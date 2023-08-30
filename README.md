@@ -39,17 +39,33 @@
 
 ### Setup
 
-TODO
+This project use the latest version of node v20.x.x, you can found it here : https://nodejs.org/en
+
+Once you have `node` installed, you should also have some utilities that comes with it like `npm`.
+
+To downloadthe dependencies, while in the front/back directory you can execute this command :
+
+```sh
+npm install
+```
 
 ### Run
 
 #### Front
 
-TODO
+To start the front in dev mode, just run :
+
+```sh
+npm start
+```
 
 #### Back
 
-TODO
+To start the front in dev mode, just run :
+
+```sh
+npm run start
+```
 
 ## Docker images
 

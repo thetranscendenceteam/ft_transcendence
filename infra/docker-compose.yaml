@@ -1,0 +1,43 @@
+---
+version: "3.8"
+services:
+  postgres:
+    image: postgres:15.4-alpine
+    restart: on-failure
+    env_file: .env-postgres
+    cap_drop:
+      - ALL
+    networks:
+      - back
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  front:
+    image: ghcr.io/thetranscendenceteam/front:latest
+    restart: on-failure
+    env_file: .env-front
+    ports:
+      - 8080:80
+    cap_drop:
+      - ALL
+    networks:
+      - front
+    volumes:
+      - front-data:/data # Needed ?
+
+  back:
+    image: ghcr.io/thetranscendenceteam/back:latest
+    restart: on-failure
+    env_file: .env-back
+    cap_drop:
+      - ALL
+    networks:
+      - back
+      - front
+    volumes:
+      - back-data:/data # Needed ?
+
+volumes:
+  postgres-data:
+  front-data:
+  back-data:

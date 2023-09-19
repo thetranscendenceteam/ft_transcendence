@@ -1,0 +1,30 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: Int!
+  nickname: String!
+  avatar: String
+  xp: Int
+}
+
+type Query {
+  user: [User!]!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+  addXpByNickname(addXp: AddXp!): User!
+  initMockDB: User!
+}
+
+input CreateUserInput {
+  nickname: String!
+  avatar: String
+}
+
+input AddXp {
+  nickname: String!
+  xp: Int!
+}

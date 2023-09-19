@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 import { CreateUserInput } from './dto/createUser.input';
 import { AddXp } from './dto/addXp.input';
 
-@Resolver()
+@Resolver(of => User)
 export class UserResolver {
   constructor(private userService: UserService) {}
 

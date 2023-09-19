@@ -24,6 +24,8 @@ export class UserService {
   }
 
   async addXpByNickname(input: AddXp): Promise<User> {
+    //const actualUser = await this.userRepository.findOne(input.nickname);
+
     const actualUser = await this.userRepository.find({
       where: {
         nickname: input.nickname,

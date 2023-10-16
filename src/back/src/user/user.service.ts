@@ -21,30 +21,30 @@ export class UserService {
   }
 
   async addXpByNickname(input: AddXp): Promise<User> {
-    //const actualUser = await this.userRepository.findOne(input.nickname);
-
     const actualUser = await this.userRepository.find({
       where: {
         nickname: input.nickname,
       },
       take: 1,
     });
-
-    if (!actualUser) {
+  
+    if (!actualUser || actualUser.length === 0) {
       throw new Error('User not found');
+    } else {
+      const xpToAdd = Number(input.xp);
+  
+      if (isNaN(xpToAdd)) {
+        throw new Error('Invalid xp value');
+      }
+  
+      const totalXp = (actualUser[0]?.xp ?? 0) + xpToAdd;
+      if (actualUser[0]) {
+        actualUser[0].xp = totalXp;
+        return this.userRepository.save(actualUser[0]);
+      } else {
+        throw new Error('User not found');
+      }
     }
-
-    // Make sure that the input.xp is converted to a number (if needed)
-    const xpToAdd = Number(input.xp);
-
-    if (isNaN(xpToAdd)) {
-      throw new Error('Invalid xp value');
-    }
-
-    const totalXp = actualUser[0].xp + xpToAdd;
-    actualUser[0].xp = totalXp;
-
-    return this.userRepository.save(actualUser[0]);
   }
 
   initMockDB(): Promise<User> {

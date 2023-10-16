@@ -5,8 +5,6 @@ services:
     image: postgres:15.4-alpine
     restart: on-failure
     env_file: .env-postgres
-    cap_drop:
-      - ALL
     networks:
       - back
     volumes:
@@ -17,9 +15,7 @@ services:
     restart: on-failure
     env_file: .env-front
     ports:
-      - 8080:80
-    cap_drop:
-      - ALL
+      - 80:8080
     networks:
       - front
     volumes:
@@ -29,8 +25,6 @@ services:
     image: ghcr.io/thetranscendenceteam/back:latest
     restart: on-failure
     env_file: .env-back
-    cap_drop:
-      - ALL
     networks:
       - back
       - front
@@ -41,3 +35,7 @@ volumes:
   postgres-data:
   front-data:
   back-data:
+
+networks:
+  front:
+  back:

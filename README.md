@@ -11,7 +11,10 @@
 │       ├── Dockerfile
 │       └── nginx.conf
 ├── infra
-│   └── docker-compose.yaml
+│   ├── docker-compose.yaml
+│   ├── .env-back
+│   ├── .env-front
+│   └── .env-postgres
 ├── README.md
 └── src
     ├── back
@@ -113,4 +116,16 @@ By running the following command , you will be able to reach the back with `http
 
 ```sh
 docker run -it --rm -n transcendence/front -p 3000:3000 ghcr.io/thetranscendenceteam/back:latest
+```
+
+## Docker compose
+
+### How to run
+
+To run the docker compose project, you will first need to build the images with the steps above.
+
+Once the images are built, you can use this command from the root of the project to deploy :
+
+```sh
+docker compose -f infra/docker-compose.yaml up -d
 ```

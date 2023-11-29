@@ -1,12 +1,10 @@
 import React from 'react'
 import {Chat} from '@/components/chat' 
 
-export const chatPage = (props : {}) => {
+function page() {
   return (
-    <main className='h-full'>
-      <Chat/>
-    </main>
+    <Chat/>
   )
 }
 
-export default chatPage;
+export default page;

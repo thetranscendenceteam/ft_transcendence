@@ -14,17 +14,19 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Image from "next/image";
-import { RegisterDialog } from "./register-dialog";
 
-const handleClick = () => {
+const handleLogin = () => {
   // call api vers backend
-}
-
-const handleRegister = () => {
-
+  const username: HTMLInputElement = document.getElementById("username") as HTMLInputElement;
+  const password: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
+  console.log(`username: ${username.value}\npassword: ${password.value}\n`);
+    
 }
 
 const LoginDialog = () => {
+  let redirect_url: string = process.env.NEXT_PUBLIC_OAUTH_URL +
+    "?client_id=" + process.env.NEXT_PUBLIC_CLIENT_ID +
+    "&scope=" + process.env.NEXT_PUBLIC_SCOPE;
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -58,17 +60,19 @@ const LoginDialog = () => {
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleClick}>Login</Button>
+          <Button type="submit" onClick={handleLogin}>Login</Button>
         </DialogFooter>
         <div className="flex items-center">
           <hr className="flex-1"/>
           <p className="m-2">or</p> 
           <hr className="flex-1"/>
         </div>
-        <Button className="flex align-middle" onClick={() => (window.location.href = process.env.NEXT_PUBLIC_REDIRECT_URI as string | URL)}>
-          Login with
-          <Image src="/42_Logo.svg" height={30} width={30} alt="42 logo" className="ml-2"/>
-        </Button>
+        <a href={redirect_url} className="flex">
+          <Button className="flex-1 flex align-middle">
+            Login with
+            <Image src="/42_Logo.svg" height={30} width={30} alt="42 logo" className="ml-2"/>
+          </Button>
+        </a>
       </DialogContent>
     </Dialog>
   )

@@ -1,16 +1,14 @@
 "use client";
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useContext } from 'react'
 import {getUser, User} from "@/lib/user"
-import { useSearchParams } from 'next/navigation';
-import Image from 'next/image';
-import { UserContext } from '@/lib/Context';
+import { useRouter, useSearchParams } from 'next/navigation';
+import {UserContext} from "@/components/userProvider"
 
 function Page(): JSX.Element {  
-  const [data, setData] = useState<User | any>(null);
-  let user = useContext(UserContext);
-  console.log("helleo: " + user);
+  const {user, updateUser} = useContext(UserContext);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  var searchParams = useSearchParams()
   var code: string = searchParams.get("code") as string;
 
   useEffect(() => {
@@ -19,22 +17,20 @@ function Page(): JSX.Element {
       try {
         const response: User | any = await getUser(code); // Replace with your API route
         if (!response.error) {
-          setData(response);
-          window.sessionStorage.setItem("user", response);
+        //  setData(response);
+          window.sessionStorage.setItem("user", JSON.stringify(response));
+          updateUser(response);
+          router.push('/');
         }
-        console.log(response);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching user data:', error);
       }
     };
 
     fetchData();
-  });
+  }, []);
 
-  console.log(JSON.stringify(data));
-
-
-  if (! data)
+  if (! user)
   {
     return (
       <div>
@@ -44,9 +40,6 @@ function Page(): JSX.Element {
   }
   return (
     <div>
-      <h1>Welcome {data.username} !</h1>
-      <Image src={data.avatar_url} unoptimized alt='avatar' width={100} height={100}/>
-      <div>{JSON.stringify(data)}</div>
     </div>
   )
 }

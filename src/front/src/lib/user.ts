@@ -3,7 +3,7 @@ export type User = {
   id: number,
   username: string,
   realname: string | null,
-  avatar_url: URL
+  avatar_url: string | URL
 }
 
 async function fetchToken(code: string) {
@@ -48,7 +48,6 @@ export async function getUser(code: string): Promise<Object> {
   let token: string = await fetchToken(code)
   if (! token.includes("error")) {
     let data = JSON.parse(await fetchUserData(token))
-    console.log(`data: ${data}`);
     let user: User = {
       id: data.id,
       username: data.login,

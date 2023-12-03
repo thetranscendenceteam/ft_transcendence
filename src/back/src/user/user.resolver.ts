@@ -26,8 +26,14 @@ export class UserResolver {
     return this.userService.addXpByNickname(addXp);
   }
 
-  @Mutation(returns => User)
-  initMockDB(): Promise<User> {
-    return this.userService.initMockDB();
+  @Mutation(returns => String)
+  async getJwt(@Args('input') inputCode: String): Promise<String | null> {
+    try {
+      const token = await this.userService.getJwt(inputCode);
+      return token;
+    } catch (error) {
+      console.log('Error generating JWT:', error);
+      return error;
+    }
   }
 }

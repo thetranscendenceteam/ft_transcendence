@@ -1,9 +1,12 @@
+const jwt = require('jsonwebtoken');
+
 import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserInput } from './dto/createUser.input';
 import { AddXp } from './dto/addXp.input';
+import axios from 'axios';
 
 @Injectable()
 export class UserService {
@@ -47,12 +50,57 @@ export class UserService {
     }
   }
 
-  initMockDB(): Promise<User> {
-    const test = {
-      nickname: 'toto',
-      avatar: 'http://toto.png',
-    };
-    this.userRepository.create(test);
-    return this.userRepository.save(test);
+  async getGithubJwt(code: String): Promise<string> {
+    const githubTokenUrl = 'https://github.com/login/oauth/access_token';
+    const githubClientId = "08d2821c6f7d32d5daad"; // tmp local
+    const githubClientSecret = "6994a8305b8501b737de254ca66c69fb8f5a7c6e"; // tmp local
+  
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await axios.post(
+          githubTokenUrl,
+          {
+            client_id: githubClientId,
+            client_secret: githubClientSecret,
+            code: code
+          },
+          {
+            headers: {
+              Accept: 'application/json'
+            }
+          }
+        );
+        console.log("response: ", response);
+        if (response.data.error) {
+          throw new Error('Error obtaining GitHub access token: ' + response.data.error);
+        }
+        const accessToken = response.data.access_token;
+        resolve(accessToken);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  // TODO : async getGithubUser(code: String): Promise<string> {
+
+
+  async getJwt(inputCode: String): Promise<String | null> {
+
+    const githubJwt = await this.getGithubJwt(inputCode);
+    console.log(githubJwt);
+    // TODO: getGithubUser()
+    // TODO: Stocker infos users
+
+    return new Promise((resolve, reject) => {
+      jwt.sign({ inputCode }, 'private-key' /*process.env.privateKey*/, { expiresIn: '1h' }, (err: any, token: any) => {
+        if (err) {
+          console.log('err: ', err);
+          reject(err);
+        } else {
+          resolve(token);
+        }
+      });
+    });
   }
 }

@@ -18,7 +18,7 @@ export default function RootLayout({children}: {
 
   return (
     <html lang="en" className="h-full">
-      <body className={inter.className + " flex flex-col h-full m-0 bg-[url('../../public/space.jpg')] bg-cover bg-center backdrop-brightness-50 dark"}>
+      <body className={inter.className + " " + "flex flex-col h-full m-0 bg-[url('../../public/space.jpg')] bg-cover bg-center backdrop-brightness-50 dark"}>
         <UserProvider>
           <Menu />
           <div className="flex-1 min-h-0">

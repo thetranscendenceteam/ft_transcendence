@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import {Callback} from "@/components/callback"
 
 function page() {
   return (
-    <Callback/>
+    <Suspense>
+      <Callback/>
+    </Suspense>
   )
 }
 

@@ -1,10 +1,13 @@
 import React from 'react'
 import {Game} from "@/components/game"
+import { GameDialog } from '@/components/game-dialog'
 
-function page() {
+function Page() {
   return (
-    <Game/>
+    <div className="h-full">
+      <GameDialog/>
+    </div>
   )
 }
 
-export default page
+export default Page

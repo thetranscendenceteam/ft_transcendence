@@ -13,6 +13,7 @@ import { PubSubModule } from './pubsub/pubsub.module';
 import * as Joi from '@hapi/joi';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { RelationshipModule } from './relationship/relationship.module';
+import { GameGateway } from './game/game.gateway';
 
 @Module({
   imports: [
@@ -43,6 +44,6 @@ import { RelationshipModule } from './relationship/relationship.module';
     RelationshipModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, GameGateway],
 })
-export class AppModule { }
+export class AppModule {}

@@ -25,6 +25,8 @@ const handleRegister = () => {
 }
 
 const LoginDialog = () => {
+  const ft_auth = process.env.NEXT_PUBLIC_OAUTH_URL + '?client_id=' + process.env.NEXT_PUBLIC_CLIENT_ID + '&redirect_uri=' + process.env.NEXT_PUBLIC_REDIRECT;
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -65,7 +67,7 @@ const LoginDialog = () => {
           <p className="m-2">or</p> 
           <hr className="flex-1"/>
         </div>
-        <Button className="flex align-middle" onClick={() => (window.location.href = process.env.NEXT_PUBLIC_REDIRECT_URI as string | URL)}>
+        <Button className="flex align-middle" onClick={() => (window.location.href = ft_auth as string)}>
           Login with
           <Image src="/42_Logo.svg" height={30} width={30} alt="42 logo" className="ml-2"/>
         </Button>

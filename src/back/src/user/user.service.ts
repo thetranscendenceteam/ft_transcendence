@@ -50,15 +50,17 @@ export class UserService {
     }
   }
 
+// Work in progress after this line.
+
   async getGithubJwt(code: String): Promise<string> {
-    const githubTokenUrl = 'https://github.com/login/oauth/access_token';
-    const githubClientId = "08d2821c6f7d32d5daad"; // tmp local
-    const githubClientSecret = "6994a8305b8501b737de254ca66c69fb8f5a7c6e"; // tmp local
+    const ftTokenUrl = 'https://api.intra.42.fr/oauth/token';
+    const githubClientId = ""; // tmp local
+    const githubClientSecret = ""; // tmp local
   
     return new Promise(async (resolve, reject) => {
       try {
         const response = await axios.post(
-          githubTokenUrl,
+          ftTokenUrl,
           {
             client_id: githubClientId,
             client_secret: githubClientSecret,
@@ -72,7 +74,7 @@ export class UserService {
         );
         console.log("response: ", response);
         if (response.data.error) {
-          throw new Error('Error obtaining GitHub access token: ' + response.data.error);
+          throw new Error('Error obtaining 42 access token: ' + response.data.error);
         }
         const accessToken = response.data.access_token;
         resolve(accessToken);

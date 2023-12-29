@@ -25,15 +25,4 @@ export class UserResolver {
   addXpByNickname(@Args('addXp') addXp: AddXp): Promise<User> {
     return this.userService.addXpByNickname(addXp);
   }
-
-  @Mutation(returns => String)
-  async getJwt(@Args('input') inputCode: String): Promise<String | null> {
-    try {
-      const token = await this.userService.getJwt(inputCode);
-      return token;
-    } catch (error) {
-      console.log('Error generating JWT:', error);
-      return error;
-    }
-  }
 }

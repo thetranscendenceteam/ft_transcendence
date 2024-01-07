@@ -24,9 +24,8 @@ const handleLogin = () => {
 }
 
 const LoginDialog = () => {
-  let redirect_url: string = process.env.NEXT_PUBLIC_OAUTH_URL +
-    "?client_id=" + process.env.NEXT_PUBLIC_CLIENT_ID +
-    "&scope=" + process.env.NEXT_PUBLIC_SCOPE;
+  const ft_auth = process.env.NEXT_PUBLIC_OAUTH_URL + '?client_id=' + process.env.NEXT_PUBLIC_CLIENT_ID + '&redirect_uri=' + process.env.NEXT_PUBLIC_REDIRECT;
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -67,12 +66,10 @@ const LoginDialog = () => {
           <p className="m-2">or</p> 
           <hr className="flex-1"/>
         </div>
-        <a href={redirect_url} className="flex">
-          <Button className="flex-1 flex align-middle">
-            Login with
-            <Image src="/42_Logo.svg" height={30} width={30} alt="42 logo" className="ml-2"/>
-          </Button>
-        </a>
+        <Button className="flex align-middle" onClick={() => (window.location.href = ft_auth as string)}>
+          Login with
+          <Image src="/42_Logo.svg" height={30} width={30} alt="42 logo" className="ml-2"/>
+        </Button>
       </DialogContent>
     </Dialog>
   )

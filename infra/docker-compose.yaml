@@ -5,6 +5,12 @@ services:
     image: postgres:15.4-alpine
     restart: on-failure
     env_file: .env-postgres
+    environment:
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=johndoe
+      - POSTGRES_PASSWORD=randompassword
+      - POSTGRES_DB=mydb
     networks:
       - back
     volumes:
@@ -19,7 +25,7 @@ services:
     networks:
       - front
     volumes:
-      - front-data:/data # Needed ?
+            - front-data:/data # Needed ?
 
   back:
     image: ghcr.io/thetranscendenceteam/back:latest
@@ -29,7 +35,7 @@ services:
       - back
       - front
     volumes:
-      - back-data:/data # Needed ?
+            - back-data:/data # Needed ?
 
 volumes:
   postgres-data:

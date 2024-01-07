@@ -27,7 +27,7 @@ export class UserResolver {
   }
 
   @Mutation(returns => String)
-  async getFtAuth(@Args('code') code: String): Promise<String | null> {
+  async getFtAuth(@Args('code') code: string): Promise<String | null> {
     const result = await this.userService.getJwt(code);
     if (result === null) {
       throw new Error('Invalid code or null response');

@@ -25,4 +25,13 @@ export class UserResolver {
   addXpByNickname(@Args('addXp') addXp: AddXp): Promise<User> {
     return this.userService.addXpByNickname(addXp);
   }
+
+  @Mutation(returns => String)
+  async getFtAuth(@Args('code') code: String): Promise<String | null> {
+    const result = await this.userService.getJwt(code);
+    if (result === null) {
+      throw new Error('Invalid code or null response');
+    }
+    return result;
+  }
 }

@@ -24,9 +24,6 @@ const handleLogin = () => {
 }
 
 const LoginDialog = () => {
-  let redirect_url: string = process.env.NEXT_PUBLIC_OAUTH_URL +
-    "?client_id=" + process.env.NEXT_PUBLIC_CLIENT_ID +
-    "&scope=" + process.env.NEXT_PUBLIC_SCOPE;
   const ft_auth = process.env.NEXT_PUBLIC_OAUTH_URL + '?client_id=' + process.env.NEXT_PUBLIC_CLIENT_ID + '&redirect_uri=' + process.env.NEXT_PUBLIC_REDIRECT;
 
   return (

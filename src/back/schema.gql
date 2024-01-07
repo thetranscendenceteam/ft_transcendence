@@ -16,6 +16,7 @@ type Query {
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   addXpByNickname(addXp: AddXp!): User!
+  getFtAuth(code: String!): String!
 }
 
 input CreateUserInput {

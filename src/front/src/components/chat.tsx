@@ -47,9 +47,11 @@ export const Chat = (props : {}) => {
   };
 
   return (
-    <div className="h-full grid grid-cols-7 grid-rows-1 items-center justify-center">
-      <Sidebar data={messages}/>
-      <Conversation className="col-span-6"/>
+    <div className="bg-slate-300 h-full w-full bg-blur-sm bg-opacity-50 p-3 rounded-lg">
+      <div className="h-full grid grid-cols-7 grid-rows-1 items-center justify-center">
+        <Sidebar data={messages}/>
+        <Conversation className="col-span-6"/>
+      </div>
     </div>
   )
 }

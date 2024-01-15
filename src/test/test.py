@@ -10,18 +10,6 @@ class SimpleEcho(WebSocket):
                 {"id": 3, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
                 {"id": 4, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
                 {"id": 5, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 6, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 7, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 8, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 9, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 10, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 11, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 12, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 13, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 14, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 15, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 16, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 17, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."}
         ]
         message = json.dumps(usersData)
 

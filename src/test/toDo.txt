@@ -1,0 +1,4 @@
+- Send Message
+- Ban (Admin only)
+- Mute
+- Invite

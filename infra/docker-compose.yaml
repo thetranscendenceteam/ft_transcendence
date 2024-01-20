@@ -11,6 +11,8 @@ services:
       - POSTGRES_USER=johndoe
       - POSTGRES_PASSWORD=randompassword
       - POSTGRES_DB=mydb
+    ports:
+      - 5432:5432
     networks:
       - back
     volumes:
@@ -47,10 +49,23 @@ services:
       - ../src/back:/app
       - back-data:/data # Needed ?
 
+  adminer:
+    image: adminer
+    restart: on-failure
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+    networks:
+      - back
+
 volumes:
   postgres-data:
   front-data:
   back-data:
+
 
 networks:
   front:

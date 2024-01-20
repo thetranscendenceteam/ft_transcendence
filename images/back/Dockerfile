@@ -5,15 +5,15 @@ ARG NODE_ENV=default
 ENV NODE_ENV=${NODE_ENV}
 
 RUN apk update && apk upgrade \
-    && apk add --no-cache --quiet --update \
-    	   vim curl bash zsh git postgresql-client dos2unix
+	&& apk add --no-cache --quiet --update \
+	vim curl bash zsh git postgresql-client dos2unix
 
 ADD src/back /app
 
 WORKDIR /app
 
 RUN npm install && \
-    npm run build
+	npm run build
 
 EXPOSE 3000
 

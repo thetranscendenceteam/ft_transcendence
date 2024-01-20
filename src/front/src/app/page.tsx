@@ -5,7 +5,7 @@ import {Board} from "@/components/board"
 export default function Home() {
   return (
     <main className="grid grid-cols-4 grid-rows-4 h-full">
-      <div className='col-span-1 row-span-4 max-h-full'>
+      <div className='col-span-1 row-span-4'>
         <Chat/>
       </div>
       <div className='col-span-3 row-span-3'>

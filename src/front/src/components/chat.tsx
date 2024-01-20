@@ -14,7 +14,7 @@ export const Chat = (props : {}) => {
     // Connection opened
     socket.addEventListener('open', function (event) {
       console.log('Connected to WS Server');
-      socket.send("fetching data...");
+      socket.send("1");
     });
 
     // Listen for Messages

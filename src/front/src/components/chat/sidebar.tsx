@@ -17,10 +17,12 @@ const Sidebar: React.FC<usersData> = ({ data }) => {
       <div className='bg-slate-800 h-12 flex items-center justify-center rounded-tl-lg'>
         <h1>Chats</h1>
       </div>
-      <div className='h-full flex flex-col overflow-auto'>
-        {data.map(conversation => (
-          <SidebarChat key={conversation.id} avatarUrl={conversation.avatarUrl} fallback={conversation.fallback} />
-        ))}
+      <div className='h-full overflow-y-auto'>
+        <div className='flex flex-col'>
+          {data.map(conversation => (
+            <SidebarChat key={conversation.id} avatarUrl={conversation.avatarUrl} fallback={conversation.fallback} />
+          ))}
+        </div>
       </div>
     </div>
   )

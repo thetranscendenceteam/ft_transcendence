@@ -1,17 +1,34 @@
 import json
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
-class SimpleEcho(WebSocket):
-    def handleMessage(self):
-        print("Message received: " + str(self.data))
+def getUsers():
         usersData = [
                 {"id": 1, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
                 {"id": 2, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
                 {"id": 3, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
                 {"id": 4, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
                 {"id": 5, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 6, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 7, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 8, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 9, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 10, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 11, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 12, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 13, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 14, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 15, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 16, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
         ]
         message = json.dumps(usersData)
+        return (message)
+
+class SimpleEcho(WebSocket):
+    def handleMessage(self):
+        message = ""
+        print("Message received: " + str(self.data))
+        if (str(self.data) == "1"):
+            message = getUsers()
 
         self.sendMessage(message)
         print("Sent message: \n" + str(message))

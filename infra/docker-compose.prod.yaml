@@ -11,8 +11,6 @@ services:
       - POSTGRES_USER=johndoe
       - POSTGRES_PASSWORD=randompassword
       - POSTGRES_DB=mydb
-    ports:
-      - 5432:5432
     networks:
       - back
     volumes:
@@ -25,6 +23,8 @@ services:
       dockerfile: images/front/Dockerfile
     restart: on-failure
     env_file: .env-front
+    environment:
+      - NODE_ENV=production
     ports:
       - 80:8080
     networks:
@@ -40,6 +40,8 @@ services:
       dockerfile: images/back/Dockerfile
     restart: on-failure
     env_file: .env-back
+    environment:
+      - NODE_ENV=production
     depends_on:
       - postgres
     networks:
@@ -49,23 +51,10 @@ services:
       - ../src/back:/app
       - back-data:/data # Needed ?
 
-  adminer:
-    image: adminer
-    restart: on-failure
-    environment:
-      - ADMINER_DEFAULT_SERVER=postgres
-    depends_on:
-      - postgres
-    ports:
-      - 8080:8080
-    networks:
-      - back
-
 volumes:
   postgres-data:
   front-data:
   back-data:
-
 
 networks:
   front:

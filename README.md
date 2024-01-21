@@ -4,36 +4,42 @@
 
 ```
 .
-├── images
-│   ├── back
-│   │   └── Dockerfile
-│   └── front
-│       ├── Dockerfile
-│       └── nginx.conf
-├── infra
-│   ├── docker-compose.yaml
-│   ├── .env-back
-│   ├── .env-front
-│   └── .env-postgres
 ├── README.md
+├── docs
+│   └── HowToUseDB.md
+├── images
+│   ├── back
+│   │   └── Dockerfile
+│   └── front
+│       ├── Dockerfile
+│       └── nginx.conf
+├── infra
+│   ├── .env-back
+│   ├── .env-front
+│   ├── .env-postgres
+│   ├── docker-compose.prod.yaml
+│   └── docker-compose.yaml
+├── package-lock.json
+├── package.json
 └── src
     ├── back
-    │   ├── dist
-    │   ├── nest-cli.json
-    │   ├── node_modules
-    │   ├── package.json
-    │   ├── package-lock.json
-    │   ├── README.md
-    │   ├── src
-    │   ├── test
-    │   ├── tsconfig.build.json
-    │   └── tsconfig.json
+    │   ├── README.md
+    │   ├── dist
+    │   ├── nest-cli.json
+    │   ├── package-lock.json
+    │   ├── package.json
+    │   ├── prisma
+    │   ├── src
+    │   ├── test
+    │   ├── tsconfig.build.json
+    │   └── tsconfig.json
     └── front
-        ├── node_modules
-        ├── package.json
-        ├── package-lock.json
-        ├── public
         ├── README.md
+        ├── components.json
+        ├── env.local
+        ├── package-lock.json
+        ├── package.json
+        ├── public
         ├── src
         └── tsconfig.json
 ```
@@ -68,6 +74,28 @@ To start the front in dev mode, just run :
 
 ```sh
 npm run start
+```
+
+#### Initialize Database
+
+Before following thoses guidelines, be sure to run the project with the corrects commands : [goto](#docker-compose)
+
+[Guide for Prisma](./docs/HowToUseDB.md##prisma)
+
+#### Use adminer
+
+Adminer is a easy database managment tool that you can use inside your internet browser.
+If you're using VSCode's Docker extension, you'll see it in the list of running containers once you've started the project.
+
+Right click on it and choose "Open in browser" or just go to "http://localhost:8080"
+
+To login :
+```
+System : PostgreSQL
+Server: postgres
+Username: "POSTGRES_USER" right now it's johndoe
+Password: "POSTGRES_PASSWORD" right now it's randompassword
+Database: "POSTGRES_DB" right now it's mydb
 ```
 
 ## Docker images
@@ -122,10 +150,18 @@ docker run -it --rm -n transcendence/front -p 3000:3000 ghcr.io/thetranscendence
 
 ### How to run
 
-To run the docker compose project, you will first need to build the images with the steps above.
-
-Once the images are built, you can use this command from the root of the project to deploy :
+If you wanna build all of the project at once, and not a particular image, this command
+allow you to directly setup everything :
 
 ```sh
-docker compose -f infra/docker-compose.yaml up -d
+docker compose -f ./infra/docker-compose.yaml -p ft_transcendence up -d --build
+```
+
+Notice : The ```--build``` argument is optional and you can remove it if you don't need it, but it's strongly advised to use it at least the first time you're launching the project.
+
+### How to shut it down
+
+Pretty basics, just replace the ```up``` argument :
+```sh
+docker compose -f ./infra/docker-compose.yaml -p ft_transcendence down
 ```

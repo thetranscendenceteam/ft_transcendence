@@ -14,49 +14,49 @@ generator client {
 //   provider = "prisma-dbml-generator"
 // }
 
-model users {
+model Users {
     id         String         @id @unique @default(uuid())
-    ftid       Int            @unique @db.Integer
+    ftId       Int            @unique @db.Integer
     pseudo     String         @db.VarChar(255)
     mail       String         @unique @db.VarChar(255)
     password   String
-    firstname  String         @db.VarChar(255)
-    lastname   String         @db.VarChar(255)
+    firstName  String         @db.VarChar(255)
+    lastName   String         @db.VarChar(255)
     avatar     String
     xp         Int            @default(0) @db.Integer
-    createdat  DateTime       @default(now())
-    modifiedat DateTime       @default(now())
+    createdAt  DateTime       @default(now())
+    modifiedAt DateTime       @default(now())
     count      Int            @default(0) @db.Integer
-    chats      usersinchats[]
+    chats      UsersInChats[]
 }
 
-model chats {
+model Chats {
     id       String         @id @unique @default(uuid())
     name     String         @unique @db.VarChar(255)
     password String
-    users    usersinchats[]
+    users    UsersInChats[]
 }
 
-model usersinchats {
-    user   users          @relation(fields: [userid], references: [id])
-    userid String
-    chat   chats          @relation(fields: [chatid], references: [id])
-    chatid String
-    role   userchatrole   @default(member)
-    status userchatstatus @default(normal)
+model UsersInChats {
+    user   Users          @relation(fields: [userId], references: [id])
+    userId String
+    chat   Chats          @relation(fields: [chatId], references: [id])
+    chatId String
+    role   UserChatRole   @default(member)
+    status UserChatStatus @default(normal)
 
     joinedat DateTime @default(now())
 
-    @@id([userid, chatid])
+    @@id([userId, chatId])
 }
 
-enum userchatrole {
+enum UserChatRole {
     owner
     admin
     member
 }
 
-enum userchatstatus {
+enum UserChatStatus {
     normal
     muted
     banned

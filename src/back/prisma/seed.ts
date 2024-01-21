@@ -1,15 +1,15 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, UserChatRole, UserChatStatus } from '@prisma/client'
 const prisma = new PrismaClient()
 async function main() {
     const Obiwan = await prisma.users.create({
         data: {
             id: 'kenobiObiwan',
-            ftid: 1010,
+            ftId: 1010,
             pseudo: 'highground',
             mail: 'yoda@gmail.com',
             password: 'kekw',
-            firstname: 'Obiwan',
-            lastname: 'Kenobi',
+            firstName: 'Obiwan',
+            lastName: 'Kenobi',
             avatar: 'Anakin',
         }
     })
@@ -17,12 +17,12 @@ async function main() {
     const Anakin = await prisma.users.create({
         data: {
             id: 'anakinSkywalker',
-            ftid: 1011,
+            ftId: 1011,
             pseudo: 'vador',
             mail: 'obiwan@gmail.com',
             password: 'wkek',
-            firstname: 'Anakin',
-            lastname: 'Skywalker',
+            firstName: 'Anakin',
+            lastName: 'Skywalker',
             avatar: 'Obiwan'
         }
     })
@@ -30,12 +30,12 @@ async function main() {
     const Yoda = await prisma.users.create({
         data: {
             id: 'yoda',
-            ftid: 1111,
+            ftId: 1111,
             pseudo: 'small',
             mail: 'green@gmail.com',
             password: 'saber',
-            firstname: 'Yoda',
-            lastname: 'dontKnow',
+            firstName: 'Yoda',
+            lastName: 'dontKnow',
             avatar: 'dasdawda'
         },
     })
@@ -60,48 +60,49 @@ async function main() {
 
     //--------------------------------------------------------------
 
-    const relation1 = await prisma.usersinchats.create({
+    const relation1 = await prisma.usersInChats.create({
         data: {
-            userid: 'yoda',
-            chatid: '901918471',
-            role: owner,
-            status: normal
+            userId: 'yoda',
+            chatId: '901918471',
+            role: UserChatRole.owner,
+            status: UserChatStatus.normal
         },
     })
 
-    const relation2 = await prisma.usersinchats.create({
+    const relation2 = await prisma.usersInChats.create({
         data: {
-            userid: 'anakinSkywalker',
-            chatid: '901918471',
-            role: member,
-            status: muted
+            userId: 'anakinSkywalker',
+            chatId: '901918471',
+            role: UserChatRole.member,
+            status: UserChatStatus.muted
+        },
+
+    })
+
+    const relation3 = await prisma.usersInChats.create({
+        data: {
+            userId: 'anakinSkywalker',
+            chatId: '824763520',
+            role: UserChatRole.owner,
+            status: UserChatStatus.normal
         },
     })
 
-    const relation3 = await prisma.usersinchats.create({
+    const relation4 = await prisma.usersInChats.create({
         data: {
-            userid: 'anakinSkywalker',
-            chatid: '824763520',
-            role: owner,
-            status: normal
+            userId: 'kenobiObiwan',
+            chatId: '824763520',
+            role: UserChatRole.admin,
+            status: UserChatStatus.normal
         },
     })
 
-    const relation4 = await prisma.usersinchats.create({
+    const relation5 = await prisma.usersInChats.create({
         data: {
-            userid: 'kenobiObiwan',
-            chatid: '824763520',
-            role: admin,
-            status: normal
-        },
-    })
-
-    const relation5 = await prisma.usersinchats.create({
-        data: {
-            userid: 'yoda',
-            chatid: '824763520',
-            role: member,
-            status: banned
+            userId: 'yoda',
+            chatId: '824763520',
+            role: UserChatRole.member,
+            status: UserChatStatus.banned
         },
     })
 

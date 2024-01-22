@@ -1,0 +1,26 @@
+import React from 'react';
+
+type Arguments = {
+  index: number;
+  message: string;
+  userMessage: boolean;
+}
+
+const Message: React.FC<Arguments> = ({ index, message, userMessage }) => {
+  const messageClass = userMessage ? "flex py-1 w-full justify-end" : "flex py-1 w-full";
+
+  return (
+    <div key={index} className={messageClass}>
+      <img className="w-8 h-8 rounded-full" src="https://avatars.githubusercontent.com/u/11646882" alt="Profile pic" />
+      <div className="flex flex-col leading-1.5 p-4 ml-2 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
+        <div className="flex items-center space-x-2 rtl:space-x-reverse">
+          <span className="text-sm font-semibold text-gray-900 dark:text-white">User Name</span>
+          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
+        </div>
+        <p className="break-words max-w-sm text-sm font-normal py-2.5 text-gray-900 dark:text-white">{message}</p>
+      </div>
+    </div>
+  );
+}
+
+export default Message;

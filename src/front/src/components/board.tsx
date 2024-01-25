@@ -17,9 +17,15 @@ const players: { name:string; score: number}[] = [
 
 return (
   <div className="h-full w-full flex grid grid-cols-7 items-center justify-center border-2 border-dashed rounded-lg">
-    <div className="h-full border-2 border-dashed">Options</div>
+    <div className="h-full border-2 border-dashed flex grid grid-rows-2 grid-cols-1">
+      <div className="bg-[#710f71] flex justify-center items-center">Amis</div>
+      <div className="bg-[#ac16ac] flex justify-center items-center">Global</div>
+    </div>
     <div className="h-4/6 col-span-6 col-start-3 col-end-7 grid grid-cols-2 scoreboard bg-gray-500">
-      <div className="border border-dashed col-span-2 flex items-center justify-center">Player</div>
+      <div className="border border-dashed col-span-2 flex items-center justify-center">
+        <span>Player</span>
+        <span className="ml-10">3</span>
+      </div>
       {players.map((player, index) => (
         <div key={index} className="border border-dashed flex items-center justify-center">
           <span>{player.name}</span>

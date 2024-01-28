@@ -2,9 +2,9 @@ import { Field, InputType, Int } from '@nestjs/graphql';
 
 @InputType()
 export class AddXp {
-  @Field()
-  nickname: string;
+  @Field(() => String)
+  id: string;
 
-  @Field(type => Int)
+  @Field(() => Int)
   xp: number;
 }

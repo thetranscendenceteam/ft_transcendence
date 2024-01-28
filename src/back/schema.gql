@@ -3,11 +3,24 @@
 # ------------------------------------------------------
 
 type User {
-  id: Int!
-  nickname: String!
-  avatar: String
-  xp: Int
+  id: String!
+  ftId: Int!
+  pseudo: String!
+  mail: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  avatar: String!
+  xp: Int!
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  count: Int!
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Query {
   user: [User!]!
@@ -20,11 +33,16 @@ type Mutation {
 }
 
 input CreateUserInput {
-  nickname: String!
-  avatar: String
+  ftId: Int!
+  mail: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  avatar: String!
+  pseudo: String!
 }
 
 input AddXp {
-  nickname: String!
+  id: String!
   xp: Int!
 }

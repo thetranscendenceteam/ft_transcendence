@@ -1,19 +1,15 @@
 # Build app
-FROM node:20.5.1-alpine as build
+FROM node:20.11.0-alpine
 
 ARG NODE_ENV=default
 ENV NODE_ENV=${NODE_ENV}
 
-RUN apk update && apk upgrade \
-	&& apk add --no-cache --quiet --update \
-	vim curl bash zsh git postgresql-client dos2unix
+WORKDIR /app
 
 ADD src/back /app
 
-WORKDIR /app
-
-RUN npm install && \
-	npm run build
+RUN npm install \
+    npm run build
 
 EXPOSE 3000
 

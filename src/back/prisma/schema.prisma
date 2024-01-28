@@ -19,7 +19,7 @@ model Users {
     ftId       Int                  @unique @db.Integer
     pseudo     String               @db.VarChar(255)
     mail       String               @unique @db.VarChar(255)
-    password   String
+    password   String?
     firstName  String               @db.VarChar(255)
     lastName   String               @db.VarChar(255)
     avatar     String

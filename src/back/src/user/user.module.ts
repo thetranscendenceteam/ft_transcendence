@@ -1,11 +1,4 @@
-import { Module } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserResolver } from './user.resolver';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user.entity';
+import { PrismaClient } from '@prisma/client'
+import { Users } from '@prisma/client'
 
-@Module({
-  imports: [TypeOrmModule.forFeature([User])],
-  providers: [UserService, UserResolver],
-})
-export class UserModule {}
+

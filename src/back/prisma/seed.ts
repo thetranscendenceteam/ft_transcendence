@@ -1,4 +1,5 @@
-import { PrismaClient, UserChatRole, UserChatStatus } from '@prisma/client'
+import { PrismaClient, RelationshipStatus, UserChatRole, UserChatStatus } from '@prisma/client'
+import { get } from 'http'
 const prisma = new PrismaClient()
 async function main() {
     const Obiwan = await prisma.users.create({
@@ -106,6 +107,22 @@ async function main() {
         },
     })
 
+    const relationshipObiwanYoda = await prisma.usersRelationships.create({
+        data: {
+            firstId: 1010,
+            secondId: 1111,
+            status: RelationshipStatus.friends
+        },
+    })
+
+    const relationshipAnakinObiwan = await prisma.usersRelationships.create({
+        data: {
+            firstId: 1010,
+            secondId: 1011,
+            status: RelationshipStatus.block_second_to_first
+        },
+    })
+
     //--------------------------------------------------------------
 
     console.log({
@@ -118,8 +135,11 @@ async function main() {
         relation2,
         relation3,
         relation4,
-        relation5
+        relation5,
+        relationshipObiwanYoda,
+        relationshipAnakinObiwan
     })
+
 }
 
 //--------------------------------------------------------------

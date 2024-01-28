@@ -15,39 +15,59 @@ generator client {
 // }
 
 model Users {
-    id         String         @id @unique @default(uuid())
-    ftId       Int            @unique @db.Integer
-    pseudo     String         @db.VarChar(255)
-    mail       String         @unique @db.VarChar(255)
+    id         String               @id @unique @default(uuid()) @db.VarChar(36)
+    ftId       Int                  @unique @db.Integer
+    pseudo     String               @db.VarChar(255)
+    mail       String               @unique @db.VarChar(255)
     password   String
-    firstName  String         @db.VarChar(255)
-    lastName   String         @db.VarChar(255)
+    firstName  String               @db.VarChar(255)
+    lastName   String               @db.VarChar(255)
     avatar     String
-    xp         Int            @default(0) @db.Integer
-    createdAt  DateTime       @default(now())
-    modifiedAt DateTime       @default(now())
-    count      Int            @default(0) @db.Integer
+    xp         Int                  @default(0) @db.Integer
+    createdAt  DateTime             @default(now())
+    modifiedAt DateTime             @default(now())
+    count      Int                  @default(0) @db.Integer
     chats      UsersInChats[]
+    friends    UsersRelationships[]
 }
 
 model Chats {
-    id       String         @id @unique @default(uuid())
-    name     String         @unique @db.VarChar(255)
-    password String
-    users    UsersInChats[]
+    id        String         @id @unique @default(uuid()) @db.VarChar(36)
+    name      String         @unique @db.VarChar(255)
+    password  String
+    createdAt DateTime       @default(now())
+    users     UsersInChats[]
 }
 
 model UsersInChats {
-    user   Users          @relation(fields: [userId], references: [id])
-    userId String
-    chat   Chats          @relation(fields: [chatId], references: [id])
-    chatId String
-    role   UserChatRole   @default(member)
-    status UserChatStatus @default(normal)
-
-    joinedat DateTime @default(now())
+    user     Users          @relation(fields: [userId], references: [id])
+    userId   String         @db.VarChar(36)
+    chat     Chats          @relation(fields: [chatId], references: [id])
+    chatId   String         @db.VarChar(36)
+    role     UserChatRole   @default(member)
+    status   UserChatStatus @default(normal)
+    joinedAt DateTime       @default(now())
 
     @@id([userId, chatId])
+}
+
+model UsersRelationships {
+    id        String             @id @unique @default(uuid()) @db.VarChar(36)
+    firstId   Int
+    secondId  Int
+    status    RelationshipStatus @default(unknown)
+    createdAt DateTime           @default(now())
+    updatedAt DateTime           @default(now())
+    Users     Users              @relation(fields: [firstId], references: [ftId])
+}
+
+enum RelationshipStatus {
+    friends
+    pending_first_to_second
+    block_first_to_second
+    block_second_to_first
+    pending_second_to_first
+    unknown
 }
 
 enum UserChatRole {

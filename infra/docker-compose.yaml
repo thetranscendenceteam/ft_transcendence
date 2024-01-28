@@ -11,8 +11,6 @@ services:
       - POSTGRES_USER=johndoe
       - POSTGRES_PASSWORD=randompassword
       - POSTGRES_DB=mydb
-    ports:
-      - 5432:5432
     networks:
       - back
     volumes:
@@ -26,11 +24,10 @@ services:
     restart: on-failure
     env_file: .env-front
     ports:
-      - 80:8080
+      - 3001:3000
     networks:
       - front
     volumes:
-      - ../src/front:/app
       - front-data:/data # Needed ?
 
   back:
@@ -42,11 +39,13 @@ services:
     env_file: .env-back
     depends_on:
       - postgres
+    platform: linux/amd64
+    ports:
+      - 3000:3000
     networks:
       - back
       - front
     volumes:
-      - ../src/back:/app
       - back-data:/data # Needed ?
 
   adminer:

@@ -3,6 +3,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Users } from '@prisma/client';
+import { GetUserInput } from './dto/getUser.input';
 import { CreateUserInput } from './dto/createUser.input';
 import { AddXp } from './dto/addXp.input';
 import axios from 'axios';
@@ -11,8 +12,19 @@ import axios from 'axios';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllUser(): Promise<Users[]> {
-    return await this.prisma.users.findMany();
+  async getAllUser(max: number | undefined): Promise<Users[]> {
+    return await this.prisma.users.findMany({
+      take: max,
+      orderBy: { xp: 'desc' },
+    });
+  }
+
+  async getUser(userInput: GetUserInput): Promise<Users | null> {
+    const toto = await this.prisma.users.findFirst({
+      where: userInput,
+    });
+    if (toto) return toto;
+    return null;
   }
 
   async getUserById(id: string): Promise<Users | null> {

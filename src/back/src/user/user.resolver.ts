@@ -1,8 +1,9 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Int } from '@nestjs/graphql';
 import { Users } from '@prisma/client';
 import { UserService } from './user.service';
 import { CreateUserInput } from './dto/createUser.input';
 import { AddXp } from './dto/addXp.input';
+import { GetUserInput } from './dto/getUser.input';
 import { User } from './dto/user.entity';
 
 @Resolver()
@@ -10,8 +11,17 @@ export class UserResolver {
   constructor(private userService: UserService) {}
 
   @Query(returns => [User])
-  user(): Promise<Users[]> {
-    return this.userService.getAllUser();
+  getUsers(
+    @Args('max', { type: () => Int, nullable: true }) max: number | undefined,
+  ): Promise<Users[]> {
+    return this.userService.getAllUser(max);
+  }
+
+  @Query(returns => User, { nullable: true })
+  async getUser(
+    @Args('UserInput') userInput: GetUserInput,
+  ): Promise<Users | null> {
+    return this.userService.getUser(userInput);
   }
 
   @Mutation(returns => User)

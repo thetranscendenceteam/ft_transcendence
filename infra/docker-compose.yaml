@@ -46,6 +46,7 @@ services:
       - back
       - front
     volumes:
+      - ../src/back/prisma/migrations:/app/prisma/migrations
       - back-data:/data # Needed ?
 
   adminer:

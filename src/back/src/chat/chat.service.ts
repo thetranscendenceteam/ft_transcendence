@@ -10,38 +10,62 @@ export class ChatService {
     constructor(private prisma: PrismaService) { }
 
     async getAllChats(max: number | undefined): Promise<Chats[]> {
-        return await this.prisma.chats.findMany({
-            take: max,
-            orderBy: { name: 'asc' },
-        });
+        try {
+            return await this.prisma.chats.findMany({
+                take: max,
+                orderBy: { name: 'asc' },
+            })
+        }
+        catch (e) {
+            console.log("Error on getAllChats query" + e);
+            throw e;
+        }
     }
 
     async getChat(chatInput: GetChatInput): Promise<Chats | null> {
-        const chat = await this.prisma.chats.findFirst({
-            where: chatInput,
-        });
-        if (chat) return chat;
-        return null;
+        try {
+            const chat = await this.prisma.chats.findFirst({
+                where: chatInput,
+            });
+            if (chat) return chat;
+            return null;
+        }
+        catch (e) {
+            console.log("Error on getChat query" + e);
+            throw e;
+        }
     }
 
     async createChat(createChatInput: CreateChatInput): Promise<Chats> {
-        const newChat = this.prisma.chats.create({
-            data: {
-                name: createChatInput.name,
-                password: createChatInput.password,
-            },
-        });
-        return newChat;
+        try {
+            const newChat = this.prisma.chats.create({
+                data: {
+                    name: createChatInput.name,
+                    password: createChatInput.password,
+                },
+            });
+            return newChat;
+        }
+        catch (e) {
+            console.log("Error on createChat query" + e);
+            throw e;
+        }
     }
 
     async updateChat(updateChatInput: UpdateChatInput): Promise<Chats> {
-        const updateChat = this.prisma.chats.update({
-            where: {
-                id: updateChatInput.id,
-            },
-            data: updateChatInput.var
-        });
-        return updateChat;
+        try {
+            const updateChat = this.prisma.chats.update({
+                where: {
+                    id: updateChatInput.id,
+                },
+                data: updateChatInput.var
+            });
+            return updateChat;
+        }
+        catch (e) {
+            console.log("Error on updateChat query" + e);
+            throw e;
+        }
     }
 
 }

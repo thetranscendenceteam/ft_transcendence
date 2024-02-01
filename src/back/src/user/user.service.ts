@@ -13,37 +13,61 @@ export class UserService {
   constructor(private prisma: PrismaService) { }
 
   async getAllUser(max: number | undefined): Promise<Users[]> {
-    return await this.prisma.users.findMany({
-      take: max,
-      orderBy: { xp: 'desc' },
-    });
+    try {
+      return await this.prisma.users.findMany({
+        take: max,
+        orderBy: { xp: 'desc' },
+      });
+    }
+    catch (e) {
+      console.log("Error on getAllUser query" + e);
+      throw e;
+    }
   }
 
   async getUser(userInput: GetUserInput): Promise<Users | null> {
-    const user = await this.prisma.users.findFirst({
-      where: userInput,
-    });
-    if (user) return user;
-    return null;
+    try {
+      const user = await this.prisma.users.findFirst({
+        where: userInput,
+      });
+      if (user) return user;
+      return null;
+    }
+    catch (e) {
+      console.log("Error on getUser query" + e);
+      throw e;
+    }
   }
 
   async getUserById(id: string): Promise<Users | null> {
-    return await this.prisma.users.findUnique({ where: { id: id } });
+    try {
+      return await this.prisma.users.findUnique({ where: { id: id } });
+    }
+    catch (e) {
+      console.log("Error on getUserById query" + e);
+      throw e;
+    }
   }
 
   async createUser(createUserInput: CreateUserInput): Promise<Users> {
-    const newUser = this.prisma.users.create({
-      data: {
-        password: 'toto',
-        mail: createUserInput.mail,
-        firstName: createUserInput.firstName,
-        lastName: createUserInput.lastName,
-        ftId: createUserInput.ftId,
-        pseudo: createUserInput.pseudo,
-        avatar: createUserInput.avatar,
-      },
-    });
-    return newUser;
+    try {
+      const newUser = this.prisma.users.create({
+        data: {
+          password: 'toto',
+          mail: createUserInput.mail,
+          firstName: createUserInput.firstName,
+          lastName: createUserInput.lastName,
+          ftId: createUserInput.ftId,
+          pseudo: createUserInput.pseudo,
+          avatar: createUserInput.avatar,
+        },
+      });
+      return newUser;
+    }
+    catch (e) {
+      console.log("Error on createUser query" + e);
+      throw e;
+    }
   }
 
   async addXpByNickname(input: AddXp): Promise<Users> {
@@ -52,14 +76,20 @@ export class UserService {
     if (isNaN(xpToAdd)) {
       throw new Error('Invalid xp value');
     }
-    return this.prisma.users.update({
-      where: { id: input.id },
-      data: {
-        xp: {
-          increment: xpToAdd,
+    try {
+      return this.prisma.users.update({
+        where: { id: input.id },
+        data: {
+          xp: {
+            increment: xpToAdd,
+          },
         },
-      },
-    });
+      });
+    }
+    catch (e) {
+      console.log("Error on addXpByNickname query" + e);
+      throw e;
+    }
   }
 
   // Work in progress after this line.

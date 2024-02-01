@@ -1,7 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Entity } from 'typeorm';
 
-@Entity()
 @ObjectType()
 export class User {
   @Field()

@@ -10,7 +10,7 @@ import axios from 'axios';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async getAllUser(max: number | undefined): Promise<Users[]> {
     return await this.prisma.users.findMany({
@@ -31,7 +31,7 @@ export class UserService {
     return await this.prisma.users.findUnique({ where: { id: id } });
   }
 
-  createUser(createUserInput: CreateUserInput): Promise<Users> {
+  async createUser(createUserInput: CreateUserInput): Promise<Users> {
     const newUser = this.prisma.users.create({
       data: {
         password: 'toto',

@@ -8,7 +8,7 @@ import { User } from './dto/user.entity';
 
 @Resolver()
 export class UserResolver {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   @Query(returns => [User])
   getUsers(
@@ -17,7 +17,7 @@ export class UserResolver {
     return this.userService.getAllUser(max);
   }
 
-  @Query(returns => User, { nullable: true })
+  @Query(returns => User)
   async getUser(
     @Args('UserInput') userInput: GetUserInput,
   ): Promise<Users | null> {

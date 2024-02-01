@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ChatService } from './chat/chat.service';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -12,8 +14,9 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       autoSchemaFile: 'schema.gql',
     }),
     UserModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

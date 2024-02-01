@@ -7,7 +7,7 @@ datasource db {
 }
 
 generator client {
-    provider = "prisma-client-js"
+    provider      = "prisma-client-js"
     binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -35,7 +35,7 @@ model Users {
 model Chats {
     id        String         @id @unique @default(uuid()) @db.VarChar(36)
     name      String         @unique @db.VarChar(255)
-    password  String
+    password  String?
     createdAt DateTime       @default(now())
     users     UsersInChats[]
 }

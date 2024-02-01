@@ -20,10 +20,10 @@ export class UserService {
   }
 
   async getUser(userInput: GetUserInput): Promise<Users | null> {
-    const toto = await this.prisma.users.findFirst({
+    const user = await this.prisma.users.findFirst({
       where: userInput,
     });
-    if (toto) return toto;
+    if (user) return user;
     return null;
   }
 

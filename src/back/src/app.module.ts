@@ -6,6 +6,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ChatService } from './chat/chat.service';
 import { ChatModule } from './chat/chat.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ChatModule } from './chat/chat.module';
     }),
     UserModule,
     ChatModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

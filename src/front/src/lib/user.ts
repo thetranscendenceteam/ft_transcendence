@@ -1,6 +1,6 @@
 "use server";
 export type User = {
-  id: number,
+  id: string,
   username: string,
   realname: string | null,
   avatar_url: string | URL

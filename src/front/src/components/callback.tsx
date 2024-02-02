@@ -4,42 +4,71 @@ import React, { useEffect, useState } from 'react';
 import { gql } from "@apollo/client";
 import apolloClient from "./apolloclient";
 import { useSearchParams } from 'next/navigation';
+import { UserProvider } from './userProvider';
+import { useRouter } from 'next/navigation';
 
-export const Callback = async () => {
+const fetchData = async (code: string | null) => {
+  if (code) {
+    try {
+      const { data } = await apolloClient.mutate({
+        mutation: gql`
+          mutation ($code: String!){
+            authAsFt(code: $code) {
+              id
+              username
+              realname
+              avatar_url
+              jwtToken
+            }
+          }
+        `,
+        variables: {
+          code: code,
+        },
+      });
+
+      console.log('Front: ', JSON.stringify(data));
+      return data; // Return the entire response data
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+};
+
+export const Callback = () => {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
+  const [data, setData] = useState();
+  const router = useRouter();
 
-  //console.log("Initial code: ", code);
-    
-  const fetchData = async (code: string | null) => {
-    if (code) {
-      try {
-        const { data } = await apolloClient.mutate({
-          mutation: gql`
-            mutation ($code: String!){
-              getFtAuth(code: $code)
-            }
-          `,
-          variables: {
-            code: code,
-          },
-        });
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      const fetchedData = await fetchData(code);
+      setData(fetchedData);
+    };
 
-        console.log('Front: ', JSON.stringify(data.getFtAuth));
-        return data.getFtAuth;
-      } catch (error) {
-        console.error('Error:', error);
-      }
+    fetchInitialData();
+    if (data) {
+      //UserProvider(data);
+      router.push('/');
     }
-  };
+  }, [data, code, router]);
 
-  //console.log('Render with code:', code);
-  const token = await fetchData(code);
-  console.log(token);
+  useEffect(() => {
+    const handleReload = () => {
+      window.location.reload();
+    };
+
+    window.addEventListener("beforeunload", handleReload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleReload);
+    };
+  }, []);
 
   return (
     <div>
-      {JSON.stringify(token)}
+      <div>{"Logging In..."}</div>
     </div>
   );
 };

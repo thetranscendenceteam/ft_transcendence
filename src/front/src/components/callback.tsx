@@ -5,7 +5,7 @@ import { gql } from "@apollo/client";
 import apolloClient from "./apolloclient";
 import { useSearchParams } from 'next/navigation';
 import { UserProvider } from './userProvider';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 const fetchData = async (code: string | null) => {
   if (code) {
@@ -49,10 +49,10 @@ export const Callback = () => {
 
     fetchInitialData();
     if (data) {
-      UserProvider(data);
+      //UserProvider(data);
       router.push('/');
     }
-  }, []);
+  }, [data, code, router]);
 
   useEffect(() => {
     const handleReload = () => {

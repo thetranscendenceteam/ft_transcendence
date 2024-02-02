@@ -8,16 +8,21 @@ import { authUser } from './dto/user.entity';
 @Injectable()
 export class AuthService {
     constructor(private prisma: PrismaService) { }
-
+      
     async ftLogin(inputCode: string): Promise<authUser | null> {
       console.log('ftLogin', inputCode);
         try {
+          const NEXT_PUBLIC_CLIENT_ID= "u-";
+          const CLIENT_SECRET= "s-";
+          const NEXT_PRIVATE_REDIRECT= "http://localhost:3001/callback";
+          // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
+
           const tokenResponse = await axios.post('https://api.intra.42.fr/oauth/token', {
             grant_type: 'authorization_code',
-            client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
-            client_secret: process.env.CLIENT_SECRET,
+            client_id: NEXT_PUBLIC_CLIENT_ID,
+            client_secret: CLIENT_SECRET,
             code: inputCode,
-            redirect_uri: process.env.NEXT_PRIVATE_REDIRECT,
+            redirect_uri: NEXT_PRIVATE_REDIRECT,
           });
           const userFtMe = await axios.get('https://api.intra.42.fr/v2/me', {
             headers: {
@@ -29,7 +34,10 @@ export class AuthService {
               ftId: userFtMe.data.id,
               username: userFtMe.data.login,
             };
-            const secretKey = process.env.PRIVATE_KEY;
+            const PRIVATE_KEY= "secretKeyPlaceHolder";
+            // .env not working, using this temporary. do not commit ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
+
+            const secretKey = PRIVATE_KEY;
             const options = {
               expiresIn: '1h',
             };

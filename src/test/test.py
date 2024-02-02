@@ -3,22 +3,22 @@ from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
 def getUsers():
         usersData = [
-                {"id": 1, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 2, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 3, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 4, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 5, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 6, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 7, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 8, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 9, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 10, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 11, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 12, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 13, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 14, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 15, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
-                {"id": 16, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "..."},
+                {"id": 1, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudoooooooooooooooooooooooooooooo"},
+                {"id": 2, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 3, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 4, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 5, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 6, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 7, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 8, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 9, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 10, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 11, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 12, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 13, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 14, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 15, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
+                {"id": 16, "avatarUrl": "https://avatars.githubusercontent.com/u/11646882", "fallback": "...", "nickname": "pseudo"},
         ]
         message = json.dumps(usersData)
         return (message)

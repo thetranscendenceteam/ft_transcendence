@@ -1,12 +1,9 @@
-const jwt = require('jsonwebtoken');
-
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Users } from '@prisma/client';
 import { GetUserInput } from './dto/getUser.input';
 import { CreateUserInput } from './dto/createUser.input';
 import { AddXp } from './dto/addXp.input';
-import axios from 'axios';
 
 @Injectable()
 export class UserService {
@@ -92,90 +89,4 @@ export class UserService {
     }
   }
 
-  // Work in progress after this line.
-
-  async getFtAuth(code: string): Promise<string> {
-    try {
-      const data = new URLSearchParams();
-      data.append('grant_type', 'authorization_code');
-      data.append('client_id', process.env.NEXT_PUBLIC_CLIENT_ID ?? '');
-      data.append('client_secret', process.env.CLIENT_SECRET ?? '');
-      data.append('code', `${code}`);
-      data.append('redirect_uri', 'process.env.NEXT_PRIVATE_REDIRECT' ?? '');
-
-      const response = await axios.post(
-        'https://api.intra.42.fr/oauth/token',
-        data,
-      );
-      console.log('response.data: ', response.data);
-      console.log(
-        'response.data stringy ',
-        JSON.stringify(response.data.access_token),
-      );
-
-      // Resolve the outer promise with the access_token
-      return response.data.access_token;
-    } catch (error) {
-      console.error(error);
-      // Reject the outer promise with the error
-      throw error;
-    }
-  }
-
-  async getFtMe(ftJwt: string): Promise<string> {
-    try {
-      const data = new URLSearchParams();
-      data.append('Authorization', ftJwt ?? '');
-
-      const response = await axios.post(
-        'https://api.intra.42.fr/v2/me',
-        data,
-      );
-      console.log('getMe: ', response.data);
-      console.log(
-        'getMe stringy: ',
-        JSON.stringify(response.data.access_token),
-      );
-
-      // Resolve the outer promise with the access_token
-      return response.data.access_token;
-    } catch (error) {
-      console.error(error);
-      // Reject the outer promise with the error
-      throw error;
-    }
-  }
-
-
-  async getJwt(inputCode: string): Promise<string | null> {
-    let ftJwt: string;
-    try {
-      ftJwt = await this.getFtAuth(inputCode);
-      console.log('toto:', ftJwt);
-    } catch (error) {
-      console.error(error);
-      return error;
-    }
-
-    let userMe: any; // TODO ANY
-    try {
-      userMe = this.getFtMe(ftJwt);
-    } catch (error) {
-      console.error(error);
-      return error;
-    }
-    // TODO: add it to the database -> getFtMe(FtJwt)
-    // TODO: Get the user from the database
-    return userMe;
-    return new Promise((resolve, reject) => {
-      jwt.sign({ inputCode }, 'private-key' process.env.privateKey, { expiresIn: '1h' }, (err: any, token: any) => {
-        if (err) {
-          console.log('err: ', err);
-          reject(err);
-        } else {
-          resolve(token);
-        }
-      });
-    });
-  }
 }

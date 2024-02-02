@@ -1,0 +1,7 @@
+.scoreboard {
+  border-width: 2px;
+  border-style: solid;
+  border-image: linear-gradient(to bottom right, purple, #FF00FF, #00FF99, purple, #00FF99, purple);
+  border-image-slice: 1;
+  border-radius: 10px;
+}

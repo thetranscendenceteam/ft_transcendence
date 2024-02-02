@@ -1,4 +1,4 @@
-//const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
@@ -122,19 +122,53 @@ export class UserService {
     }
   }
 
-  async getJwt(inputCode: string): Promise<string | null> {
+  async getFtMe(ftJwt: string): Promise<string> {
     try {
-      const FtJwt = await this.getFtAuth(inputCode);
-      console.log('debug');
-      console.log('toto:', FtJwt);
-      return FtJwt;
+      const data = new URLSearchParams();
+      data.append('Authorization', ftJwt ?? '');
+
+      const response = await axios.post(
+        'https://api.intra.42.fr/v2/me',
+        data,
+      );
+      console.log('getMe: ', response.data);
+      console.log(
+        'getMe stringy: ',
+        JSON.stringify(response.data.access_token),
+      );
+
+      // Resolve the outer promise with the access_token
+      return response.data.access_token;
     } catch (error) {
       console.error(error);
-      return null;
+      // Reject the outer promise with the error
+      throw error;
+    }
+  }
+
+
+  async getJwt(inputCode: string): Promise<string | null> {
+    let ftJwt: string;
+    try {
+      ftJwt = await this.getFtAuth(inputCode);
+      console.log('toto:', ftJwt);
+    } catch (error) {
+      console.error(error);
+      return error;
     }
 
-    /*return new Promise((resolve, reject) => {
-      jwt.sign({ inputCode }, 'private-key' /*process.env.privateKey, { expiresIn: '1h' }, (err: any, token: any) => {
+    let userMe: any; // TODO ANY
+    try {
+      userMe = this.getFtMe(ftJwt);
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
+    // TODO: add it to the database -> getFtMe(FtJwt)
+    // TODO: Get the user from the database
+    return userMe;
+    return new Promise((resolve, reject) => {
+      jwt.sign({ inputCode }, 'private-key' process.env.privateKey, { expiresIn: '1h' }, (err: any, token: any) => {
         if (err) {
           console.log('err: ', err);
           reject(err);
@@ -142,6 +176,6 @@ export class UserService {
           resolve(token);
         }
       });
-    });*/
+    });
   }
 }

@@ -5,6 +5,7 @@ import { gql } from "@apollo/client";
 import apolloClient from "./apolloclient";
 import { useSearchParams } from 'next/navigation';
 import { UserProvider } from './userProvider';
+import { useRouter } from 'next/router';
 
 const fetchData = async (code: string | null) => {
   if (code) {
@@ -38,6 +39,7 @@ export const Callback = () => {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
   const [data, setData] = useState();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -48,6 +50,7 @@ export const Callback = () => {
     fetchInitialData();
     if (data) {
       UserProvider(data);
+      router.push('/');
     }
   }, []);
 
@@ -65,8 +68,7 @@ export const Callback = () => {
 
   return (
     <div>
-      <div>{"Logged In"}</div>
-      <div>{JSON.stringify(data)}</div>
+      <div>{"Logging In..."}</div>
     </div>
   );
 };

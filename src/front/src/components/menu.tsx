@@ -44,6 +44,11 @@ const Menu = () => {
             <Button variant="transparent">Leaderboard</Button>
           </Link>
         </li>
+        <li className='m-1 mr-auto'>
+          <Link href="/profile" legacyBehavior passHref>
+            <Button variant="transparent">Profile</Button>
+          </Link>
+        </li>
         {!user &&
           <div className='flex items-center justify-end'>
             <li className='m-1'>

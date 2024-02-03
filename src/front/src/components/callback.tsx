@@ -5,7 +5,6 @@ import { gql } from "@apollo/client";
 import apolloClient from "./apolloclient";
 import { useSearchParams } from 'next/navigation';
 import { UserContext } from "./userProvider";
-const { updateUser } = useContext(UserContext);
 import { useRouter } from 'next/navigation';
 
 const fetchData = async (code: string | null) => {
@@ -41,6 +40,7 @@ export const Callback = () => {
   const code = searchParams.get('code');
   const [data, setData] = useState();
   const router = useRouter();
+  const { updateUser } = useContext(UserContext);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -54,7 +54,7 @@ export const Callback = () => {
       updateUser({ id, username, realname, avatar_url });
       router.push('/');
     }
-  }, []);
+  }, [data, code]);
 
   useEffect(() => {
     const handleReload = () => {

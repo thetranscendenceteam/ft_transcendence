@@ -11,12 +11,13 @@ export type userData = {
   fallback: string;
 };
 
-type usersData = {
+type Props = {
   data: userData[];
-};
+  changeConvType: (buttonName: string) => void;
+}
 
-const Sidebar: React.FC<usersData> = ({ data }) => {
-  const [activeConvType, setActiveConvType] = useState<string>('Friends');
+const Sidebar: React.FC<Props> = ({ data, changeConvType }) => {
+  const [activeList, setActiveList] = useState<string>('Friends');
   const [createNewChannel, setCreateNewChannel] = useState(false);
 
   const openCreateChannel = () => {
@@ -27,22 +28,24 @@ const Sidebar: React.FC<usersData> = ({ data }) => {
     setCreateNewChannel(false);
   };
 
-  const changeConvType = (buttonName: string) => {
-    setActiveConvType(buttonName);
+  const changeActiveList = (buttonName: string) => {
+    setActiveList(buttonName);
   };
 
   return (
     <div className='h-full flex flex-col bg-slate-700 rounded-l-lg'>
       <div className='bg-white h-12 flex grid grid-cols-2 grid-row-1 items-center justify-center'>
-        <button className='border-r border-gray-500 bg-slate-800 h-full transition-all duration-300 hover:opacity-60' onClick={() => changeConvType('Friends')}>Friends</button>
-        <button className='h-full transition-all duration-300 hover:opacity-60 bg-slate-800' onClick={() => changeConvType('Channels')}>Channels</button>
+        <button className='border-r border-gray-500 bg-slate-800 h-full transition-all duration-300 hover:opacity-60' onClick={() => changeActiveList('Friends')}>Friends</button>
+        <button className='h-full transition-all duration-300 hover:opacity-60 bg-slate-800' onClick={() => changeActiveList('Channels')}>Channels</button>
       </div>
       <div className='h-full overflow-y-auto'>
         <div className='flex flex-col'>
           {data.map(conversation => (
-            <SidebarChat key={conversation.id} avatarUrl={conversation.avatarUrl} fallback={conversation.fallback} nickname={conversation.nickname} />
+            <button className="cursor-pointer" onClick={() => changeConvType(activeList)}>
+              <SidebarChat key={conversation.id} avatarUrl={conversation.avatarUrl} fallback={conversation.fallback} nickname={conversation.nickname} />
+            </button>
           ))}
-          {activeConvType === 'Channels' && (
+          {activeList === 'Channels' && (
             <div className='h-20 bg-slate-900 flex items-center justify-center border-t border-gray-500'>
               <button onClick={openCreateChannel}>
                 <Image src={addButton} alt="Add" width={40} height={40} />

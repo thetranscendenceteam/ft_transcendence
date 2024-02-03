@@ -3,7 +3,7 @@ import Sidebar, { userData } from "@/components/chat/sidebar";
 import Conversation from "@/components/chat/conversation";
 import React, { useEffect, useState } from 'react';
 
-export const Chat = (props : {}) => {
+export const Chat = () => {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [messages, setMessages] = useState<userData[]>([]);
 
@@ -45,12 +45,18 @@ export const Chat = (props : {}) => {
       console.log('WebSocket is not open. Message not sent:', message);
     }
   };
+  
+  const [activeConvType, setActiveConvType] = useState<string>('');
+
+  const changeConvType = (buttonName: string) => {
+    setActiveConvType(buttonName);
+  }
 
   return (
     <div className="bg-slate-300 h-full w-full bg-blur-sm bg-opacity-50 p-3 rounded-lg">
       <div className="h-full grid grid-cols-7 grid-rows-1 items-center justify-center">
-        <Sidebar data={messages}/>
-        <Conversation className="col-span-6"/>
+        <Sidebar data={messages} changeConvType={changeConvType} />
+        <Conversation className="col-span-6" activeConvType={activeConvType} />
       </div>
     </div>
   )

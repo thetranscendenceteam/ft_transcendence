@@ -6,9 +6,10 @@ import Message from './message';
 
 type Props = {
   className: string;
+  activeConvType: string;
 }
 
-const Conversation = ({ className }: Props) => {
+const Conversation = ({ className, activeConvType }: Props) => {
   const [isMenuOpen, setIsOpen] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState([
@@ -88,9 +89,19 @@ const Conversation = ({ className }: Props) => {
       {isMenuOpen && (
         <div ref={menuRef} className="absolute top-10 right-1">
           <ul className="border border-gray-300 rounded-xl text-gray-600 h-50 bg-white hover:border-gray-400">
-            <li className="rounded-t-xl hover:bg-gray-200 pl-5 pr-7">Invite</li>
-            <li className="hover:bg-gray-200 pl-5 pr-7">Ban</li>
-            <li className="rounded-b-xl hover:bg-gray-200 pl-5 pr-7">Mute</li>
+            {activeConvType === 'Friends' && (
+              <>
+                <li className="rounded-t-xl hover:bg-gray-200 pl-5 pr-7">Play with</li>
+                <li className="rounded-b-xl hover:bg-gray-200 pl-5 pr-7">Block</li>
+              </>
+            )}
+            {activeConvType === 'Channels' && (
+              <>
+                <li className="rounded-t-xl hover:bg-gray-200 pl-5 pr-7">Invite</li>
+                <li className="hover:bg-gray-200 pl-5 pr-7">Ban</li>
+                <li className="rounded-b-xl hover:bg-gray-200 pl-5 pr-7">Mute</li>
+              </>
+            )}
           </ul>
         </div>
       )}

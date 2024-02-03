@@ -7,6 +7,8 @@ import { GetUserInput } from './dto/getUser.input';
 import { CreateUserInput } from './dto/createUser.input';
 import { AddXp } from './dto/addXp.input';
 import axios from 'axios';
+import { UserModule } from './user.module';
+import { User } from './dto/user.entity';
 
 @Injectable()
 export class UserService {
@@ -25,7 +27,7 @@ export class UserService {
     }
   }
 
-  async getUser(userInput: GetUserInput): Promise<Users | null> {
+  public async getUser(userInput: GetUserInput): Promise<Users | null> {
     try {
       const user = await this.prisma.users.findFirst({
         where: userInput,
@@ -39,9 +41,11 @@ export class UserService {
     }
   }
 
-  async getUserById(id: string): Promise<Users | null> {
+  async getUserById(id: string): Promise<User | undefined> {
     try {
-      return await this.prisma.users.findUnique({ where: { id: id } });
+      const user = await this.prisma.users.findFirst({ where: { id: id } });
+      if (user == null) return undefined
+      return user;
     }
     catch (e) {
       console.log("Error on getUserById query" + e);

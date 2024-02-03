@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma.service';
 import { GetChatInput } from './dto/getChat.input';
 import { CreateChatInput } from './dto/createChat.input';
 import { UpdateChatInput } from './dto/updateChat.input';
+import { Chat } from './dto/chat.entity';
 
 @Injectable()
 export class ChatService {

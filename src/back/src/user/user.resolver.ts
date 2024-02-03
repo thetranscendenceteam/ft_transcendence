@@ -14,6 +14,7 @@ export class UserResolver {
   getUsers(
     @Args('max', { type: () => Int, nullable: true }) max: number | undefined,
   ): Promise<Users[]> {
+    console.log("getUsers with max arg : " + max);
     return this.userService.getAllUser(max);
   }
 

@@ -81,7 +81,7 @@ const Sidebar: React.FC<Props> = ({ changeConvType }) => {
       <div className='h-full overflow-y-auto'>
         <div className='flex flex-col'>
           {data.map(conversation => (
-            <button className="cursor-pointer" onClick={() => changeConvType(activeList)}>
+            <button key={conversation.id} className="cursor-pointer" onClick={() => changeConvType(activeList)}>
               <SidebarChat key={conversation.id} avatarUrl={conversation.avatar} fallback="..." nickname={conversation.nickname} />
             </button>
           ))}

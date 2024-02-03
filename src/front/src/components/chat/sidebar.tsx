@@ -77,10 +77,10 @@ const Sidebar: React.FC<Props> = ({ changeConvType }) => {
   };
 
   return (
-    <div className='h-full flex flex-col bg-slate-700 rounded-l-lg'>
+    <div className='h-full flex flex-col bg-indigo-800 rounded-l-lg'>
       <div className='bg-white h-12 flex grid grid-cols-2 grid-row-1 items-center justify-center'>
-        <button className='border-r border-gray-500 bg-slate-800 h-full transition-all duration-300 hover:opacity-60' onClick={() => changeActiveList('Friends')}>Friends</button>
-        <button className='h-full transition-all duration-300 hover:opacity-60 bg-slate-800' onClick={() => changeActiveList('Channels')}>Channels</button>
+        <button className='border-r border-gray-500 bg-indigo-950 h-full transition-all duration-300 hover:opacity-60' onClick={() => changeActiveList('Friends')}>Friends</button>
+        <button className='h-full transition-all duration-300 hover:opacity-60 bg-indigo-950' onClick={() => changeActiveList('Channels')}>Channels</button>
       </div>
       <div className='h-full overflow-y-auto'>
         <div className='flex flex-col'>
@@ -90,7 +90,7 @@ const Sidebar: React.FC<Props> = ({ changeConvType }) => {
             </button>
           ))}
           {activeList === 'Channels' && (
-            <div className='h-20 bg-slate-900 flex items-center justify-center border-t border-gray-500'>
+            <div className='h-20 bg-indigo-950 flex items-center justify-center border-t border-gray-500'>
               <button onClick={openCreateChannel}>
                 <Image src={addButton} alt="Add" width={40} height={40} />
               </button>
@@ -105,7 +105,7 @@ const Sidebar: React.FC<Props> = ({ changeConvType }) => {
 
 const SidebarChat: React.FC<{ avatarUrl: string; fallback: string; nickname: string }> = ({ avatarUrl, fallback, nickname }) => {
   return (
-    <div className='hover:bg-slate-500 h-20 bg-slate-900 flex items-center justify-start border-t border-b border-gray-500'>
+    <div className='hover:bg-purple-700 h-20 bg-purple-900 flex items-center justify-start border-t border-b border-gray-500'>
       <Avatar className='h-9 w-9 ml-4 mr-4'>
         <AvatarImage src={avatarUrl} />
         <AvatarFallback>{fallback}</AvatarFallback>

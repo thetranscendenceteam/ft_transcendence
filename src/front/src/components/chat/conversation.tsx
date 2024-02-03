@@ -3,6 +3,7 @@ import Image from 'next/image';
 import menuIcon from '../../../public/more.png';
 import sendIcon from '../../../public/send.png';
 import Message from './message';
+import Options from './options';
 
 type Props = {
   className: string;
@@ -57,7 +58,7 @@ const Conversation = ({ className, activeConvType }: Props) => {
   })
 
   return (
-    <div className={`relative h-full flex flex-col items-center justify-center bg-white dark:bg-gray-600 ${className} rounded-r-lg`}>
+    <div className={`relative h-full flex flex-col items-center justify-center bg-gradient-to-b from-purple-800 to-indigo-500 ${className} rounded-r-lg`}>
       <button onClick={toggleMenu} className="absolute top-0 right-3 m-2 p-2 bg-gray-200 rounded-full menu-button">
         <Image src={menuIcon} alt="Menu Icon" width={12} height={12} className="menu-button"/>
       </button>
@@ -71,7 +72,7 @@ const Conversation = ({ className, activeConvType }: Props) => {
       <div className="px-1 pb-1 w-full">
         <input 
           type="text"
-          className="w-full border dark:bg-gray-500 dark:text-white text-gray-700 border-gray-500 rounded-lg pl-1 pr-10 outline-none"
+          className="w-full border bg-indigo-400 placeholder-gray-300 text-white border-indigo-300 rounded-lg pl-1 pr-10 outline-none"
           placeholder="Type here"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
@@ -87,23 +88,7 @@ const Conversation = ({ className, activeConvType }: Props) => {
       </div>
 
       {isMenuOpen && (
-        <div ref={menuRef} className="absolute top-10 right-1">
-          <ul className="border border-gray-300 rounded-xl text-gray-600 h-50 bg-white hover:border-gray-400">
-            {activeConvType === 'Friends' && (
-              <>
-                <li className="rounded-t-xl hover:bg-gray-200 pl-5 pr-7">Play with</li>
-                <li className="rounded-b-xl hover:bg-gray-200 pl-5 pr-7">Block</li>
-              </>
-            )}
-            {activeConvType === 'Channels' && (
-              <>
-                <li className="rounded-t-xl hover:bg-gray-200 pl-5 pr-7">Invite</li>
-                <li className="hover:bg-gray-200 pl-5 pr-7">Ban</li>
-                <li className="rounded-b-xl hover:bg-gray-200 pl-5 pr-7">Mute</li>
-              </>
-            )}
-          </ul>
-        </div>
+        <Options ref={menuRef} activeConvType={activeConvType} />
       )}
     </div>
   );

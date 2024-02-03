@@ -50,8 +50,8 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addConv }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
-      <div className="relative h-3/4 w-1/2 bg-gray-700 flex flex-col items-center justify-center">
-        <button className="absolute top-2 h-6 w-6 right-2 bg-gray-700 p-2 flex justify-center items-center text-gray-400 hover:text-gray-500" onClick={closePopUp}>
+      <div className="relative h-3/4 w-1/2 bg-indigo-900 flex flex-col items-center justify-center rounded-xl">
+        <button className="absolute top-2 h-6 w-6 right-2 bg-indigo-900 p-2 flex justify-center items-center text-gray-400 hover:text-gray-500" onClick={closePopUp}>
           <h1 className="text-2xl">x</h1>
         </button>
         <h2 className=" absolute top-6 text-3xl mb-6">Create your new channel</h2>

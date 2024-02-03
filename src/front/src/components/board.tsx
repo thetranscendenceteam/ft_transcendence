@@ -39,7 +39,7 @@ type Player = {
 };
 
 export const Board = () => {
-  const [data, setData] = useState<Player[]>([]);;
+  const [data, setData] = useState<Player[]>([]);
 
   useEffect(() => {
     const fetchInitialData = async () => {

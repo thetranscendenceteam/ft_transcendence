@@ -1,24 +1,64 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import addButton from '../../../public/add-button.png';
 import Image from 'next/image';
 import NewChannel from './newChannel';
+import apolloClient from "../apolloclient";
+import { gql } from "@apollo/client"
 
-export type userData = {
-  id: number;
+type Conv = {
+  id: string;
   nickname: string;
-  avatarUrl: string;
-  fallback: string;
-};
+  avatar: string;
+}
 
 type Props = {
-  data: userData[];
   changeConvType: (buttonName: string) => void;
 }
 
-const Sidebar: React.FC<Props> = ({ data, changeConvType }) => {
+const fetchData = async() => {
+  console.log("fetchData");
+  try {
+    const { data } = await apolloClient.query({
+      query: gql`
+        {
+          getUsers {
+            id 
+            nickname: pseudo
+            avatar
+          }
+        }
+      `,
+    });
+    console.log("data", data);
+    return (data.getUsers);
+  } catch (error) {
+    return ([]);
+  }
+}
+
+const Sidebar: React.FC<Props> = ({ changeConvType }) => {
   const [activeList, setActiveList] = useState<string>('Friends');
   const [createNewChannel, setCreateNewChannel] = useState(false);
+  const [data, setData]= useState<Conv[]>([]);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      const fetchedData = await fetchData();
+      setData(fetchedData);
+    };
+    fetchInitialData();
+  }, []);
+
+  useEffect(() => {
+    const handleReload = () => {
+      window.location.reload();
+    };
+    window.addEventListener("beforeunload", handleReload);
+    return () => {
+      window.removeEventListener("beforeunload", handleReload);
+    };
+  }, []);
 
   const openCreateChannel = () => {
     setCreateNewChannel(true);
@@ -42,7 +82,7 @@ const Sidebar: React.FC<Props> = ({ data, changeConvType }) => {
         <div className='flex flex-col'>
           {data.map(conversation => (
             <button className="cursor-pointer" onClick={() => changeConvType(activeList)}>
-              <SidebarChat key={conversation.id} avatarUrl={conversation.avatarUrl} fallback={conversation.fallback} nickname={conversation.nickname} />
+              <SidebarChat key={conversation.id} avatarUrl={conversation.avatar} fallback="..." nickname={conversation.nickname} />
             </button>
           ))}
           {activeList === 'Channels' && (

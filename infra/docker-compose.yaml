@@ -12,7 +12,7 @@ services:
       - POSTGRES_PASSWORD=randompassword
       - POSTGRES_DB=mydb
     networks:
-      - back
+      - db
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -23,10 +23,8 @@ services:
       dockerfile: images/front/Dockerfile
     restart: on-failure
     env_file: .env-front
-    ports:
-      - 3001:3000
     networks:
-      - front
+      - back
     volumes:
       - front-data:/data # Needed ?
 
@@ -40,11 +38,9 @@ services:
     depends_on:
       - postgres
     platform: linux/amd64
-    ports:
-      - 3000:3000
     networks:
+      - db
       - back
-      - front
     volumes:
       - ../src/back/prisma/migrations:/app/prisma/migrations
       - back-data:/data # Needed ?
@@ -57,16 +53,33 @@ services:
     depends_on:
       - postgres
     ports:
-      - 8080:8080
+      - 8081:8080
     networks:
       - back
+
+  nginx:
+    image: ghcr.io/thetranscendenceteam/nginx:latest
+    build:
+      context: ..
+      dockerfile: images/nginx/Dockerfile
+    restart: on-failure
+    depends_on:
+      - back
+      - front
+    ports:
+      - 8080:8080
+      - 8443:8443
+    networks:
+      - back
+    volumes:
+      - nginx-ssl:/etc/nginx/ssl
 
 volumes:
   postgres-data:
   front-data:
   back-data:
-
+  nginx-ssl:
 
 networks:
-  front:
   back:
+  db:

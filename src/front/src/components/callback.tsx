@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { gql } from "@apollo/client";
 import apolloClient from "./apolloclient";
 import { useSearchParams } from 'next/navigation';
-import { UserProvider } from './userProvider';
+import { UserContext } from "./userProvider";
+const { updateUser } = useContext(UserContext);
 import { useRouter } from 'next/navigation';
 
 const fetchData = async (code: string | null) => {
@@ -28,7 +29,7 @@ const fetchData = async (code: string | null) => {
       });
 
       console.log('Front: ', JSON.stringify(data));
-      return data; // Return the entire response data
+      return data.authAsFt; // Return the entire response data
     } catch (error) {
       console.error('Error:', error);
     }
@@ -49,10 +50,11 @@ export const Callback = () => {
 
     fetchInitialData();
     if (data) {
-      //UserProvider(data);
+      const { id, username, realname, avatar_url, jwtToken }  = data;
+      updateUser({ id, username, realname, avatar_url });
       router.push('/');
     }
-  }, [data, code, router]);
+  }, []);
 
   useEffect(() => {
     const handleReload = () => {

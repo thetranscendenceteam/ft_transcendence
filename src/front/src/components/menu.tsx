@@ -7,8 +7,16 @@ import { LoginDialog } from '@/components/login-dialog'
 import { Button } from "@/components/ui/button"
 import { RegisterDialog } from '@/components/register-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "./ui/dropDownMenu";
 import { UserContext } from './userProvider';
-import { User } from '@/lib/user';
+import styles from './menu/menu.module.css';
+import MenuLink from './ui/menuLink';
 
 const Menu = () => {
   const {user, updateUser} = React.useContext(UserContext);
@@ -44,11 +52,6 @@ const Menu = () => {
             <Button variant="transparent">Leaderboard</Button>
           </Link>
         </li>
-        <li className='m-1 mr-auto'>
-          <Link href="/profile" legacyBehavior passHref>
-            <Button variant="transparent">Profile</Button>
-          </Link>
-        </li>
         {!user &&
           <div className='flex items-center justify-end'>
             <li className='m-1'>
@@ -61,10 +64,19 @@ const Menu = () => {
         }
         {user &&
           <li className='m-1'>
-            <Avatar className='h-8 w-8'>
-              <AvatarImage src={user.avatar_url as string} />
-              <AvatarFallback>{user.username}</AvatarFallback>
-            </Avatar>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Avatar className='h-8 w-8' style={{ objectFit: 'cover' }}>
+                  <AvatarImage src={user.avatar_url as string} />
+                  <AvatarFallback>{user.username}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <MenuLink href="/profile">My Profile</MenuLink>
+                <DropdownMenuItem>Edit Profile</DropdownMenuItem>
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </li>
         }
 

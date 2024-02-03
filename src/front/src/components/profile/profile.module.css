@@ -1,0 +1,147 @@
+.container {
+  display: flex;
+  max-height: "80%";
+  justify-content: space-around;
+  padding: 40px;
+  flex-wrap: wrap;
+}
+
+.userProfileCard {
+  padding-top: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 25%;
+  max-height: 80vh;
+  overflow: auto;
+  flex-direction: column;
+  align-items: center; /* Centers content horizontally */
+  justify-content: center; /* Centers content vertically */
+  text-align: center; /* Centers text within each block */
+  background: linear-gradient(to bottom, #6a11cb 0%, #2575fc 100%);
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-width: 2px;
+  border-style: solid;
+  border-image: linear-gradient(to bottom right, purple, #FF00FF, #00FF99, purple, #00FF99, purple);
+  border-image-slice: 1;
+  border-radius: 10px;
+}
+
+.avatarImage {
+  margin: 0 auto;
+  display: block;
+  border-radius: 50%; /* Make the image rounded */
+  width: 200px; /* Set a fixed width */
+  height: 200px; /* Set a fixed height */
+  object-fit: cover; /* Ensure the image covers the area without stretching */
+}
+
+.matchHistoryCard {
+  flex: 2;
+  max-width: 60%;
+  max-height: 80vh;
+  overflow: auto;
+  flex-direction: column;
+  align-items: center; /* Centers content horizontally */
+  justify-content: center; /* Centers content vertically */
+  text-align: center; /* Centers text within each block */
+  background: linear-gradient(to bottom, #6a11cb 0%, #2575fc 100%);
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-width: 2px;
+  border-style: solid;
+  border-image: linear-gradient(to bottom right, purple, #FF00FF, #00FF99, purple, #00FF99, purple);
+  border-image-slice: 1;
+  border-radius: 10px;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  width: 95%;
+  align-items: center;
+}
+
+.centerCard {
+  display: flex;
+  justify-content: center;
+}
+
+.individualCard {
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 5px;
+  background-color: transparent; /* Remove background color from individual cards */
+}
+
+.greenCard {
+  background-color: rgb(15, 111, 39)  !important;
+}
+
+.redCard {
+  background-color: rgb(111, 15, 15)  !important;
+}
+
+.titleCard {
+  background-color: rgb(44, 44, 44) !important;
+  border-radius: 0px  !important;
+}
+
+/* Style for individual spans for more control if needed */
+.matchItem span {
+  /* Add styles if needed, for example text truncation for longer content */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* You can specify individual alignments or styling for each column if needed */
+.matchItem span.date {
+  text-align: left;
+}
+
+.matchItem span.matchNumber {
+  text-align: center;
+}
+
+.matchItem span.adversaire {
+  text-align: center;
+}
+
+.matchItem span.result {
+  text-align: right;
+}
+
+
+/* Responsive font sizes using classes, adjusted for smaller text */
+.title {
+  color: goldenrod;
+  font-size: 3vw; /* Adjust this value as needed to reduce text size */
+}
+
+.text {
+  font-size: 1.2vw; /* Adjust this value as needed to reduce text size */
+}
+
+.button {
+  align-self: flex-end ;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 0.8vw;
+}
+
+/* Media queries for further responsiveness */
+@media (max-width: 768px) {
+  .title {
+    font-size: 4vw;
+  }
+
+  .text {
+    font-size: 2vw;
+  }
+
+  .userProfileCard, .matchHistoryCard {
+    max-width: 100%;
+    max-height: unset; /* Allows the card to grow with content on small screens */
+  }
+}

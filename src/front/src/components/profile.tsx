@@ -1,194 +1,121 @@
+"use client"
+
 import React from 'react';
 import { Card } from './ui/card';
+import { UserContext } from './userProvider';
+import styles from './profile/profile.module.css'; // Ensure the CSS module file is correctly imported
 
-const ProfileComponent = () => {
+type UserProfileCardProps = {
+  user: {
+    username: string;
+    realname: string;
+    email: string;
+    avatar_url: string | URL;
+    campus: string;
+  };
+};
 
-  const cardContainerStyle: React.CSSProperties = {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-    alignItems: 'stretch',
-    padding: '20px'
-  };
+const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
+  return (
+    <Card className={`${styles.card} ${styles.userProfileCard}`}>
+      <img
+        src={user.avatar_url as string}
+        alt="User Avatar"
+        className={styles.avatarImage} // Apply the class for styles
+      />
+      <h2 className={styles.title}>{user.username}</h2>
+      <p className={styles.text}>{user.realname}</p>
+      <p className={styles.text}>{user.email}</p>
+      <p className={styles.text}>{"42 " + user.campus}</p>
+      <p className={styles.text}>Ranking</p>
+      <p className={styles.text}>Win ratio: 0%</p>
+      <p className={styles.text}>Total matches: 0</p>
+      <button className={styles.button}>Edit Profile</button>
+    </Card>
+  );
+};
 
-  const profilCardStyle: React.CSSProperties = {
-    width: "20%",
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-    backgroundColor: 'LightSlateGrey ',
-    border: '1px solid #ddd',
-    padding: '20px',
-    borderRadius: '4px',
-    maxHeight: '50vh'
-  };
-
-  const infosCardStyle: React.CSSProperties = {
-    width: "50%",
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-    backgroundColor: 'LightSlateGrey ',
-    border: '1px solid #ddd',
-    padding: '20px',
-    borderRadius: '4px',
-    maxHeight: '50vh'
-  };
-
-  const infoRowStyle: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: '1fr 2fr', // Two columns with a 1:2 ratio
-    gap: '10px', // Spacing between columns
-    padding: '10px', // Add padding for spacing
-  };
-  
-  const labelStyle: React.CSSProperties = {
-    fontWeight: 'bold',
-    fontSize: '1.2em',
-  };
-  
-  const infoStyle: React.CSSProperties = {
-    flex: 1,
-  };
-
-  const separatorStyle: React.CSSProperties = {
-    borderBottom: '1px solid #ccc',
-    margin: '20px 0',
-  };
-
-  const matchHistoryCardStyle: React.CSSProperties = {
-    width: "80%",
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-    backgroundColor: 'LightSlateGrey ',
-    border: '1px solid #ddd',
-    padding: '20px',
-    borderRadius: '4px',
-    maxHeight: '50vh',
-  };
-
-  const matchRowStyleWin: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr', // Two columns with a 1:2 ratio
-    backgroundColor: 'DarkSeaGreen',
-  };
-
-  const matchRowStyleLoose: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr', // Two columns with a 1:2 ratio
-    backgroundColor: 'LightCoral',
-  };
+const MatchHistoryCard = () => {
+  const matchHistory = [
+    {
+      id: "175",
+      creation_date: "2021-01-01",
+      score: [
+        { id: "4166fbb1-0431-41b5-91b4-ecaf6830ecf7", score: 5 },
+        { id: "16374", score: 1 },
+      ],
+      adversaire: "John Doe",
+      winner: "4166fbb1-0431-41b5-91b4-ecaf6830ecf7",
+    },
+    {
+      id: "134",
+      creation_date: "2021-01-01",
+      score: [
+        { id: "4166fbb1-0431-41b5-91b4-ecaf6830ecf7", score: 4 },
+        { id: "16374", score: 5 },
+      ],
+      adversaire: "John Doe",
+      winner: "16374",
+    },
+  ];
 
   return (
-    <div>
-      <div className="h-full flex items-center justify-center rounded-lg" style={cardContainerStyle}>
-          <Card style={profilCardStyle}>
-            <img src="https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg" alt="Profile Image" style={{ maxWidth: "80%", borderRadius: '50%', marginTop: "20px", marginBottom:"10%",margin: '0 auto' }}/>
-            <h3 style={{ margin: '0.5em 0', fontSize: '1.5em' }}>Pseudo</h3>
-            <p style={{ margin: '0.5em 0', fontSize: '1.5em' }}>Titre 42</p>
-            <p style={{ margin: '0.5em 0', fontSize: '1.5em', marginBottom:"10px" }}>Campus 42</p>
-          </Card>
-          <Card style={infosCardStyle}>
-            <div style={infoRowStyle}>
-              <div>
-                <label style={labelStyle}>Full Name:</label>
-              </div>
-              <div>
-                <span style={infoStyle}>Ellie copter</span>
-              </div>
-            </div>
-            <hr style={separatorStyle} />
-            <div style={infoRowStyle}>
-              <div>
-                <label style={labelStyle}>Email:</label>
-              </div>
-              <div>
-                <span style={infoStyle}>example@example.com</span>
-              </div>
-            </div>
-            <hr style={separatorStyle} />
-            <div style={infoRowStyle}>
-              <div>
-                <label style={labelStyle}>Ranking:</label>
-              </div>
-              <div>
-                <span style={infoStyle}>Top 1</span>
-              </div>
-            </div>
-            <hr style={separatorStyle} />
-            <div style={infoRowStyle}>
-              <div>
-                <label style={labelStyle}>Win ratio:</label>
-              </div>
-              <div>
-                <span style={infoStyle}>90%</span>
-              </div>
-            </div>
-            <hr style={separatorStyle} />
-            <div style={infoRowStyle}>
-              <div>
-                <label style={labelStyle}>Total matches:</label>
-              </div>
-              <div>
-                <span style={infoStyle}>2163</span>
-              </div>
-            </div>
-          </Card>
+    <Card className={`${styles.card} ${styles.matchHistoryCard}`}>
+      <div className={`${styles.centerCard}`}>
+        <Card className={`${styles.titleCard} ${styles.individualCard}`}>
+          <div className={styles.gridContainer}>
+            <span className="date">Date</span>
+            <span className="adversaire">Adversaire</span>
+            <span className="Score">Score</span>
+            <span className="result">Resultat</span>
+          </div>
+        </Card>
       </div>
-      <div className="h-full flex items-center justify-center rounded-lg" style={cardContainerStyle}>
-      <Card style={matchHistoryCardStyle}>
-            <div style={matchRowStyleWin}>
-              <div>
-                <label style={labelStyle}>Match N°175:</label>
+      {matchHistory.map((match, index) => {
+        const won = match.winner === "16374";
+        const cardColor = won ? styles.greenCard : styles.redCard;
+        return (
+          <div key={index} className={`${styles.centerCard}`}>
+            <Card className={`${cardColor} ${styles.individualCard}`}>
+              <div className={styles.gridContainer}>
+                <span className="date">{match.creation_date}</span>
+                <span className="adversaire">{match.adversaire}</span>
+                <span className="Score">
+                  {match.score[0].score + "-" + match.score[1].score}
+                </span>
+                {won ? (
+                  <span className="result">Win</span>
+                ) : (
+                  <span className="result">Loose</span>
+                )}
               </div>
-              <div>
-                <span style={infoStyle}>Adversaire Random</span>
-              </div>
-              <div>
-                <span style={infoStyle}>Win</span>
-              </div>
-            </div>
-            <hr style={separatorStyle} />
-            <div style={matchRowStyleLoose}>
-              <div>
-                <label style={labelStyle}>Match N°54:</label>
-              </div>
-              <div>
-                <span style={infoStyle}>Adversaire Random</span>
-              </div>
-              <div>
-                <span style={infoStyle}>Loose</span>
-              </div>
-            </div>
-            <hr style={separatorStyle} />
-            <div style={matchRowStyleWin}>
-              <div>
-                <label style={labelStyle}>Match N°3:</label>
-              </div>
-              <div>
-                <span style={infoStyle}>Adversaire Random</span>
-              </div>
-              <div>
-                <span style={infoStyle}>Win</span>
-              </div>
-            </div>
-            <hr style={separatorStyle} />
-            <div style={matchRowStyleWin}>
-              <div>
-                <label style={labelStyle}>Match N°1:</label>
-              </div>
-              <div>
-                <span style={infoStyle}>Adversaire Random</span>
-              </div>
-              <div>
-                <span style={infoStyle}>Win</span>
-              </div>
-            </div>
-          </Card>
-      </div>
+            </Card>
+          </div>
+        );
+      })}
+    </Card>
+  );
+};
+
+
+
+const ProfileComponent = () => {
+  const {user, updateUser} = React.useContext(UserContext);
+
+  React.useEffect(() => {
+    let userStorage = window.sessionStorage.getItem("user");
+    if (!user && userStorage) {
+      updateUser(JSON.parse(userStorage));
+    }
+  }, []);
+
+  return (
+    user && <div className={styles.container}>
+      <UserProfileCard user={user} />
+      <MatchHistoryCard />
     </div>
   );
 };
 
 export default ProfileComponent;
+

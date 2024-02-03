@@ -1,12 +1,18 @@
 import React, { FunctionComponent, useState } from 'react';
 import inputImage from '../../../public/image-input.png';
-import { StaticImageData } from'next/image';
+
+type Conv = {
+  id: string;
+  nickname: string;
+  avatar: string;
+}
 
 interface PopUpProp {
   closePopUp: () => void;
+  addConv: (newConv: Conv) => void;
 }
 
-const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp }) => {
+const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addConv }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [channelName, setChannelName] = useState<string>('');
 
@@ -24,11 +30,23 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp }) => {
   };
 
   const createChannel = () => {
-
-    // Make the backend call to create 
-    
+    if (selectedImage) {
+      const newConv: Conv = {
+        id: channelName,
+        nickname: channelName,
+        avatar: selectedImage,
+      };
+      addConv(newConv); 
+    } else {
+      const newConv: Conv = {
+        id: channelName,
+        nickname: channelName,
+        avatar: "https://avatars.githubusercontent.com/u/11646882",
+      };
+      addConv(newConv);
+    }
     closePopUp();
-  }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">

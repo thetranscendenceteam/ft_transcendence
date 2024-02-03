@@ -72,6 +72,10 @@ const Sidebar: React.FC<Props> = ({ changeConvType }) => {
     setActiveList(buttonName);
   };
 
+  const addConv = (newConv: Conv) => {
+    setData((prevData) => [...prevData, newConv]);
+  };
+
   return (
     <div className='h-full flex flex-col bg-slate-700 rounded-l-lg'>
       <div className='bg-white h-12 flex grid grid-cols-2 grid-row-1 items-center justify-center'>
@@ -90,7 +94,7 @@ const Sidebar: React.FC<Props> = ({ changeConvType }) => {
               <button onClick={openCreateChannel}>
                 <Image src={addButton} alt="Add" width={40} height={40} />
               </button>
-              {createNewChannel && <NewChannel closePopUp={closeCreateChannel}/>}
+              {createNewChannel && <NewChannel closePopUp={closeCreateChannel} addConv={addConv} />}
             </div>
           )}
         </div>

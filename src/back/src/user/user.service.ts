@@ -1,5 +1,3 @@
-//const jwt = require('jsonwebtoken');
-
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Users } from '@prisma/client';
@@ -96,56 +94,4 @@ export class UserService {
     }
   }
 
-  // Work in progress after this line.
-
-  async getFtAuth(code: string): Promise<string> {
-    try {
-      const data = new URLSearchParams();
-      data.append('grant_type', 'authorization_code');
-      data.append('client_id', process.env.NEXT_PUBLIC_CLIENT_ID ?? '');
-      data.append('client_secret', process.env.CLIENT_SECRET ?? '');
-      data.append('code', `${code}`);
-      data.append('redirect_uri', 'process.env.NEXT_PRIVATE_REDIRECT' ?? '');
-
-      const response = await axios.post(
-        'https://api.intra.42.fr/oauth/token',
-        data,
-      );
-      console.log('response.data: ', response.data);
-      console.log(
-        'response.data stringy ',
-        JSON.stringify(response.data.access_token),
-      );
-
-      // Resolve the outer promise with the access_token
-      return response.data.access_token;
-    } catch (error) {
-      console.error(error);
-      // Reject the outer promise with the error
-      throw error;
-    }
-  }
-
-  async getJwt(inputCode: string): Promise<string | null> {
-    try {
-      const FtJwt = await this.getFtAuth(inputCode);
-      console.log('debug');
-      console.log('toto:', FtJwt);
-      return FtJwt;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-
-    /*return new Promise((resolve, reject) => {
-      jwt.sign({ inputCode }, 'private-key' /*process.env.privateKey, { expiresIn: '1h' }, (err: any, token: any) => {
-        if (err) {
-          console.log('err: ', err);
-          reject(err);
-        } else {
-          resolve(token);
-        }
-      });
-    });*/
-  }
 }

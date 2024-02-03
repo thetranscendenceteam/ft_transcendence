@@ -22,9 +22,26 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Chat {
+  id: String!
+  name: String!
+  password: String
+  createdAt: DateTime!
+}
+
+type authUser {
+  id: String!
+  username: String!
+  realname: String!
+  avatar_url: String!
+  jwtToken: String!
+}
+
 type Query {
   getUsers(max: Int): [User!]!
-  getUser(UserInput: GetUserInput!): User
+  getUser(UserInput: GetUserInput!): User!
+  getAllChats(max: Int): [Chat!]!
+  getChat(ChatInput: GetChatInput!): Chat!
 }
 
 input GetUserInput {
@@ -37,10 +54,17 @@ input GetUserInput {
   xp: Int
 }
 
+input GetChatInput {
+  id: String
+  name: String
+}
+
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   addXpByNickname(addXp: AddXp!): User!
-  getFtAuth(code: String!): String!
+  createChat(createChatInput: CreateChatInput!): Chat!
+  updateChat(updateChatInput: UpdateChatInput!): Chat!
+  authAsFt(code: String!): authUser
 }
 
 input CreateUserInput {
@@ -56,4 +80,19 @@ input CreateUserInput {
 input AddXp {
   id: String!
   xp: Int!
+}
+
+input CreateChatInput {
+  name: String!
+  password: String
+}
+
+input UpdateChatInput {
+  var: VarUpdateChatInput!
+  id: String!
+}
+
+input VarUpdateChatInput {
+  name: String
+  password: String
 }

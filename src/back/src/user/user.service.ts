@@ -19,7 +19,7 @@ export class UserService {
         take: max,
         orderBy: { xp: 'desc' },
       });
-          }
+    }
     catch (e) {
       console.log("Error on getAllUser query" + e);
       throw e;

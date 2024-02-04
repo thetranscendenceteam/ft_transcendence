@@ -27,10 +27,9 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
       <p className={styles.text}>{user.realname}</p>
       <p className={styles.text}>{user.email}</p>
       <p className={styles.text}>{"42 " + user.campus}</p>
-      <p className={styles.text}>Ranking</p>
-      <p className={styles.text}>Win ratio: 0%</p>
-      <p className={styles.text}>Total matches: 0</p>
-      <button className={styles.button}>Edit Profile</button>
+      <p className={styles.text}>Ranking: Top42</p>
+      <p className={styles.text}>Win ratio: 50%</p>
+      <p className={styles.text}>Total matches: 2</p>
     </Card>
   );
 };

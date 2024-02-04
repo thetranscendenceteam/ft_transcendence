@@ -27,7 +27,7 @@ const LoginDialog = () => {
 
   const NEXT_PUBLIC_CLIENT_ID = "u-";
   const NEXT_PUBLIC_OAUTH_URL = "https://api.intra.42.fr/oauth/authorize";
-  const NEXT_PUBLIC_REDIRECT = "http://localhost:3001/callback&response_type=code";
+  const NEXT_PUBLIC_REDIRECT = "https://localhost:8443/callback&response_type=code";
   const CLIENT_SECRET = "s-";
   // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
   const ft_auth = NEXT_PUBLIC_OAUTH_URL + '?client_id=' + NEXT_PUBLIC_CLIENT_ID + '&redirect_uri=' + NEXT_PUBLIC_REDIRECT;

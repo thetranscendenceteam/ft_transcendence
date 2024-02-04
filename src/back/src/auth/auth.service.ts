@@ -14,7 +14,7 @@ export class AuthService {
         try {
           const NEXT_PUBLIC_CLIENT_ID= "u-";
           const CLIENT_SECRET= "s-";
-          const NEXT_PRIVATE_REDIRECT= "http://localhost:3001/callback";
+          const NEXT_PRIVATE_REDIRECT= "https://localhost:8443/callback";
           // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
 
           const tokenResponse = await axios.post('https://api.intra.42.fr/oauth/token', {
@@ -69,6 +69,8 @@ export class AuthService {
               id: userMe.id,
               username: userMe.pseudo,
               realname: userMe.firstName + ' ' + userMe.lastName,
+              email: userMe.mail,
+              campus: userFtMe.data.campus[0].name,
               avatar_url: userMe.avatar,
               jwtToken: ourJwt,
             };

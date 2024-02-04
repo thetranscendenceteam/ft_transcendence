@@ -88,7 +88,7 @@ const Conversation = ({ className, activeConvType }: Props) => {
       </div>
 
       {isMenuOpen && (
-        <Options ref={menuRef} activeConvType={activeConvType} />
+        <Options ref={menuRef} activeConvType={activeConvType} toggleMenu={toggleMenu}/>
       )}
     </div>
   );

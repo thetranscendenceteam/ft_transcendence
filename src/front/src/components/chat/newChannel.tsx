@@ -54,7 +54,7 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addConv }) => {
         <button className="absolute top-2 h-6 w-6 right-2 bg-indigo-900 p-2 flex justify-center items-center text-gray-400 hover:text-gray-500" onClick={closePopUp}>
           <h1 className="text-2xl">x</h1>
         </button>
-        <h2 className=" absolute top-6 text-3xl mb-6">Create your new channel</h2>
+        <h2 className="absolute top-6 text-3xl mb-6">Create your new channel</h2>
         <form onSubmit={createChannel} className="flex flex-col items-center">
           <label htmlFor="imageInput" className="cursor-pointer">
             {selectedImage ? (
@@ -69,7 +69,7 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addConv }) => {
             <input type="file" id="imageInput" accept="image/*" className="hidden" onChange={imageChange} />
           </label>
           <input type="text" required placeholder="Channel Name" className="text-gray-600 border rounded-md p-2 mt-16" onChange={(e) => setChannelName(e.target.value)} />
-          <button type="submit" className="absolute bottom-3 right-3 bg-black text-white py-2 px-4 rounded-md hover:bg-blue-600">Create</button>
+          <button type="submit" className="absolute bottom-3 right-3 bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-600">Create</button>
         </form>
       </div>
     </div>

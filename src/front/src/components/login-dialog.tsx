@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -13,24 +11,62 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { gql } from "@apollo/client";
 import Image from "next/image";
-
-const handleLogin = () => {
-  // call api vers backend
-  const username: HTMLInputElement = document.getElementById("username") as HTMLInputElement;
-  const password: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
-  console.log(`username: ${username.value}\npassword: ${password.value}\n`);
-    
-}
+import apolloClient from "./apolloclient";
+import { useContext } from "react";
+import { UserContext } from "./userProvider";
+import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+import React from "react";
 
 const LoginDialog = () => {
-
+  const { updateUser } = useContext(UserContext);
   const NEXT_PUBLIC_CLIENT_ID = "u-";
   const NEXT_PUBLIC_OAUTH_URL = "https://api.intra.42.fr/oauth/authorize";
   const NEXT_PUBLIC_REDIRECT = "https://localhost:8443/callback&response_type=code";
   const CLIENT_SECRET = "s-";
   // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
   const ft_auth = NEXT_PUBLIC_OAUTH_URL + '?client_id=' + NEXT_PUBLIC_CLIENT_ID + '&redirect_uri=' + NEXT_PUBLIC_REDIRECT;
+
+  const handleLogin = async () => {
+    loadDevMessages();
+    loadErrorMessages();
+    console.log('login');
+    const username: HTMLInputElement = document.getElementById("username") as HTMLInputElement;
+    const password: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
+    try {
+      const { data } = await apolloClient.mutate({
+        mutation: gql`
+          mutation standardLogin($standardLoginInput: StandardLoginInput!) {
+            standardLogin(standardLogin: $standardLoginInput) {
+              id
+              username
+              realname
+              email
+              avatar_url
+              campus
+              jwtToken
+            }
+          }
+        `,
+        variables: {
+          standardLoginInput: {
+            username: username.value,
+            password: password.value,
+          },
+        },
+      });
+  
+      if (data) {
+        const { id, username, realname, avatar_url, email, campus }  = data.standardLogin;
+        updateUser({ id, username, realname, avatar_url, email, campus });
+      }
+  
+    } catch (e) {
+      console.error('Error login standard:', e);
+    }
+      
+  }
 
   return (
     <Dialog>

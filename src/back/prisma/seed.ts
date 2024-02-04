@@ -15,7 +15,7 @@ async function main() {
             password: 'kekw',
             firstName: 'Obiwan',
             lastName: 'Kenobi',
-            avatar: 'Anakin',
+            avatar: 'https://lumiere-a.akamaihd.net/v1/images/62bf0e03e8459d0001f4881b-image_71900d89.jpeg?region=192%2C0%2C1152%2C864',
         }
     })
 
@@ -32,7 +32,7 @@ async function main() {
             password: 'wkek',
             firstName: 'Anakin',
             lastName: 'Skywalker',
-            avatar: 'Obiwan'
+            avatar: 'https://static.wikia.nocookie.net/starwars/images/6/6f/Anakin_Skywalker_RotS.png/revision/latest?cb=20130621175844'
         }
     })
 
@@ -49,7 +49,7 @@ async function main() {
             password: 'saber',
             firstName: 'Yoda',
             lastName: 'dontKnow',
-            avatar: 'dasdawda'
+            avatar: 'https://lumiere-a.akamaihd.net/v1/images/image_3e7881c8.jpeg?region=131,0,1338,753'
         },
     })
 
@@ -190,6 +190,115 @@ async function main() {
         },
     })
 
+    // ---------------------------------------------------------------
+
+    const match1 = await prisma.matchs.upsert({
+        where: {
+            id: '95872389572'
+        },
+        update: {},
+        create: {
+            id: '95872389572',
+        }
+    })
+
+    const match2 = await prisma.matchs.upsert({
+        where: {
+            id: '34091858917',
+        },
+        update: {},
+        create: {
+            id: '34091858917',
+        }
+    })
+    // ----------------------------------------------------------------
+
+    const score1 = await prisma.matchScore.upsert({
+        where: {
+            matchId: '95872389572',
+        },
+        update: {},
+        create: {
+            winnerScore: 10,
+            looserScore: 8,
+            matchId: '95872389572',
+        }
+    })
+
+    const score2 = await prisma.matchScore.upsert({
+        where: {
+            matchId: '34091858917',
+        },
+        update: {},
+        create: {
+            winnerScore: 15,
+            looserScore: 2,
+            matchId: '34091858917',
+        }
+    })
+
+    // ----------------------------------------------------------
+
+    const UserInMatch1 = await prisma.usersInMatchs.upsert({
+        where: {
+            userId_matchId: {
+                userId: 'kenobiObiwan',
+                matchId: '95872389572'
+            },
+        },
+        update: {},
+        create: {
+            userId: 'kenobiObiwan',
+            matchId: '95872389572',
+            isWin: false
+        }
+    })
+
+    const UserInMatch2 = await prisma.usersInMatchs.upsert({
+        where: {
+            userId_matchId: {
+                userId: 'anakinSkywalker',
+                matchId: '95872389572'
+            },
+        },
+        update: {},
+        create: {
+            userId: 'anakinSkywalker',
+            matchId: '95872389572',
+            isWin: true
+        }
+    })
+
+    const UserInMatch3 = await prisma.usersInMatchs.upsert({
+        where: {
+            userId_matchId: {
+                userId: 'anakinSkywalker',
+                matchId: '34091858917'
+            },
+        },
+        update: {},
+        create: {
+            userId: 'anakinSkywalker',
+            matchId: '34091858917',
+            isWin: false
+        }
+    })
+
+    const UserInMatch4 = await prisma.usersInMatchs.upsert({
+        where: {
+            userId_matchId: {
+                userId: 'yoda',
+                matchId: '34091858917'
+            },
+        },
+        update: {},
+        create: {
+            userId: 'yoda',
+            matchId: '34091858917',
+            isWin: true
+        }
+    })
+
     //--------------------------------------------------------------
 
     console.log({
@@ -204,7 +313,15 @@ async function main() {
         relation4,
         relation5,
         relationshipObiwanYoda,
-        relationshipAnakinObiwan
+        relationshipAnakinObiwan,
+        match1,
+        match2,
+        score1,
+        score2,
+        UserInMatch1,
+        UserInMatch2,
+        UserInMatch3,
+        UserInMatch4
     })
 
 }

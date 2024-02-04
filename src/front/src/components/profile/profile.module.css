@@ -27,6 +27,27 @@
   border-radius: 10px;
 }
 
+.userProfileEditCard {
+  padding-top: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 50%;
+  max-height: 80vh;
+  overflow: auto;
+  flex-direction: column;
+  align-items: center; /* Centers content horizontally */
+  justify-content: center; /* Centers content vertically */
+  text-align: center; /* Centers text within each block */
+  background: linear-gradient(to bottom, #6a11cb 0%, #2575fc 100%);
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-width: 2px;
+  border-style: solid;
+  border-image: linear-gradient(to bottom right, purple, #FF00FF, #00FF99, purple, #00FF99, purple);
+  border-image-slice: 1;
+  border-radius: 10px;
+}
+
 .avatarImage {
   margin: 0 auto;
   display: block;
@@ -126,8 +147,11 @@
 .button {
   align-self: flex-end ;
   padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
   margin-top: 10px;
   font-size: 0.8vw;
+  background-color: aliceblue;
 }
 
 /* Media queries for further responsiveness */

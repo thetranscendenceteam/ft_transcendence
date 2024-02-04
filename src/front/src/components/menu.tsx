@@ -28,7 +28,7 @@ const Menu = () => {
     }
   }, [])
   return (
-    <header className="sticky top-0 w-full h-14 border-b backdrop-blur-lg backdrop-brightness-75 flex p-4 text-center text-slate-50">
+    <header className="sticky top-0 w-full h-14 backdrop-blur-lg backdrop-brightness-75 flex p-4 text-center text-slate-50">
       <menu className='flex items-center justify-end w-full'>
         <li className='self-center m-1'>
           <Link href="/" legacyBehavior passHref>

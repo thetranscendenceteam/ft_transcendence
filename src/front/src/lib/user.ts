@@ -2,8 +2,10 @@
 export type User = {
   id: string,
   username: string,
-  realname: string | null,
-  avatar_url: string | URL
+  realname: string,
+  avatar_url: string
+  email: string,
+  campus: string,
 }
 
 async function fetchToken(code: string) {
@@ -52,7 +54,9 @@ export async function getUser(code: string): Promise<Object> {
       id: data.id,
       username: data.login,
       realname: data.name,
-      avatar_url: data.avatar_url
+      email: data.email,
+      avatar_url: data.avatar_url,
+      campus: data.campus
     }
     return (user)
   }

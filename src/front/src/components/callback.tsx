@@ -17,7 +17,9 @@ const fetchData = async (code: string | null) => {
               id
               username
               realname
+              email
               avatar_url
+              campus
               jwtToken
             }
           }
@@ -50,8 +52,8 @@ export const Callback = () => {
 
     fetchInitialData();
     if (data) {
-      const { id, username, realname, avatar_url, jwtToken }  = data;
-      updateUser({ id, username, realname, avatar_url });
+      const { id, username, realname, avatar_url, email, campus }  = data;
+      updateUser({ id, username, realname, avatar_url, email, campus });
       router.push('/');
     }
   }, [data, code]);

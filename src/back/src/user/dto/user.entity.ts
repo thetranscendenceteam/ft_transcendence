@@ -6,7 +6,7 @@ export class User {
   id: string;
 
   @Field(() => Int, { nullable: true })
-  ftId: number;
+  ftId: number | null;
 
   @Field(() => String, { nullable: true })
   pseudo: string;

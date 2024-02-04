@@ -7,6 +7,7 @@ import { UsersInChatsModule } from './users-in-chats/users-in-chats.module';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { MatchModule } from './match/match.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
     UserModule,
     UsersInChatsModule,
     AuthModule,
+    MatchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

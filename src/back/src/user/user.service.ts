@@ -4,8 +4,6 @@ import { Users } from '@prisma/client';
 import { GetUserInput } from './dto/getUser.input';
 import { CreateUserInput } from './dto/createUser.input';
 import { AddXp } from './dto/addXp.input';
-import axios from 'axios';
-import { UserModule } from './user.module';
 import { User } from './dto/user.entity';
 
 @Injectable()

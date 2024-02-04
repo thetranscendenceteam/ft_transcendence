@@ -17,7 +17,7 @@ generator client {
 
 model Users {
     id         String               @id @unique @default(uuid()) @db.VarChar(36)
-    ftId       Int                  @unique @db.Integer
+    ftId       Int?                 @unique @db.Integer
     pseudo     String               @db.VarChar(255)
     mail       String               @unique @db.VarChar(255)
     password   String?
@@ -30,6 +30,7 @@ model Users {
     count      Int                  @default(0) @db.Integer
     chats      UsersInChats[]
     friends    UsersRelationships[]
+    matchs     UsersInMatchs[]
 }
 
 model Chats {
@@ -38,6 +39,13 @@ model Chats {
     password  String?
     createdAt DateTime       @default(now())
     users     UsersInChats[]
+}
+
+model Matchs {
+    id        String          @id @unique @default(uuid()) @db.VarChar(36)
+    startedAt DateTime        @default(now())
+    score     MatchScore?
+    users     UsersInMatchs[]
 }
 
 model UsersInChats {
@@ -60,6 +68,25 @@ model UsersRelationships {
     createdAt DateTime           @default(now())
     updatedAt DateTime           @default(now())
     Users     Users              @relation(fields: [firstId], references: [ftId])
+}
+
+model UsersInMatchs {
+    user    Users   @relation(fields: [userId], references: [id])
+    userId  String  @db.VarChar(36)
+    match   Matchs  @relation(fields: [matchId], references: [id])
+    matchId String  @db.VarChar(36)
+    isWin   Boolean @default(false)
+
+    @@id([userId, matchId])
+}
+
+model MatchScore {
+    id          String @id @unique @default(uuid()) @db.VarChar(36)
+    winnerScore Int    @default(0) @db.Integer
+    looserScore Int    @default(0) @db.Integer
+
+    match   Matchs @relation(fields: [matchId], references: [id])
+    matchId String @unique @db.VarChar(36)
 }
 
 enum RelationshipStatus {

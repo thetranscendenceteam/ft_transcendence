@@ -69,8 +69,8 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
         </button>
         <h1 className="absolute top-6 text-3xl mb-6">
           {mode === 'Invite' && 'Play a game with someone!'}
-          {mode === 'Ban' && 'Ban someone from the channel'}
-          {mode === 'Mute' && 'Mute someone from the channel'}
+          {mode === 'Ban' && 'Ban someone from the channel.'}
+          {mode === 'Mute' && 'Mute someone from the channel.'}
         </h1>
         <div className="overflow-y-auto h-24">
           <select 

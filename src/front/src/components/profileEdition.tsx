@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Card } from './ui/card';
 import { UserContext } from './userProvider';
-import styles from './profile/profile.module.css'; // Ensure the CSS module file is correctly imported
+import styles from './profile/profile.module.css';
 import { DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -36,21 +36,25 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
   };
 
   const handleEdit = async () => {
+    console.log("🚀 ~ handleInfoChange ~ formData:", formData);
     try {
       const { data } = await apolloClient.mutate({
         mutation: gql`
           mutation ($inputUser: EditUserInput!){
             editUser(editUserInput: $inputUser) {
               id
-              username
-              realname
-              email
-              avatar_url
+              ftId
+              firstName
+              lastName
+              avatar
+              mail
+              password
+              pseudo
             }
           }
         `,
         variables: {
-          userinput: formData,
+          inputUser: formData,
         },
       });
       } catch (error) {
@@ -122,10 +126,10 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
               className="col-span-2"
             />
           </div>
+          <DialogFooter>
+            <Button className={styles.button} type="submit" onClick={handleEdit}>Edit</Button>
+          </DialogFooter>
         </div>
-        <DialogFooter>
-          <Button className={styles.button} type="submit" onClick={handleEdit}>Edit</Button>
-        </DialogFooter>
       </div>
     </Card>
   );

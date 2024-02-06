@@ -1,12 +1,16 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Users } from '@prisma/client';
 import { GetUserInput } from './dto/getUser.input';
 import { CreateUserInput } from './dto/createUser.input';
+import { CreateClassicUserInput } from './dto/createClassicUser.input';
 import { AddXp } from './dto/addXp.input';
 import { User } from './dto/user.entity';
 import { UpdateUser } from './dto/updateUser.input';
 import { deflateSync } from 'zlib';
+import { uid } from 'uid';
+import { EditUserInput } from './dto/editUser.input';
 
 @Injectable()
 export class UserService {
@@ -55,7 +59,7 @@ export class UserService {
     try {
       const newUser = this.prisma.users.create({
         data: {
-          password: 'toto',
+          password: uid(21),
           mail: createUserInput.mail,
           firstName: createUserInput.firstName,
           lastName: createUserInput.lastName,
@@ -68,6 +72,50 @@ export class UserService {
     }
     catch (e) {
       console.log("Error on createUser query" + e);
+      throw e;
+    }
+  }
+
+  async createClassicUser(createUserInput: CreateClassicUserInput): Promise<Users> {
+    try {
+      const newUser = this.prisma.users.create({
+        data: {
+          ftId: null,
+          password: createUserInput.password,
+          mail: createUserInput.mail,
+          firstName: createUserInput.firstName,
+          lastName: createUserInput.lastName,
+          pseudo: createUserInput.pseudo,
+          avatar: "https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg",
+        },
+      });
+            return newUser;
+    }
+    catch (e) {
+      console.log("Error on createUser query" + e);
+      throw e;
+    }
+  }
+
+  async editUser(editUserInput: EditUserInput): Promise<Users> {
+    try {
+
+      const userToUpdate = {
+        ...(editUserInput.mail && { mail: editUserInput.mail }),
+        ...(editUserInput.password && { password: editUserInput.password }),
+        ...(editUserInput.firstName && { firstName: editUserInput.firstName }),
+        ...(editUserInput.lastName && { lastName: editUserInput.lastName }),
+        ...(editUserInput.avatar && { avatar: editUserInput.avatar }),
+        ...(editUserInput.pseudo && { pseudo: editUserInput.pseudo }),
+      };
+
+      return this.prisma.users.update({
+        where: { id: editUserInput.id },
+        data: userToUpdate
+      });
+    }
+    catch (e) {
+      console.log("Error on editUser query" + e);
       throw e;
     }
   }

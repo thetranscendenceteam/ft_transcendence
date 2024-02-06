@@ -37,6 +37,7 @@ const Options = forwardRef<HTMLDivElement, Props>(({ activeConvType, toggleMenu 
             <>
               <button onClick={() => openInviteMuteBanMenu('Invite')}><li className="rounded-t-xl hover:bg-gray-200 pl-5 pr-7">Invite</li></button>
               <button onClick={() => openInviteMuteBanMenu('Ban')}><li className="hover:bg-gray-200 pl-5 pr-7">Ban</li></button>
+              <button onClick={() => openInviteMuteBanMenu('Kick')}><li className="hover:bg-gray-200 pl-5 pr-7">Kick</li></button>
               <button onClick={() => openInviteMuteBanMenu('Mute')}><li className="rounded-b-xl hover:bg-gray-200 pl-5 pr-7">Mute</li></button>
             </>
           )}

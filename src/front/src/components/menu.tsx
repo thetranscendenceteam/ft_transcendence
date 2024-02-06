@@ -11,15 +11,15 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "./ui/dropDownMenu";
 import { UserContext } from './userProvider';
-import styles from './menu/menu.module.css';
 import MenuLink from './ui/menuLink';
+import { useRouter } from 'next/navigation';
 
 const Menu = () => {
   const {user, updateUser} = React.useContext(UserContext);
+  const router = useRouter();
 
   React.useEffect(() => {
     let userStorage = window.sessionStorage.getItem("user");
@@ -27,6 +27,13 @@ const Menu = () => {
       updateUser(JSON.parse(userStorage));
     }
   }, [])
+
+  function handleLogoutClick() {
+    window.sessionStorage.removeItem("user");
+    updateUser({ id: null, username: null, realname: null, avatar_url: null, email: null, campus: null });
+    router.push('/');
+  }
+
   return (
     <header className="sticky top-0 w-full h-14 backdrop-blur-lg backdrop-brightness-75 flex p-4 text-center text-slate-50">
       <menu className='flex items-center justify-end w-full'>
@@ -52,7 +59,7 @@ const Menu = () => {
             <Button variant="transparent">Leaderboard</Button>
           </Link>
         </li>
-        {!user &&
+        {!user?.id &&
           <div className='flex items-center justify-end'>
             <li className='m-1'>
               <RegisterDialog />
@@ -62,7 +69,7 @@ const Menu = () => {
             </li>
           </div>
         }
-        {user &&
+        {user?.id && 
           <li className='m-1'>
             <DropdownMenu>
               <DropdownMenuTrigger>
@@ -73,8 +80,8 @@ const Menu = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <MenuLink href="/profile">My Profile</MenuLink>
-                <DropdownMenuItem>Edit Profile</DropdownMenuItem>
-                <DropdownMenuItem>Logout</DropdownMenuItem>
+                <MenuLink href="/edit_profile">Edit Profile</MenuLink>
+                <DropdownMenuItem onClick={handleLogoutClick}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </li>

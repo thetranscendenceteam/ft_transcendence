@@ -12,6 +12,9 @@ export class GetUserInput {
   pseudo: string;
 
   @Field(() => String, { nullable: true })
+  password: string;
+
+  @Field(() => String, { nullable: true })
   mail: string;
 
   @Field(() => String, { nullable: true })

@@ -1,13 +1,17 @@
+/* eslint-disable prettier/prettier */
 const jwt = require('jsonwebtoken');
 
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import axios from 'axios';
 import { authUser } from './dto/user.entity';
+import { UserService } from 'src/user/user.service';
+import { StandardRegisterInput } from './dto/standardRegister.input';
+import { StandardLoginInput } from './dto/standardLogin.input';
 
 @Injectable()
 export class AuthService {
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaService, private userService: UserService) { }
       
     async ftLogin(inputCode: string): Promise<authUser | null> {
       console.log('ftLogin', inputCode);
@@ -79,5 +83,63 @@ export class AuthService {
           console.error("getJwt: ", error);
           return error;
         }
+      }
+
+      async classicRegister(input: StandardRegisterInput): Promise<boolean> {
+        try {
+          this.userService.createClassicUser({
+            mail: input.mail,
+            password: input.password,
+            firstName: input.firstname,
+            lastName: input.lastname,
+            avatar: null,
+            pseudo: input.username,
+          });
+          return true;
+        } catch (error) {
+          console.error("classicRegister: ", error);
+          return false;
+        }
+      }
+
+      async classicLogin(input: StandardLoginInput): Promise<authUser | null> {
+
+        const payload = (input: { username:string, ftId: number | null }) => {
+          return {
+            username: input.username,
+            ftId: input.ftId,
+          }
+        };
+
+        try {
+          const PRIVATE_KEY= "secretKeyPlaceHolder";
+          const secretKey = PRIVATE_KEY;
+          const options = {
+            expiresIn: '1h',
+          };
+          const user = await this.prisma.users.findFirst({
+            where: {
+              pseudo: input.username,
+              password: input.password,
+            },
+          });
+          if (user) {
+            return {
+              username: user.pseudo,
+              realname: user.firstName + ' ' + user.lastName,
+              avatar_url: user.avatar,
+              id: user.id,
+              email: user.mail ? user.mail : "No email",
+              campus: "Not a 42 Student",
+              jwtToken: jwt.sign(payload({username: user.pseudo, ftId: null}), secretKey, options),
+            };
+          }
+          return null;
+        }
+        catch (e) {
+          console.log("Error on classicLogin" + e);
+          throw e;
+        }
+
       }
 }

@@ -12,17 +12,56 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import Image from "next/image";
-
-const handleClick = () => {
-  // call api vers backend
-}
-
-const handleRegister = () => {
-
-}
+import apolloClient from "./apolloclient";
+import { gql } from "@apollo/client";
+import { useState } from "react";
+import router from "next/router";
 
 const RegisterDialog = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [mail, setMail] = useState("");
+  const [error, setError] = useState("");
+
+  const handleRegister = async (
+    username: string,
+    password: string,
+    password2: string,
+    firstname: string,
+    lastname: string,
+    mail: string
+    ) => {
+
+      if (password !== password2) {
+      setError("Passwords do not match");
+      return;
+      }
+      try {
+        apolloClient.mutate({
+          mutation: gql`
+            mutation standardRegister($standardRegisterInput: StandardRegisterInput!) {
+              standardRegister(standardRegister: $standardRegisterInput)
+            }
+          `,
+          variables: {
+            standardRegisterInput: {
+              username: username,
+              password: password,
+              firstname: firstname,
+              lastname: lastname,
+              mail: mail,
+            },
+          },
+        });
+        router.push('/');
+      } catch (e) {
+        console.error('Error register standard:', e);
+      }
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -34,17 +73,18 @@ const RegisterDialog = () => {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
+            <Label htmlFor="username" className="text-right">
               Username
             </Label>
             <Input
               id="username"
               placeholder="foo_bar"
               className="col-span-2"
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
+            <Label htmlFor="password" className="text-right">
               Password
             </Label>
             <Input
@@ -52,10 +92,11 @@ const RegisterDialog = () => {
               type="password"
               placeholder="********"
               className="col-span-2"
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
+            <Label htmlFor="password2" className="text-right">
               Repeat Password
             </Label>
             <Input
@@ -63,11 +104,49 @@ const RegisterDialog = () => {
               type="password"
               placeholder="********"
               className="col-span-2"
+              onChange={(e) => setPassword2(e.target.value)}
             />
           </div>
+          <div className="grid grid-cols-3 items-center gap-4">
+            <Label htmlFor="firstname" className="text-right">
+              Firstname
+            </Label>
+            <Input
+              id="firstname"
+              type="firstname"
+              placeholder="Elie"
+              className="col-span-2"
+              onChange={(e) => setFirstname(e.target.value)}
+            />
+          </div>
+          <div className="grid grid-cols-3 items-center gap-4">
+            <Label htmlFor="lastname" className="text-right">
+                Lastname
+              </Label>
+              <Input
+                id="lastname"
+                type="lastname"
+                placeholder="Copter"
+                className="col-span-2"
+                onChange={(e) => setLastname(e.target.value)}
+              />
+            </div>
+            <div className="grid grid-cols-3 items-center gap-4">
+            <Label htmlFor="mail" className="text-right">
+                E-Mail
+              </Label>
+              <Input
+                id="mail"
+                type="mail"
+                placeholder="toto@gmail.com"
+                className="col-span-2"
+                onChange={(e) => setMail(e.target.value)}
+              />
+            </div>
         </div>
+        {error && <div className="text-red-500">{error}</div>}
         <DialogFooter>
-          <Button type="submit" onClick={handleRegister}>Register</Button>
+        <Button type="submit" onClick={() => handleRegister(username, password, password2, firstname, lastname, mail)}>Register</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

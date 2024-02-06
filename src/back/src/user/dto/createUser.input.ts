@@ -22,4 +22,7 @@ export class CreateUserInput {
 
   @Field(() => String)
   pseudo: string;
+
+  @Field(() => String, { nullable: true })
+  campus: string | null;
 }

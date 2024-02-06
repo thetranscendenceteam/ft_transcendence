@@ -37,4 +37,10 @@ export class User {
 
   @Field(() => Int, { nullable: true })
   count: number;
+
+  @Field(() => String, { nullable: true })
+  campus: string | null;
+
+  @Field(() => Boolean, { nullable: true })
+  twoFA: boolean;
 }

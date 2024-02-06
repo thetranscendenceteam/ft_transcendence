@@ -16,6 +16,8 @@ async function main() {
             firstName: 'Obiwan',
             lastName: 'Kenobi',
             avatar: 'https://lumiere-a.akamaihd.net/v1/images/62bf0e03e8459d0001f4881b-image_71900d89.jpeg?region=192%2C0%2C1152%2C864',
+            campus: 'Coruscant',
+            twoFA: true,
         }
     })
 
@@ -32,7 +34,8 @@ async function main() {
             password: 'wkek',
             firstName: 'Anakin',
             lastName: 'Skywalker',
-            avatar: 'https://static.wikia.nocookie.net/starwars/images/6/6f/Anakin_Skywalker_RotS.png/revision/latest?cb=20130621175844'
+            avatar: 'https://static.wikia.nocookie.net/starwars/images/6/6f/Anakin_Skywalker_RotS.png/revision/latest?cb=20130621175844',
+            campus: 'Tatooine',
         }
     })
 
@@ -49,7 +52,8 @@ async function main() {
             password: 'saber',
             firstName: 'Yoda',
             lastName: 'dontKnow',
-            avatar: 'https://lumiere-a.akamaihd.net/v1/images/image_3e7881c8.jpeg?region=131,0,1338,753'
+            avatar: 'https://lumiere-a.akamaihd.net/v1/images/image_3e7881c8.jpeg?region=131,0,1338,753',
+            campus: 'Dagobah',
         },
     })
 

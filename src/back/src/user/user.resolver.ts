@@ -5,6 +5,7 @@ import { CreateUserInput } from './dto/createUser.input';
 import { AddXp } from './dto/addXp.input';
 import { GetUserInput } from './dto/getUser.input';
 import { User } from './dto/user.entity';
+import { UpdateUser } from './dto/updateUser.input';
 
 @Resolver()
 export class UserResolver {
@@ -31,6 +32,14 @@ export class UserResolver {
   ): Promise<Users> {
     if (!createUserInput.avatar) createUserInput.avatar = 'Default';
     return this.userService.createUser(createUserInput);
+  }
+
+  @Mutation(returns => User)
+  updateUser(
+    @Args('updateUserInput') updateUser: UpdateUser,
+  ): Promise<User | null> {
+    console.log("UpdateUser query for UserId : " + updateUser.id);
+    return this.userService.updateUser(updateUser);
   }
 
   @Mutation(returns => User)

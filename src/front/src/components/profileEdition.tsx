@@ -22,12 +22,37 @@ type UserProfileEditionCardProps = {
 };
 
 const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user }) => {
-  const [formData, setFormData] = useState({});
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    email: null,
+    password:null,
+    password2:null,
+    username: null,
+  });
 
-  const handleImageChange = (e: any) => {
+  const handleImageChange = async (e: any) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData({...formData, avatar: file});
+      console.log("🚀 ~ handleImageChange ~ file:", file)
+      const formData = new FormData();
+      formData.append('avatar', file, file.name);
+  
+      try {
+        const response = await fetch('http://localhost:8443/upload/image', {
+          method: 'POST',
+          body: formData,
+          //mode: 'no-cors', didnt fix the issue
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Upload successful. File details:', data);
+        } else {
+          console.error('Upload failed. HTTP status:', response.status);
+        }
+      } catch (error) {
+        console.error('Error uploading the file:', error);
+      }
     }
   };
 
@@ -37,6 +62,21 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
 
   const handleEdit = async () => {
     console.log("🚀 ~ handleInfoChange ~ formData:", formData);
+    if (formData.password && formData.password2 && formData.password !== formData.password2) {
+      setError('Passwords do not match');
+      return;
+    }
+    if (formData.password && !formData.password2) {
+      setError('Missing password validation');
+      return; 
+    }
+    if (!formData.password && formData.password2) {
+      setError('Missing password');
+      return; 
+    }
+
+    const formDataReady = formData.hasOwnProperty('password2') ? { ...formData, password2: undefined } : { ...formData };
+    console.log(formData);
     try {
       const { data } = await apolloClient.mutate({
         mutation: gql`
@@ -46,7 +86,6 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
               ftId
               firstName
               lastName
-              avatar
               mail
               password
               pseudo
@@ -67,12 +106,13 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
       <div className="flex justify-center items-center">
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="avatar" className="text-right">
+            <Label htmlFor="image" className="text-right">
               Avatar
             </Label>
             <input
-              id="avatar"
+              id="image"
               type="file"
+              name="avatar"
               accept="image/*"
               onChange={handleImageChange}
               className="col-span-2"
@@ -104,10 +144,10 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="password2" className="text-right">
-              Password
+              Password validation
             </Label>
             <Input
-              id="password"
+              id="password2"
               type="password"
               placeholder="********"
               onChange={(e) => handleInfoChange("password2", e.target.value)}
@@ -119,13 +159,14 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
               Email
             </Label>
             <Input
-              id="email"
-              type="email"
+              id="mail"
+              type="mail"
               placeholder="example@gmail.com"
-              onChange={(e) => handleInfoChange("email", e.target.value)}
+              onChange={(e) => handleInfoChange("mail", e.target.value)}
               className="col-span-2"
             />
           </div>
+          {error && <div className="text-red-500">{error}</div>}
           <DialogFooter>
             <Button className={styles.button} type="submit" onClick={handleEdit}>Edit</Button>
           </DialogFooter>

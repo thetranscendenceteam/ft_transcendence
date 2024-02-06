@@ -35,6 +35,7 @@ const LoginDialog = () => {
     console.log('login');
     const username: HTMLInputElement = document.getElementById("username") as HTMLInputElement;
     const password: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
+    const twoFA: HTMLInputElement = document.getElementById("2FA") as HTMLInputElement;
     try {
       const { data } = await apolloClient.mutate({
         mutation: gql`
@@ -54,6 +55,7 @@ const LoginDialog = () => {
           standardLoginInput: {
             username: username.value,
             password: password.value,
+            twoFactorCode: twoFA.value,
           },
         },
       });
@@ -97,6 +99,17 @@ const LoginDialog = () => {
               id="password"
               type="password"
               placeholder="********"
+              className="col-span-2"
+            />
+          </div>
+          <div className="grid grid-cols-3 items-center gap-4">
+            <Label htmlFor="2FA" className="text-right">
+              Password
+            </Label>
+            <Input
+              id="2FA"
+              type="2FA"
+              placeholder="Enter your code if you've activated 2FA"
               className="col-span-2"
             />
           </div>

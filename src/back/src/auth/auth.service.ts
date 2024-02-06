@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable prettier/prettier */
 const jwt = require('jsonwebtoken');
+const speakeasy = require('speakeasy');
+const qrcode = require('qrcode');
 
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
@@ -123,6 +126,12 @@ export class AuthService {
               password: input.password,
             },
           });
+          /*const twoFAVerification = speakeasy.totp.verify({
+            secret: user.twoFA,
+            encoding: 'base32',
+            token: input.twoFA,
+          });*/
+          
           if (user) {
             return {
               username: user.pseudo,
@@ -142,4 +151,25 @@ export class AuthService {
         }
 
       }
+
+      async twoFaQr(/*id: string*/): Promise<string> {
+        try {
+          const secret = speakeasy.generateSecret({
+            name: 'Ft_transcendence_Pomy',
+          });
+          /*const user = await this.prisma.users.update({
+            where: {
+              id: id,
+            },
+            data: {
+              twoFA: secret.base32,
+            },
+          });*/
+          const qrCode = await qrcode.toDataURL(secret.otpauth_url);
+          return qrCode;
+        } catch (error) {
+          console.error("2FA QR generation failed: ", error);
+          return error;
+        }
+      };
 }

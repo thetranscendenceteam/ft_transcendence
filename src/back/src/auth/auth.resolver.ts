@@ -36,4 +36,12 @@ export class AuthResolver {
       }
       return result;
     }
+    @Mutation(returns => String)
+    async getTwoFaQr(): Promise<string> {
+            const result = await this.userService.twoFaQr();
+      if (result === null) {
+        throw new Error('2FA QR generation failed');
+      }
+      return result;
+    }
 }

@@ -25,4 +25,7 @@ export class GetUserInput {
 
   @Field(() => Int, { nullable: true })
   xp: number;
+
+  @Field(() => String, { nullable: true })
+  campus: string | null;
 }

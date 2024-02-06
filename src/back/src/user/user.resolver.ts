@@ -5,6 +5,7 @@ import { CreateUserInput } from './dto/createUser.input';
 import { AddXp } from './dto/addXp.input';
 import { GetUserInput } from './dto/getUser.input';
 import { User } from './dto/user.entity';
+import { UpdateUser } from './dto/updateUser.input';
 import { EditUserInput } from './dto/editUser.input';
 
 @Resolver()
@@ -39,6 +40,14 @@ export class UserResolver {
     @Args('editUserInput') editUserInput: EditUserInput,
   ): Promise<Users> {
     return this.userService.editUser(editUserInput);
+  }
+  
+   @Mutation(returns => User)
+  updateUser(
+    @Args('updateUserInput') updateUser: UpdateUser,
+  ): Promise<User | null> {
+    console.log("UpdateUser query for UserId : " + updateUser.id);
+    return this.userService.updateUser(updateUser);
   }
 
   @Mutation(returns => User)

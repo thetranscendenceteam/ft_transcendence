@@ -7,6 +7,8 @@ import { CreateUserInput } from './dto/createUser.input';
 import { CreateClassicUserInput } from './dto/createClassicUser.input';
 import { AddXp } from './dto/addXp.input';
 import { User } from './dto/user.entity';
+import { UpdateUser } from './dto/updateUser.input';
+import { deflateSync } from 'zlib';
 import { uid } from 'uid';
 import { EditUserInput } from './dto/editUser.input';
 
@@ -140,4 +142,32 @@ export class UserService {
     }
   }
 
+  async updateUser(updateUser: UpdateUser): Promise<User | null> {
+    try {
+      const date = new Date();
+      const res = await this.prisma.users.update({
+        where: {
+          id: updateUser.id,
+        },
+        data: {
+          pseudo: updateUser.pseudo,
+          password: updateUser.password,
+          avatar: updateUser.avatar,
+          xp: updateUser.xp,
+          campus: updateUser.campus,
+          twoFA: updateUser.twoFA,
+          count: {
+            increment: 1,
+          },
+          modifiedAt: date.toISOString(),
+        },
+      })
+      if (res) return res;
+      return null;
+    }
+    catch (e) {
+      console.log("Error on updateUser query" + e);
+      throw e;
+    }
+  }
 }

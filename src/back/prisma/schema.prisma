@@ -16,21 +16,24 @@ generator client {
 // }
 
 model Users {
-    id         String               @id @unique @default(uuid()) @db.VarChar(36)
-    ftId       Int?                 @unique @db.Integer
-    pseudo     String               @db.VarChar(255)
-    mail       String               @unique @db.VarChar(255)
-    password   String?
-    firstName  String               @db.VarChar(255)
-    lastName   String               @db.VarChar(255)
-    avatar     String
-    xp         Int                  @default(0) @db.Integer
-    createdAt  DateTime             @default(now())
-    modifiedAt DateTime             @default(now())
-    count      Int                  @default(0) @db.Integer
-    chats      UsersInChats[]
-    friends    UsersRelationships[]
-    matchs     UsersInMatchs[]
+    id          String               @id @unique @default(uuid()) @db.VarChar(36)
+    ftId        Int?                 @unique @db.Integer
+    pseudo      String               @db.VarChar(255)
+    mail        String               @unique @db.VarChar(255)
+    password    String?
+    firstName   String               @db.VarChar(255)
+    lastName    String               @db.VarChar(255)
+    avatar      String
+    xp          Int                  @default(0) @db.Integer
+    createdAt   DateTime             @default(now())
+    modifiedAt  DateTime             @default(now())
+    count       Int                  @default(0) @db.Integer
+    campus      String?              @db.VarChar(255)
+    twoFA       Boolean              @default(false)
+    twoFASecret String?              @db.VarChar(255)
+    chats       UsersInChats[]
+    friends     UsersRelationships[]
+    matchs      UsersInMatchs[]
 }
 
 model Chats {
@@ -39,6 +42,7 @@ model Chats {
     password  String?
     createdAt DateTime       @default(now())
     users     UsersInChats[]
+    messages  Messages[]
 }
 
 model Matchs {
@@ -46,6 +50,15 @@ model Matchs {
     startedAt DateTime        @default(now())
     score     MatchScore?
     users     UsersInMatchs[]
+}
+
+model Messages {
+    id        String   @id @unique @default(uuid()) @db.VarChar(36)
+    timestamp DateTime @default(now())
+    message   String
+    username  String   @db.VarChar(255)
+    chatId    String   @db.VarChar(36)
+    Chat      Chats    @relation(fields: [chatId], references: [id])
 }
 
 model UsersInChats {

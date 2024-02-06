@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Users" ADD COLUMN     "campus" VARCHAR(255),
+ADD COLUMN     "twoFA" BOOLEAN NOT NULL DEFAULT false;

@@ -8,6 +8,7 @@ import { CreateClassicUserInput } from './dto/createClassicUser.input';
 import { AddXp } from './dto/addXp.input';
 import { User } from './dto/user.entity';
 import { uid } from 'uid';
+import { EditUserInput } from './dto/editUser.input';
 
 @Injectable()
 export class UserService {
@@ -90,6 +91,29 @@ export class UserService {
     }
     catch (e) {
       console.log("Error on createUser query" + e);
+      throw e;
+    }
+  }
+
+  async editUser(editUserInput: EditUserInput): Promise<Users> {
+    try {
+
+      const userToUpdate = {
+        ...(editUserInput.mail && { mail: editUserInput.mail }),
+        ...(editUserInput.password && { password: editUserInput.password }),
+        ...(editUserInput.firstName && { firstName: editUserInput.firstName }),
+        ...(editUserInput.lastName && { lastName: editUserInput.lastName }),
+        ...(editUserInput.avatar && { avatar: editUserInput.avatar }),
+        ...(editUserInput.pseudo && { pseudo: editUserInput.pseudo }),
+      };
+
+      return this.prisma.users.update({
+        where: { id: editUserInput.id },
+        data: userToUpdate
+      });
+    }
+    catch (e) {
+      console.log("Error on editUser query" + e);
       throw e;
     }
   }

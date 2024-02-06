@@ -4,7 +4,11 @@ import * as cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(cors()); // Use the cors middleware
+  app.use(
+    cors({
+      origin: 'https://localhost:8443', // Allow requests from this origin
+    }),
+  ); // Use the cors middleware
   await app.listen(3000);
 }
 bootstrap();

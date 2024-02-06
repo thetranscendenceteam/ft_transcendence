@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label"
 import { gql } from "@apollo/client";
 import Image from "next/image";
 import apolloClient from "./apolloclient";
+import styles from './profile/profile.module.css';
 import { useContext } from "react";
 import { UserContext } from "./userProvider";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
@@ -101,7 +102,7 @@ const LoginDialog = () => {
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleLogin}>Login</Button>
+          <Button className={styles.button} type="submit" onClick={handleLogin}>Login</Button>
         </DialogFooter>
         <div className="flex items-center">
           <hr className="flex-1"/>

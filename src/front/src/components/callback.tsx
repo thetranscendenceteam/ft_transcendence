@@ -40,6 +40,7 @@ const fetchData = async (code: string | null) => {
 export const Callback = () => {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
+  console.log("TEST: ", code);
   const [data, setData] = useState();
   const router = useRouter();
   const { updateUser } = useContext(UserContext);
@@ -52,8 +53,9 @@ export const Callback = () => {
 
     fetchInitialData();
     if (data) {
-      const { id, username, realname, avatar_url, email, campus }  = data;
+      const { id, username, realname, avatar_url, email, campus, jwtToken }  = data;
       updateUser({ id, username, realname, avatar_url, email, campus });
+      document.cookie = `jwt=${jwtToken}; path=/; secure; HttpOnly`;
       router.push('/');
     }
   }, [data, code]);

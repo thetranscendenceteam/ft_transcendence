@@ -22,4 +22,7 @@ export class authUser {
 
   @Field(() => String, { nullable: true })
   jwtToken: string;
+
+  @Field(() => String)
+  twoFA: boolean;
 }

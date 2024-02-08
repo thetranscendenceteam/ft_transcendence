@@ -7,4 +7,7 @@ export class StandardLoginInput {
 
   @Field(() => String)
   password: string;
+
+  @Field(() => String, { nullable: true })
+  twoFactorCode: string | null;
 }

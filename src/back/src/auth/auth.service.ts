@@ -80,6 +80,7 @@ export class AuthService {
               campus: userFtMe.data.campus[0].name,
               avatar_url: userMe.avatar,
               jwtToken: ourJwt,
+              twoFA: userMe.twoFA,
             };
 
         } catch (error) {
@@ -113,7 +114,6 @@ export class AuthService {
             ftId: input.ftId,
           }
         };
-
         try {
           const PRIVATE_KEY= "secretKeyPlaceHolder";
           const secretKey = PRIVATE_KEY;
@@ -126,13 +126,17 @@ export class AuthService {
               password: input.password,
             },
           });
-          /*const twoFAVerification = speakeasy.totp.verify({
-            secret: user.twoFA,
-            encoding: 'base32',
-            token: input.twoFA,
-          });*/
-          
           if (user) {
+            if (user.twoFA) {
+              const twoFAVerification = speakeasy.totp.verify({
+                secret: user.twoFASecret,
+                encoding: 'base32',
+                token: input.twoFactorCode as string,
+              });
+              if(!twoFAVerification) {
+                throw new Error("Logging failed");
+              }
+            }
             return {
               username: user.pseudo,
               realname: user.firstName + ' ' + user.lastName,
@@ -141,9 +145,10 @@ export class AuthService {
               email: user.mail ? user.mail : "No email",
               campus: "Not a 42 Student",
               jwtToken: jwt.sign(payload({username: user.pseudo, ftId: null}), secretKey, options),
+              twoFA: user.twoFA,
             };
           }
-          return null;
+          throw new Error("Logging failed");
         }
         catch (e) {
           console.log("Error on classicLogin" + e);
@@ -152,21 +157,49 @@ export class AuthService {
 
       }
 
-      async twoFaQr(/*id: string*/): Promise<string> {
+      async twoFaQr(id: string): Promise<string | null> { // TODO take from JWT
         try {
-          const secret = speakeasy.generateSecret({
-            name: 'Ft_transcendence_Pomy',
-          });
-          /*const user = await this.prisma.users.update({
-            where: {
-              id: id,
+
+          const user = await this.prisma.users.findFirst({where: {id: id}});
+          if (user && user.twoFASecret) {
+            const qrCode = await qrcode.toDataURL(user.twoFAOtpAuthUrl);
+            return qrCode;
+          }
+          return null;
+        } catch (error) {
+          console.error("2FA QR generation failed: ", error);
+          return error;
+        }
+      };
+
+      async toggleTwoFA(id: string, code: string, toggleTwoFA: boolean): Promise<boolean | null> { // TODO take from JWT
+        try {
+          const userCurrent = await this.prisma.users.findFirst(
+            {
+              where: {id: id},
             },
-            data: {
-              twoFA: secret.base32,
+          );
+          if (userCurrent) {
+            const twoFAVerification = speakeasy.totp.verify({
+              secret: userCurrent.twoFASecret,
+              encoding: 'base32',
+              token: code as string,
+            });
+            if (!twoFAVerification) {
+              throw new Error("2FA verification failed");
+            }
+          }
+
+          const user = await this.prisma.users.update(
+            {
+              where: {id: id},
+              data: {twoFA: toggleTwoFA},
             },
-          });*/
-          const qrCode = await qrcode.toDataURL(secret.otpauth_url);
-          return qrCode;
+          );
+          if (user) {
+            return user.twoFA;
+          }
+          return null;
         } catch (error) {
           console.error("2FA QR generation failed: ", error);
           return error;

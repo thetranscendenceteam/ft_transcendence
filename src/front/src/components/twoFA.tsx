@@ -6,17 +6,22 @@ import styles from './twoFA/twoFA.module.css';
 import apolloClient from './apolloclient';
 import { gql } from '@apollo/client';
 import { Card } from './ui/card';
-import { DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
+import { UserContext } from './userProvider';
+import { Input } from './ui/input';
+import { useRouter } from 'next/navigation';
 
-const fetchQR = async () => {
+const fetchQR = async (id: string) => {
   try {
     const { data } = await apolloClient.mutate({
       mutation: gql`
-        mutation {
-          getTwoFaQr
-        }
+        mutation getTwoFaQr($id: String!){
+          getTwoFaQr(id: $id)
+        },
       `,
+      variables: {
+        id: id
+      }
     });
     return data.getTwoFaQr;
   } catch (error) {
@@ -24,25 +29,72 @@ const fetchQR = async () => {
   }
 };
 
+const toggleTwoFA = async (id: string, code: string, value: boolean, setError: Function) => {
+  try {
+    const { data, errors } = await apolloClient.mutate({
+      mutation: gql`
+        mutation toggleTwoFA($id: String!, $code: String!, $toggleTwoFA: Boolean!){
+          toggleTwoFA(id: $id, code: $code, toggleTwoFA: $toggleTwoFA)
+        },
+      `,
+      variables: {
+        id: id,
+        code: code,
+        toggleTwoFA: value,
+      }
+    });
+    if (errors) {
+      setError(errors[0].message);
+    } else {
+      setError("");
+    }
+    return data.getTwoFaQr;
+  } catch (error) {
+    setError("Error when toggling 2FA");
+  }
+};
+
 const TwoFA = () => {
   const [qr, setQr] = useState("");
-
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const fetchedQR = await fetchQR();
-      setQr(fetchedQR);
-    };
-
-    fetchInitialData();
-    if (qr) {
-      console.log('2FA QR code:', qr);
+  const [twoFACode, setTwoFACode] = useState("");
+  const [error, setError] = useState("");
+  const {user, updateUser} = React.useContext(UserContext);
+  const router = useRouter();
+  
+  React.useEffect(() => {
+    let userStorage = window.sessionStorage.getItem("user");
+    if (!user && userStorage) {
+      updateUser(JSON.parse(userStorage));
     }
   }, []);
 
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (user) {
+        const fetchedQR = await fetchQR(user.id);
+        setQr(fetchedQR);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
+
   function activate(): void {
-    console.log("Activated");
+    if (user && twoFACode) {
+      toggleTwoFA(user.id, twoFACode, true, setError);
+      updateUser({...user, twoFA: true});
+      router.push('/');
+    }
   }
 
+  function deactivate(): void {
+    if (user && twoFACode) {
+      toggleTwoFA(user.id, twoFACode, false, setError);
+      updateUser({...user, twoFA: false});
+      router.push('/');
+    }
+  }
+  console.log(user?.twoFA);
   return (
     <div className={`${styles.container}`}>
       <Card className={`${styles.twoFACard}`}>
@@ -50,12 +102,28 @@ const TwoFA = () => {
           <div className={styles.imageContainer}>
             <img src={qr} alt="2FA QR code" />
           </div>
+          {error && (
+            <div style={{ color: 'red' }}>
+              Invalid 2FA code
+            </div>
+          )}
           <div className={styles.textContainer}>
             <div>To enable 2FA just scan this picture with Google authenticator and then press "Activate"</div>
           </div>
-          <DialogFooter>
-            <Button className={styles.button} type="submit" onClick={activate}>Activate</Button>
-          </DialogFooter>
+          {
+            String(user?.twoFA) === "true" && 
+              <div className={styles.buttonAndInput}>
+                <Input id="2FADeactivate" type="text" placeholder="Enter a 2FA code" onChange={(e) => setTwoFACode(e.target.value)} />
+                <Button className={styles.button} type="submit" onClick={deactivate}>Deactivate</Button>
+              </div>
+          }
+          {
+            String(user?.twoFA) === "false" && 
+              <div className={styles.buttonAndInput}>
+                <Input id="2FAActivate" type="text" placeholder="Enter a 2FA code" onChange={(e) => setTwoFACode(e.target.value)} />
+                <Button className={styles.button} type="submit" onClick={activate}>Activate</Button>
+              </div>
+          }
         </div>
       </Card>
     </div>

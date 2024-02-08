@@ -36,11 +36,21 @@ export class AuthResolver {
       }
       return result;
     }
+
     @Mutation(returns => String)
-    async getTwoFaQr(): Promise<string> {
-            const result = await this.userService.twoFaQr();
+    async getTwoFaQr(@Args('id') id: string): Promise<string> { // TODO take id from JWT
+            const result = await this.userService.twoFaQr(id);
       if (result === null) {
         throw new Error('2FA QR generation failed');
+      }
+      return result;
+    }
+
+    @Mutation(returns => String)
+    async toggleTwoFA(@Args('id') id: string, @Args('code') code: string, @Args('toggleTwoFA') toggleTwoFA: boolean): Promise<boolean> { // TODO take id from JWT
+            const result = await this.userService.toggleTwoFA(id, code, toggleTwoFA);
+      if (result === null) {
+        throw new Error('2FA activation failed');
       }
       return result;
     }

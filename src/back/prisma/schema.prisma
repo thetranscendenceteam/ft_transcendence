@@ -16,24 +16,25 @@ generator client {
 // }
 
 model Users {
-    id          String               @id @unique @default(uuid()) @db.VarChar(36)
-    ftId        Int?                 @unique @db.Integer
-    pseudo      String               @db.VarChar(255)
-    mail        String               @unique @db.VarChar(255)
-    password    String?
-    firstName   String               @db.VarChar(255)
-    lastName    String               @db.VarChar(255)
-    avatar      String
-    xp          Int                  @default(0) @db.Integer
-    createdAt   DateTime             @default(now())
-    modifiedAt  DateTime             @default(now())
-    count       Int                  @default(0) @db.Integer
-    campus      String?              @db.VarChar(255)
-    twoFA       Boolean              @default(false)
-    twoFASecret String?              @db.VarChar(255)
-    chats       UsersInChats[]
-    friends     UsersRelationships[]
-    matchs      UsersInMatchs[]
+    id              String               @id @unique @default(uuid()) @db.VarChar(36)
+    ftId            Int?                 @unique @db.Integer
+    pseudo          String               @db.VarChar(255)
+    mail            String               @unique @db.VarChar(255)
+    password        String?
+    firstName       String               @db.VarChar(255)
+    lastName        String               @db.VarChar(255)
+    avatar          String
+    xp              Int                  @default(0) @db.Integer
+    createdAt       DateTime             @default(now())
+    modifiedAt      DateTime             @default(now())
+    count           Int                  @default(0) @db.Integer
+    campus          String?              @db.VarChar(255)
+    twoFA           Boolean              @default(false)
+    twoFASecret     String?              @db.VarChar(255)
+    twoFAOtpAuthUrl String?              @db.VarChar(255)
+    chats           UsersInChats[]
+    friends         UsersRelationships[]
+    matchs          UsersInMatchs[]
 }
 
 model Chats {

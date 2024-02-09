@@ -16,8 +16,8 @@ export class AuthService {
     async ftLogin(inputCode: string): Promise<authUser | null> {
       console.log('ftLogin', inputCode);
         try {
-          const NEXT_PUBLIC_CLIENT_ID= "u-";
-          const CLIENT_SECRET= "s-";
+          const NEXT_PUBLIC_CLIENT_ID= "u-s4t2ud-b732bcb13d06d5351f1864cdd7f3a8843ba12fcbe1b3080c494e8cc96d4cd7c7";
+          const CLIENT_SECRET= "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";
           const NEXT_PRIVATE_REDIRECT= "https://localhost:8443/callback";
           // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
 

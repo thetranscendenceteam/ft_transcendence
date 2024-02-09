@@ -22,10 +22,10 @@ import React from "react";
 
 const LoginDialog = () => {
   const { updateUser } = useContext(UserContext);
-  const NEXT_PUBLIC_CLIENT_ID = "u-";
+  const NEXT_PUBLIC_CLIENT_ID = "u-s4t2ud-b732bcb13d06d5351f1864cdd7f3a8843ba12fcbe1b3080c494e8cc96d4cd7c7";
   const NEXT_PUBLIC_OAUTH_URL = "https://api.intra.42.fr/oauth/authorize";
   const NEXT_PUBLIC_REDIRECT = "https://localhost:8443/callback&response_type=code";
-  const CLIENT_SECRET = "s-";
+  const CLIENT_SECRET = "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";
   // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
   const ft_auth = NEXT_PUBLIC_OAUTH_URL + '?client_id=' + NEXT_PUBLIC_CLIENT_ID + '&redirect_uri=' + NEXT_PUBLIC_REDIRECT;
 

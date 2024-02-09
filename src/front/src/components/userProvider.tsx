@@ -2,47 +2,89 @@
 
 import { ReactNode, createContext, useState, useEffect } from "react";
 import type { User } from "@/lib/user";
+import { useCookies } from 'react-cookie';
+import { jwtDecode } from 'jwt-decode';
+import apolloClient from "./apolloclient";
+import { gql } from "@apollo/client"
+
+interface DecodedToken {
+  ftId: number;
+  username: string;
+  iat: number;
+  exp: number;
+}
 
 export const UserContext = createContext<{ user: User | null; updateUser: any }>({
   user: null,
   updateUser: null,
 });
 
+function useJwtCookie() {
+  const [cookies] = useCookies(['jwt']);
+  const jwtCookie = cookies['jwt'];
+
+  return (jwtCookie ? jwtCookie : null);
+}
+
+const fetchData = async (ftId: number) => {
+  console.log("fetchData");
+  try {
+    const { data } = await apolloClient.query({
+      query: gql`
+        query GetUser($UserInput: GetUserInput!) {
+          getUser(UserInput: $UserInput) {
+            id 
+            pseudo
+            mail
+            firstName
+            lastName
+            avatar
+            campus
+          }
+        }
+      `,
+      variables: {
+        UserInput: {
+          ftId: ftId
+        }
+      }
+    });
+    console.log("data", data);
+    return (data.getUser);
+  } catch (error) {
+    return ([]);
+  }
+}
+
 export function UserProvider({ children }: { children: ReactNode }): JSX.Element {
   const [user, setUser] = useState<User | null>(null);
+  const jwtToken = useJwtCookie();
 
   function updateUser(inUser: User) {
     setUser(inUser);
   }
 
-  function getCookie(name: string) {
-    const cookieValue = document.cookie.match(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`);
-    console.log(cookieValue);
-    return cookieValue ? cookieValue.pop() : null;
-  }
-
-  //function decodeToken(token) {
-  //  try {
-  //    const decodedToken = decode(token);
-
-  //    if (!decodedToken || !decodedToken.user) {
-  //      return (null);
-  //    }
-  //    return (decodedToken.user);
-  //  } catch (error) {
-  //    console.error('Error decoding token:', error);
-  //    return (null);
-  //  }
-  //}
-
   useEffect(() => {
-    const jwtToken = getCookie('jwt');
+    const fetchDataSetUser = async () => {
+      if (jwtToken.jwtToken && !user) {
+        const decodedToken = jwtDecode(jwtToken.jwtToken) as DecodedToken;
+        const fetchedData = await fetchData(decodedToken.ftId);
+        if (fetchedData) {
+          const user: User = {
+            id: fetchedData.id,
+            username: fetchedData.pseudo,
+            realname: `${fetchedData.firstName} ${fetchedData.lastName}`,
+            avatar_url: fetchedData.avatar,
+            email: fetchedData.mail,
+            campus: fetchedData.campus,
+          };
+          updateUser(user);
+        }
+      }
+    };
 
-    if (jwtToken) {
-  //    const user = decodeToken(jwtToken);
-  //    setUser(user);
-    }
-  }, [])
+    fetchDataSetUser();
+  }, [jwtToken]);
 
   return (
     <UserContext.Provider value={{ user, updateUser }}>

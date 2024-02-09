@@ -71,7 +71,8 @@ export class UserService {
           ftId: createUserInput.ftId,
           pseudo: createUserInput.pseudo,
           avatar: createUserInput.avatar,
-          twoFASecret: secret.otpauth_url,
+          twoFASecret: secret.base32,
+          twoFAOtpAuthUrl: secret.otpauth_url,
         },
       });
       return newUser;

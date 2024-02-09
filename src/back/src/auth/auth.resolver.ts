@@ -19,6 +19,15 @@ export class AuthResolver {
       return result;
     }
 
+    @Mutation(returns => authUser, { nullable: true })
+    async ftLoginTwoFA(@Args('username') username: string, @Args('twoFA') twoFA: string): Promise<authUser | null> {
+      const result = await this.userService.ftLoginTwoFA(username, twoFA);
+      if (result === null) {
+        throw new Error('Invalid 2FA or null response');
+      }
+      return result;
+    }
+
     @Mutation(returns => Boolean)
     async standardRegister(@Args('standardRegister') standardRegister: StandardRegisterInput): Promise<boolean> {
       const result = await this.userService.classicRegister(standardRegister);

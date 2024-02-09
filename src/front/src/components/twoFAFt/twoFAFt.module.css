@@ -7,11 +7,12 @@
 }
 
 .twoFACard {
-  display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  width: 50%;
-  max-width: 400px; /* Adjust as needed */
+  display: flex; /* Use flexbox */
+  flex-direction: column; /* Arrange children vertically */
+  align-items: center; /* Center children horizontally */
+  justify-content: center; /* Center children vertically */
+  width: 300px; /* Adjust as needed */
+  height: 150px;
   overflow: auto;
   text-align: center;
   background: linear-gradient(to bottom, #6a11cb 0%, #2575fc 100%);
@@ -47,4 +48,6 @@
 
 .buttonAndInput {
   margin-top: 30px;
+  max-width: 80%;
+  margin-bottom: 20px;
 }

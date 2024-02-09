@@ -81,7 +81,7 @@ const Menu = () => {
               <DropdownMenuContent>
                 <MenuLink href="/profile">My Profile</MenuLink>
                 <MenuLink href="/edit_profile">Edit Profile</MenuLink>
-                <MenuLink href="/twoFA">Enable 2FA</MenuLink>
+                <MenuLink href="/twoFA">2FA</MenuLink>
                 <DropdownMenuItem onClick={handleLogoutClick}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

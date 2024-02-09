@@ -11,6 +11,7 @@ import { User } from './dto/user.entity';
 import { UpdateUser } from './dto/updateUser.input';
 import { uid } from 'uid';
 import { EditUserInput } from './dto/editUser.input';
+import { UserPrivate } from './dto/userPrivate.entity';
 
 const speakeasy = require('speakeasy');
 
@@ -18,7 +19,7 @@ const speakeasy = require('speakeasy');
 export class UserService {
   constructor(private prisma: PrismaService) { }
 
-  async getAllUser(max: number | undefined): Promise<Users[]> {
+  async getAllUser(max: number | undefined): Promise<UserPrivate[]> {
     try {
       return await this.prisma.users.findMany({
         take: max,
@@ -31,7 +32,7 @@ export class UserService {
     }
   }
 
-  public async getUser(userInput: GetUserInput): Promise<Users | null> {
+  public async getUser(userInput: GetUserInput): Promise<User | null> {
     console.log("🚀 ~ UserService ~ getUser ~ userInput:", userInput)
     try {
       const user = await this.prisma.users.findFirst({
@@ -59,7 +60,7 @@ export class UserService {
     }
   }
 
-  async createUser(createUserInput: CreateUserInput): Promise<Users> {
+  async createUser(createUserInput: CreateUserInput): Promise<User> {
     try {
       const secret = speakeasy.generateSecret({
         name: 'Ft_transcendence_Pomy',
@@ -85,7 +86,7 @@ export class UserService {
     }
   }
 
-  async createClassicUser(createUserInput: CreateClassicUserInput): Promise<Users> {
+  async createClassicUser(createUserInput: CreateClassicUserInput): Promise<User> {
     try {
       const secret = speakeasy.generateSecret({
         name: 'Ft_transcendence_Pomy',
@@ -103,7 +104,7 @@ export class UserService {
           twoFAOtpAuthUrl: secret.otpauth_url,
         },
       });
-            return newUser;
+      return newUser;
     }
     catch (e) {
       console.log("Error on createUser query" + e);
@@ -111,7 +112,7 @@ export class UserService {
     }
   }
 
-  async editUser(editUserInput: EditUserInput): Promise<Users> {
+  async editUser(editUserInput: EditUserInput): Promise<User> {
     try {
 
       const userToUpdate = {
@@ -134,7 +135,7 @@ export class UserService {
     }
   }
 
-  async addXpByNickname(input: AddXp): Promise<Users> {
+  async addXpByNickname(input: AddXp): Promise<User> {
     const xpToAdd = Number(input.xp);
 
     if (isNaN(xpToAdd)) {

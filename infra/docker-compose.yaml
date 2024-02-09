@@ -55,7 +55,7 @@ services:
     ports:
       - 8081:8080
     networks:
-      - back
+      - db
 
   nginx:
     image: ghcr.io/thetranscendenceteam/nginx:latest

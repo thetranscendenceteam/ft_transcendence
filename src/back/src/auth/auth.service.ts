@@ -59,8 +59,8 @@ export class AuthService {
       };
 
         try {
-          const NEXT_PUBLIC_CLIENT_ID= "u-s4t2ud-fb46f21123114fbf75699a7e6e9ba5db6ba2b51b3ab9b6887ec107e4704cc2ff";
-          const CLIENT_SECRET= "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";
+          const NEXT_PUBLIC_CLIENT_ID= "u-";
+          const CLIENT_SECRET= "s-";
           const NEXT_PRIVATE_REDIRECT= "https://localhost:8443/callback";
           // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
   
@@ -161,10 +161,10 @@ export class AuthService {
 
       async classicLogin(input: StandardLoginInput): Promise<authUser | null> {
 
-        const payload = (input: { username:string, ftId: number | null }) => {
+        const payload = (input: { username:string, id: string | null }) => {
           return {
             username: input.username,
-            ftId: input.ftId,
+            id: input.id,
           }
         };
         try {
@@ -197,7 +197,7 @@ export class AuthService {
               id: user.id,
               email: user.mail ? user.mail : "No email",
               campus: "Not a 42 Student",
-              jwtToken: jwt.sign(payload({username: user.pseudo, ftId: null}), secretKey, options),
+              jwtToken: jwt.sign(payload({username: user.pseudo, id: user.id}), secretKey, options),
               twoFA: user.twoFA,
             };
           }

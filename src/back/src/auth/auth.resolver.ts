@@ -19,6 +19,15 @@ export class AuthResolver {
       return result;
     }
 
+    @Mutation(returns => authUser, { nullable: true })
+    async ftLoginTwoFA(@Args('username') username: string, @Args('twoFA') twoFA: string): Promise<authUser | null> {
+      const result = await this.userService.ftLoginTwoFA(username, twoFA);
+      if (result === null) {
+        throw new Error('Invalid 2FA or null response');
+      }
+      return result;
+    }
+
     @Mutation(returns => Boolean)
     async standardRegister(@Args('standardRegister') standardRegister: StandardRegisterInput): Promise<boolean> {
       const result = await this.userService.classicRegister(standardRegister);
@@ -33,6 +42,24 @@ export class AuthResolver {
             const result = await this.userService.classicLogin(standardLogin);
       if (result === null) {
         throw new Error('Error: Invalid user/password');
+      }
+      return result;
+    }
+
+    @Mutation(returns => String)
+    async getTwoFaQr(@Args('id') id: string): Promise<string> { // TODO take id from JWT
+            const result = await this.userService.twoFaQr(id);
+      if (result === null) {
+        throw new Error('2FA QR generation failed');
+      }
+      return result;
+    }
+
+    @Mutation(returns => String)
+    async toggleTwoFA(@Args('id') id: string, @Args('code') code: string, @Args('toggleTwoFA') toggleTwoFA: boolean): Promise<boolean> { // TODO take id from JWT
+            const result = await this.userService.toggleTwoFA(id, code, toggleTwoFA);
+      if (result === null) {
+        throw new Error('2FA activation failed');
       }
       return result;
     }

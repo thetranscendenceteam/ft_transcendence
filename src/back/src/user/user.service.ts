@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
@@ -8,9 +9,10 @@ import { CreateClassicUserInput } from './dto/createClassicUser.input';
 import { AddXp } from './dto/addXp.input';
 import { User } from './dto/user.entity';
 import { UpdateUser } from './dto/updateUser.input';
-import { deflateSync } from 'zlib';
 import { uid } from 'uid';
 import { EditUserInput } from './dto/editUser.input';
+
+const speakeasy = require('speakeasy');
 
 @Injectable()
 export class UserService {
@@ -30,10 +32,12 @@ export class UserService {
   }
 
   public async getUser(userInput: GetUserInput): Promise<Users | null> {
+    console.log("🚀 ~ UserService ~ getUser ~ userInput:", userInput)
     try {
       const user = await this.prisma.users.findFirst({
         where: userInput,
       });
+      console.log("🚀 ~ UserService ~ getUser ~ user:", user)
       if (user) return user;
       return null;
     }
@@ -57,6 +61,9 @@ export class UserService {
 
   async createUser(createUserInput: CreateUserInput): Promise<Users> {
     try {
+      const secret = speakeasy.generateSecret({
+        name: 'Ft_transcendence_Pomy',
+      });
       const newUser = this.prisma.users.create({
         data: {
           password: uid(21),
@@ -66,6 +73,8 @@ export class UserService {
           ftId: createUserInput.ftId,
           pseudo: createUserInput.pseudo,
           avatar: createUserInput.avatar,
+          twoFASecret: secret.base32,
+          twoFAOtpAuthUrl: secret.otpauth_url,
         },
       });
       return newUser;
@@ -78,6 +87,9 @@ export class UserService {
 
   async createClassicUser(createUserInput: CreateClassicUserInput): Promise<Users> {
     try {
+      const secret = speakeasy.generateSecret({
+        name: 'Ft_transcendence_Pomy',
+      });
       const newUser = this.prisma.users.create({
         data: {
           ftId: null,
@@ -87,6 +99,8 @@ export class UserService {
           lastName: createUserInput.lastName,
           pseudo: createUserInput.pseudo,
           avatar: "https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg",
+          twoFASecret: secret.base32,
+          twoFAOtpAuthUrl: secret.otpauth_url,
         },
       });
             return newUser;

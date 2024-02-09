@@ -32,10 +32,12 @@ export class UserService {
   }
 
   public async getUser(userInput: GetUserInput): Promise<Users | null> {
+    console.log("🚀 ~ UserService ~ getUser ~ userInput:", userInput)
     try {
       const user = await this.prisma.users.findFirst({
         where: userInput,
       });
+      console.log("🚀 ~ UserService ~ getUser ~ user:", user)
       if (user) return user;
       return null;
     }

@@ -95,9 +95,10 @@ export const Callback = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       const fetchedData = await fetchData(code);
-      if(fetchedData.graphQLErrors[0].message) {
+
+      if(fetchedData?.graphQLErrors) {
         setModale(true);
-        const userSplited = fetchedData.graphQLErrors[0].message.split(" ");
+        const userSplited = fetchedData?.graphQLErrors[0]?.message.split(" ");
         const username = userSplited[userSplited.length - 1];
         setUsername(username);
         return fetchedData;

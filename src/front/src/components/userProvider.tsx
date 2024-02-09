@@ -40,6 +40,7 @@ const fetchData = async (ftId: number) => {
             lastName
             avatar
             campus
+            twoFA
           }
         }
       `,
@@ -66,7 +67,7 @@ export function UserProvider({ children }: { children: ReactNode }): JSX.Element
 
   useEffect(() => {
     const fetchDataSetUser = async () => {
-      if (jwtToken.jwtToken && !user) {
+      if (jwtToken?.jwtToken && !user) {
         const decodedToken = jwtDecode(jwtToken.jwtToken) as DecodedToken;
         const fetchedData = await fetchData(decodedToken.ftId);
         if (fetchedData) {
@@ -77,6 +78,7 @@ export function UserProvider({ children }: { children: ReactNode }): JSX.Element
             avatar_url: fetchedData.avatar,
             email: fetchedData.mail,
             campus: fetchedData.campus,
+            twoFA: fetchedData.twoFA
           };
           updateUser(user);
         }

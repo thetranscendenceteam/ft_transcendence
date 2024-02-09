@@ -6,6 +6,7 @@ import apolloClient from "./apolloclient";
 import { useSearchParams } from 'next/navigation';
 import { UserContext } from "./userProvider";
 import { useRouter } from 'next/navigation';
+import { useCookies } from 'react-cookie';
 
 const fetchData = async (code: string | null) => {
   if (code) {
@@ -43,6 +44,7 @@ export const Callback = () => {
   const [data, setData] = useState();
   const router = useRouter();
   const { updateUser } = useContext(UserContext);
+  const [cookies, setCookie] = useCookies(['jwt']);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -52,8 +54,9 @@ export const Callback = () => {
 
     fetchInitialData();
     if (data) {
-      const { id, username, realname, avatar_url, email, campus }  = data;
+      const { id, username, realname, avatar_url, email, campus, jwtToken }  = data;
       updateUser({ id, username, realname, avatar_url, email, campus });
+      setCookie('jwt', { jwtToken }, { path: '/'});
       router.push('/');
     }
   }, [data, code]);

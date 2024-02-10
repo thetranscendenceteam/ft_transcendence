@@ -27,6 +27,7 @@ services:
       - back
     volumes:
       - front-data:/data # Needed ?
+      - ../src/front/src:/app/src
 
   back:
     image: ghcr.io/thetranscendenceteam/back:latest
@@ -43,6 +44,7 @@ services:
       - back
     volumes:
       - ../src/back/prisma/migrations:/app/prisma/migrations
+      - ../src/back/src:/app/src
       - back-data:/data # Needed ?
 
   adminer:

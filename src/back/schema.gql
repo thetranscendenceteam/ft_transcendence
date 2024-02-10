@@ -3,18 +3,20 @@
 # ------------------------------------------------------
 
 type User {
-  id: String!
-  ftId: Int!
-  pseudo: String!
-  mail: String!
-  password: String!
-  firstName: String!
-  lastName: String!
-  avatar: String!
-  xp: Int!
-  createdAt: DateTime!
-  modifiedAt: DateTime!
-  count: Int!
+  id: String
+  ftId: Int
+  pseudo: String
+  mail: String
+  password: String
+  firstName: String
+  lastName: String
+  avatar: String
+  xp: Int
+  createdAt: DateTime
+  modifiedAt: DateTime
+  count: Int
+  campus: String
+  twoFA: Boolean
 }
 
 """
@@ -27,6 +29,23 @@ type Chat {
   name: String!
   password: String
   createdAt: DateTime!
+  users: [User!]
+}
+
+type UserChatInfo {
+  idUser: String
+  pseudo: String
+  role: String
+  status: String
+  joinedAt: DateTime
+}
+
+type ChatUserInfo {
+  idChat: String
+  name: String
+  role: String
+  status: String
+  joinedAt: DateTime
 }
 
 type authUser {
@@ -34,24 +53,29 @@ type authUser {
   username: String!
   realname: String!
   avatar_url: String!
-  jwtToken: String!
+  email: String!
+  campus: String!
+  jwtToken: String
+  twoFA: String!
+}
+
+type MatchHistory {
+  matchId: String
+  startedAt: DateTime
+  isWin: Boolean
+  userScore: Int
+  adversaryScore: Int
+  adversaryUsername: String
 }
 
 type Query {
-  getUsers(max: Int): [User!]!
-  getUser(UserInput: GetUserInput!): User!
   getAllChats(max: Int): [Chat!]!
   getChat(ChatInput: GetChatInput!): Chat!
-}
-
-input GetUserInput {
-  id: String
-  ftId: Int
-  pseudo: String
-  mail: String
-  firstName: String
-  lastName: String
-  xp: Int
+  getUsers(max: Int): [User!]!
+  getUser(UserInput: GetUserInput!): User!
+  getUsersByIdChat(chatId: String!): [UserChatInfo!]!
+  getChatsByIdUser(userId: String!): [ChatUserInfo!]!
+  getUserMatchHistory(userId: String!): [MatchHistory!]!
 }
 
 input GetChatInput {
@@ -59,27 +83,31 @@ input GetChatInput {
   name: String
 }
 
+input GetUserInput {
+  id: String
+  ftId: Int
+  pseudo: String
+  password: String
+  mail: String
+  firstName: String
+  lastName: String
+  xp: Int
+  campus: String
+}
+
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
-  addXpByNickname(addXp: AddXp!): User!
   createChat(createChatInput: CreateChatInput!): Chat!
   updateChat(updateChatInput: UpdateChatInput!): Chat!
+  createUser(createUserInput: CreateUserInput!): User!
+  editUser(editUserInput: EditUserInput!): User!
+  updateUser(updateUserInput: UpdateUser!): User!
+  addXpByNickname(addXp: AddXp!): User!
   authAsFt(code: String!): authUser
-}
-
-input CreateUserInput {
-  ftId: Int!
-  mail: String!
-  password: String!
-  firstName: String!
-  lastName: String!
-  avatar: String!
-  pseudo: String!
-}
-
-input AddXp {
-  id: String!
-  xp: Int!
+  ftLoginTwoFA(username: String!, twoFA: String!): authUser
+  standardRegister(standardRegister: StandardRegisterInput!): Boolean!
+  standardLogin(standardLogin: StandardLoginInput!): authUser
+  getTwoFaQr(id: String!): String!
+  toggleTwoFA(id: String!, code: String!, toggleTwoFA: Boolean!): String!
 }
 
 input CreateChatInput {
@@ -95,4 +123,54 @@ input UpdateChatInput {
 input VarUpdateChatInput {
   name: String
   password: String
+}
+
+input CreateUserInput {
+  ftId: Int!
+  mail: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  avatar: String!
+  pseudo: String!
+  campus: String
+}
+
+input EditUserInput {
+  id: String
+  mail: String
+  password: String
+  firstName: String
+  lastName: String
+  avatar: String
+  pseudo: String
+}
+
+input UpdateUser {
+  id: String!
+  pseudo: String
+  password: String
+  avatar: String
+  xp: Int
+  campus: String
+  twoFA: Boolean
+}
+
+input AddXp {
+  id: String!
+  xp: Int!
+}
+
+input StandardRegisterInput {
+  username: String!
+  firstname: String!
+  lastname: String!
+  mail: String!
+  password: String!
+}
+
+input StandardLoginInput {
+  username: String!
+  password: String!
+  twoFactorCode: String
 }

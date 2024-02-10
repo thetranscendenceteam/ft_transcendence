@@ -12,6 +12,7 @@ import { uid } from 'uid';
 import { EditUserInput } from './dto/editUser.input';
 import { UserPrivate } from './dto/userPrivate.entity';
 import { SearchUser, SearchUserInput } from './dto/searchUser.input';
+import { hashPassword } from 'src/utils/bcrypt';
 
 const speakeasy = require('speakeasy');
 
@@ -105,7 +106,7 @@ export class UserService {
       });
       const newUser = this.prisma.users.create({
         data: {
-          password: uid(21),
+          password: await hashPassword(uid(21)),
           mail: createUserInput.mail,
           firstName: createUserInput.firstName,
           lastName: createUserInput.lastName,
@@ -132,7 +133,7 @@ export class UserService {
       const newUser = this.prisma.users.create({
         data: {
           ftId: null,
-          password: createUserInput.password,
+          password: await hashPassword(createUserInput.password),
           mail: createUserInput.mail,
           firstName: createUserInput.firstName,
           lastName: createUserInput.lastName,
@@ -155,7 +156,7 @@ export class UserService {
 
       const userToUpdate = {
         ...(editUserInput.mail && { mail: editUserInput.mail }),
-        ...(editUserInput.password && { password: editUserInput.password }),
+        ...(editUserInput.password && { password: await hashPassword(editUserInput.password) }),
         ...(editUserInput.firstName && { firstName: editUserInput.firstName }),
         ...(editUserInput.lastName && { lastName: editUserInput.lastName }),
         ...(editUserInput.avatar && { avatar: editUserInput.avatar }),
@@ -198,13 +199,16 @@ export class UserService {
   async updateUser(updateUser: UpdateUser): Promise<User | null> {
     try {
       const date = new Date();
+      if (updateUser.password) {
+        updateUser.password = await hashPassword(updateUser.password)
+      }
       const res = await this.prisma.users.update({
         where: {
           id: updateUser.id,
         },
         data: {
           pseudo: updateUser.pseudo,
-          password: updateUser.password,
+          password: updateUser.password, // hashed on line 162
           avatar: updateUser.avatar,
           xp: updateUser.xp,
           campus: updateUser.campus,

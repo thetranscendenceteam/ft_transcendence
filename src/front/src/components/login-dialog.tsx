@@ -66,12 +66,14 @@ const LoginDialog = () => {
   const {updateUser} = React.useContext(UserContext);
   const [error, setError] = useState("");
   const router = useRouter();
-  const NEXT_PUBLIC_CLIENT_ID = "u-";
-  const NEXT_PUBLIC_OAUTH_URL = "https://api.intra.42.fr/oauth/authorize";
-  const NEXT_PUBLIC_REDIRECT = "https://localhost:8443/callback&response_type=code";
-  const CLIENT_SECRET = "s-";
+  const NEXT_PUBLIC_OAUTH_CLIENT_ID = process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID;
+  const NEXT_PUBLIC_OAUTH_URL = process.env.NEXT_PUBLIC_OAUTH_URL;
+  const NEXT_PUBLIC_OAUTH_REDIRECT = process.env.NEXT_PUBLIC_OAUTH_REDIRECT;
+  if (!NEXT_PUBLIC_OAUTH_CLIENT_ID || !NEXT_PUBLIC_OAUTH_URL || !NEXT_PUBLIC_OAUTH_REDIRECT) {
+    throw new Error("Missing environment variables for OAuth");
+  }
   // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
-  const ft_auth = NEXT_PUBLIC_OAUTH_URL + '?client_id=' + NEXT_PUBLIC_CLIENT_ID + '&redirect_uri=' + NEXT_PUBLIC_REDIRECT;
+  const ft_auth = NEXT_PUBLIC_OAUTH_URL + '?client_id=' + NEXT_PUBLIC_OAUTH_CLIENT_ID + '&redirect_uri=' + NEXT_PUBLIC_OAUTH_REDIRECT + '&response_type=code';
 
   function login(): void {
     handleLogin(setError, updateUser);

@@ -1,0 +1,88 @@
+# ===== Backend =====
+
+# dependencies
+src/back/**/node_modules/
+
+# IDE
+src/back/**/.idea
+src/back/**/.awcache
+src/back/**/.vscode
+src/back/**/.devcontainer
+src/back/**/*.code-workspace
+
+# Vim
+src/back/**/[._]*.s[a-v][a-z]
+src/back/**/[._]*.sw[a-p]
+src/back/**/[._]s[a-rt-v][a-z]
+src/back/**/[._]ss[a-gi-z]
+src/back/**/[._]sw[a-p]
+
+# bundle
+src/back/**/packages/**/*.d.ts
+src/back/**/packages/**/*.js
+
+# misc
+src/back/**/.DS_Store
+src/back/**/lerna-debug.log
+src/back/**/npm-debug.log
+src/back/**/yarn-error.log
+src/back/**/**/npm-debug.log
+src/back/**/packages/**/.npmignore
+src/back/**/packages/**/LICENSE
+src/back/**/*.tsbuildinfo
+
+# example
+src/back/**/quick-start
+src/back/**/example_dist
+src/back/**/example
+
+# tests
+src/back/**/test
+src/back/**/benchmarks/memory
+src/back/**/coverage
+src/back/**/.nyc_output
+src/back/**/packages/graphql
+src/back/**/benchmarks/memory
+src/back/**/build/config\.gypi
+
+src/back/**/.npmrc
+src/back/**/pnpm-lock.yaml
+
+
+# ===== Frontend =====
+
+src/front/**/node_modules
+src/front/**/.pnp
+src/front/**/.pnp.js
+
+# testing
+src/front/**/coverage
+
+# next.js
+src/front/**/.next/
+src/front/**/out/
+
+# production
+src/front/**/build
+
+# misc
+src/front/**/.DS_Store
+src/front/**/*.pem
+
+# debug
+src/front/**/npm-debug.log*
+src/front/**/yarn-debug.log*
+src/front/**/yarn-error.log*
+
+# local env files
+src/front/**/.env*.local
+
+# vercel
+src/front/**/.vercel
+
+# typescript
+src/front/**/*.tsbuildinfo
+src/front/**/next-env.d.ts
+
+# package-lock
+src/front/**/package-lock.json

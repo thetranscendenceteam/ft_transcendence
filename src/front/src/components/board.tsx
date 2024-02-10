@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import apolloClient from "./apolloclient";
 import { gql } from "@apollo/client";
-import './board/styles.css';
+import './style/board.css';
 import globalIcon from '../../public/global-network.png';
 import friendIcon from '../../public/friend.png';
 import rightArrow from '../../public/right-arrow.png';

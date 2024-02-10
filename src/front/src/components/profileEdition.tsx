@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Card } from './ui/card';
 import { UserContext } from './userProvider';
-import styles from './profile/profile.module.css';
+import styles from './style/profile.module.css';
 import { DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';

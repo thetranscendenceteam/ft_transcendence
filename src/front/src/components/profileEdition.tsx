@@ -9,6 +9,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import apolloClient from './apolloclient';
+import axios from 'axios';
 import { gql } from '@apollo/client';
 
 type UserProfileEditionCardProps = {
@@ -36,23 +37,18 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
       console.log("🚀 ~ handleImageChange ~ file:", file)
       const formData = new FormData();
       formData.append('avatar', file, file.name);
-  
-      try {
-        const response = await fetch('http://localhost:8443/upload/image', {
-          method: 'POST',
-          body: formData,
-          //mode: 'no-cors', didnt fix the issue
-        });
-  
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Upload successful. File details:', data);
-        } else {
-          console.error('Upload failed. HTTP status:', response.status);
-        }
-      } catch (error) {
+      
+      await axios.post(`https://localhost:8443/avatar`, formData, { // TODO change to env var
+        params: { username: user.username },
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true,
+      }).then((response: any) => {
+        console.log('avatar uploaded', response); // TODO: reload avatar
+      }).catch((error: any) => {
         console.error('Error uploading the file:', error);
-      }
+      });
     }
   };
 

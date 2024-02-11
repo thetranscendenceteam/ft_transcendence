@@ -85,6 +85,19 @@ export class UserService {
     }
   }
 
+  // TODO: remove this function when JWT is implemented
+  async getUserByUserName(pseudo: string): Promise<User | undefined> {
+    try {
+      const user = await this.prisma.users.findFirst({ where: { pseudo: pseudo } });
+      if (user == null) return undefined
+      return user;
+    }
+    catch (e) {
+      console.log("Error on getUserByUserName query" + e);
+      throw e;
+    }
+  }
+
   async createUser(createUserInput: CreateUserInput): Promise<User> {
     try {
       const secret = speakeasy.generateSecret({

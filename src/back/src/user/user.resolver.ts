@@ -7,15 +7,16 @@ import { GetUserInput } from './dto/getUser.input';
 import { User } from './dto/user.entity';
 import { UpdateUser } from './dto/updateUser.input';
 import { EditUserInput } from './dto/editUser.input';
+import { UserPrivate } from './dto/userPrivate.entity';
 
 @Resolver()
 export class UserResolver {
   constructor(private userService: UserService) { }
 
-  @Query(returns => [User])
+  @Query(returns => [UserPrivate])
   getUsers(
     @Args('max', { type: () => Int, nullable: true }) max: number | undefined,
-  ): Promise<Users[]> {
+  ): Promise<UserPrivate[]> {
     console.log("getUsers with max arg : " + max);
     return this.userService.getAllUser(max);
   }
@@ -23,14 +24,14 @@ export class UserResolver {
   @Query(returns => User)
   async getUser(
     @Args('UserInput') userInput: GetUserInput,
-  ): Promise<Users | null> {
+  ): Promise<User | null> {
     return this.userService.getUser(userInput);
   }
 
   @Mutation(returns => User)
   createUser(
     @Args('createUserInput') createUserInput: CreateUserInput,
-  ): Promise<Users> {
+  ): Promise<User> {
     if (!createUserInput.avatar) createUserInput.avatar = 'Default';
     return this.userService.createUser(createUserInput);
   }
@@ -38,11 +39,11 @@ export class UserResolver {
   @Mutation(returns => User)
   editUser(
     @Args('editUserInput') editUserInput: EditUserInput,
-  ): Promise<Users> {
+  ): Promise<User> {
     return this.userService.editUser(editUserInput);
   }
-  
-   @Mutation(returns => User)
+
+  @Mutation(returns => User)
   updateUser(
     @Args('updateUserInput') updateUser: UpdateUser,
   ): Promise<User | null> {
@@ -51,7 +52,7 @@ export class UserResolver {
   }
 
   @Mutation(returns => User)
-  addXpByNickname(@Args('addXp') addXp: AddXp): Promise<Users> {
+  addXpByNickname(@Args('addXp') addXp: AddXp): Promise<User> {
     return this.userService.addXpByNickname(addXp);
   }
 

@@ -1,7 +1,7 @@
-import { Field, Int, NumberScalarMode, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
 
-@ObjectType()
-export class Score {
+@InputType()
+export class ScoreInput {
     @Field(() => String, { nullable: true })
     id: string;
 

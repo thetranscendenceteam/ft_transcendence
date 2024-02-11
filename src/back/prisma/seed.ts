@@ -1,5 +1,4 @@
-import { PrismaClient, UserChatRole, UserChatStatus, RelationshipStatus } from '@prisma/client'
-import { get } from 'http'
+import { PrismaClient, UserChatRole, UserChatStatus, RelationshipStatus, MatchDifficulty } from '@prisma/client'
 const prisma = new PrismaClient()
 async function main() {
     const Obiwan = await prisma.users.upsert({
@@ -200,9 +199,15 @@ async function main() {
         where: {
             id: '95872389572'
         },
-        update: {},
+        update: {
+            startedAt: new Date().toISOString(),
+            finishedAt: new Date().toISOString(),
+        },
         create: {
             id: '95872389572',
+            difficulty: MatchDifficulty.easy,
+            startedAt: new Date().toISOString(),
+            finishedAt: new Date().toISOString(),
         }
     })
 
@@ -210,9 +215,15 @@ async function main() {
         where: {
             id: '34091858917',
         },
-        update: {},
+        update: {
+            startedAt: new Date().toISOString(),
+            finishedAt: new Date().toISOString(),
+        },
         create: {
             id: '34091858917',
+            difficulty: MatchDifficulty.normal,
+            startedAt: new Date().toISOString(),
+            finishedAt: new Date().toISOString(),
         }
     })
     // ----------------------------------------------------------------
@@ -226,6 +237,7 @@ async function main() {
             winnerScore: 10,
             looserScore: 8,
             matchId: '95872389572',
+            bestOf: 3,
         }
     })
 
@@ -238,6 +250,7 @@ async function main() {
             winnerScore: 15,
             looserScore: 2,
             matchId: '34091858917',
+            bestOf: 7,
         }
     })
 

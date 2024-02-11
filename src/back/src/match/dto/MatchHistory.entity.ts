@@ -6,7 +6,7 @@ export class MatchHistory {
     matchId: string;
 
     @Field(() => Date, { nullable: true })
-    startedAt: Date;
+    createdAt: Date;
 
     @Field(() => Boolean, { nullable: true })
     isWin: boolean;

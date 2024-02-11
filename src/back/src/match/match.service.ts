@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { UserInMatch } from './dto/UserInMatch.entity';
 import { MatchHistory } from './dto/MatchHistory.entity';
+import { CreateOrFindMatchInput } from './dto/CreateOrFindMatch.input';
+import { SaveOrUpdateMatchInput } from './dto/SaveOrUpdateMatch.input';
+import { Match } from './dto/Match.entity';
 
 @Injectable()
 export class MatchService {
@@ -34,7 +37,7 @@ export class MatchService {
     async convertResultMatch(match: UserInMatch): Promise<MatchHistory> {
         let hMatch: MatchHistory = new MatchHistory;
         hMatch.matchId = match.matchId;
-        hMatch.startedAt = match.match.startedAt;
+        hMatch.createdAt = match.match.createdAt;
         hMatch.isWin = match.isWin;
         hMatch.adversaryUsername = this.getAdversaryUsername(match.matchId, match.userId);
         if (match.match.score) {
@@ -67,6 +70,142 @@ export class MatchService {
         }
         catch (e) {
             console.log("Error in getAdversaryUsername" + e);
+            throw e;
+        }
+    }
+
+    async isUserInMatch(userId: string): Promise<string | null> {
+        try {
+            const res = await this.prisma.matchs.findFirst({
+                where: {
+                    OR: [
+                        { startedAt: null },
+                        { finishedAt: null },
+                    ],
+                    users: {
+                        some: {
+                            userId: userId,
+                        }
+                    }
+                },
+            });
+            if (!res) return null;
+            return res.id;
+        }
+        catch (e) {
+            console.log("Error on isUserInMatch");
+            throw e;
+        }
+    }
+
+    async createOrFindMatch(input: CreateOrFindMatchInput): Promise<string> {
+        try {
+            // Find match with searched parameter
+            const findMatch = await this.prisma.matchs.findFirst({
+                where: {
+                    startedAt: null,
+                    difficulty: input.difficulty,
+                    score: {
+                        bestOf: input.bestOf,
+                    }
+                },
+            });
+            if (findMatch) {
+                this.startMatch(findMatch.id, input.userId);
+                return findMatch.id;
+            }
+            // Create Match if not match found
+            const newMatch = await this.prisma.matchs.create({
+                data: {
+                    difficulty: input.difficulty,
+                    score: {
+                        create: {
+                            bestOf: input.bestOf,
+                        }
+                    },
+                    users: {
+                        create: {
+                            userId: input.userId
+                        }
+                    }
+                }
+            })
+            return newMatch.id;
+        }
+        catch (e) {
+            console.log("Error on createOrFindMatch");
+            throw e;
+        }
+    }
+
+    async startMatch(matchId: string, joinUserId: string) {
+        try {
+            const date = new Date();
+            await this.prisma.matchs.update({
+                where: {
+                    id: matchId,
+                },
+                data: {
+                    startedAt: date.toISOString(),
+                    users: {
+                        create: {
+                            userId: joinUserId,
+                        },
+                    },
+                },
+                include: {
+                    users: true,
+                }
+            });
+        }
+        catch (e) {
+            console.log("Error on startMatch query");
+            throw e;
+        }
+    }
+
+    async saveOrUpdateMatch(input: SaveOrUpdateMatchInput): Promise<Match> {
+        try {
+            const date = new Date();
+            const res = await this.prisma.matchs.update({
+                where: {
+                    id: input.id,
+                },
+                data: {
+                    score: {
+                        update: {
+                            where: {
+                                matchId: input.id,
+                            },
+                            data: {
+                                winnerScore: input.score.winnerScore,
+                                looserScore: input.score.looserScore,
+                            },
+                        },
+                    },
+                    finishedAt: date.toISOString(),
+                    users: {
+                        update: {
+                            where: {
+                                userId_matchId: {
+                                    matchId: input.id,
+                                    userId: input.winnerId,
+                                }
+                            },
+                            data: {
+                                isWin: true,
+                            },
+                        },
+                    }
+                },
+                include: {
+                    score: true,
+                }
+            })
+            return res;
+        }
+        catch (e) {
+            console.log("Error on saveOrUpdateMatch query");
             throw e;
         }
     }

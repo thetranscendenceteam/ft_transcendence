@@ -1,26 +1,22 @@
 "use client";
-import React, { useEffect, useRef, useState} from 'react'
+import React, { useEffect, useRef} from 'react'
 import GameEngine from '../lib/game/GameEngine'
 
-export const Game = () => {
+export const Game = ({matchId, userId}: {matchId: string, userId: string}) => {
 
-  const [gameStart, setGameStart] = useState(null);
   const gameRef: any = useRef(null);
   const gameEngine: any = useRef(null);
 
-  
   useEffect(function launchGame() {
-    if ( ! gameStart )
-      return ;
     if (! gameRef.current)
       return ;
     if (gameEngine.current)
       return ;
     console.log("launching game");
     gameEngine.current = new GameEngine();
-    gameEngine.current.init(gameRef);
+    gameEngine.current.init(gameRef, matchId, userId);
     gameEngine.current.start();
-  }, [gameRef, gameStart]);
+  }, [gameRef, matchId, userId]);
 
 // 
   useEffect(function handleKeys() {

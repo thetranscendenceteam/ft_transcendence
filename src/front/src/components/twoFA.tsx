@@ -2,7 +2,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import styles from './twoFA/twoFA.module.css';
+import styles from './style/twoFA.module.css';
 import apolloClient from './apolloclient';
 import { gql } from '@apollo/client';
 import { Card } from './ui/card';
@@ -94,7 +94,6 @@ const TwoFA = () => {
       router.push('/');
     }
   }
-  console.log(user?.twoFA);
   return (
 <div className={`${styles.container}`}>
   <Card className={`${styles.twoFACard}`}>

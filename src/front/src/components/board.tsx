@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import apolloClient from "./apolloclient";
 import { gql } from "@apollo/client";
-import './board/styles.css';
+import './style/board.css';
 import globalIcon from '../../public/global-network.png';
 import friendIcon from '../../public/friend.png';
 import rightArrow from '../../public/right-arrow.png';
@@ -10,7 +10,6 @@ import leftArrow from '../../public/left-arrow.png';
 import Image from 'next/image';
 
 const fetchData = async () => {
-  console.log("fetchData");
   try {
     const { data } = await apolloClient.query({
       query: gql`
@@ -24,7 +23,6 @@ const fetchData = async () => {
         }
       `,
     });
-    console.log("data", data);
     return data.getUsers;
   } catch (error) {
     return [];

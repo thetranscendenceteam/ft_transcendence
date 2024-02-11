@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { gql } from "@apollo/client";
 import Image from "next/image";
 import apolloClient from "./apolloclient";
-import styles from './profile/profile.module.css';
+import styles from './style/profile.module.css';
 import { useState } from "react";
 import { UserContext } from "./userProvider";
 import React from "react";

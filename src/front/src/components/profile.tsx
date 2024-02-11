@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card } from './ui/card';
 import { UserContext } from './userProvider';
-import styles from './profile/profile.module.css'; // Ensure the CSS module file is correctly imported
+import styles from './style/profile.module.css'; // Ensure the CSS module file is correctly imported
 
 type UserProfileCardProps = {
   user: {
@@ -15,7 +15,7 @@ type UserProfileCardProps = {
   };
 };
 
-const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
+export const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
   return (
     <Card className={`${styles.card} ${styles.userProfileCard}`}>
       <img
@@ -34,7 +34,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
   );
 };
 
-const MatchHistoryCard = () => {
+export const MatchHistoryCard = () => {
   const matchHistory = [
     {
       id: "175",

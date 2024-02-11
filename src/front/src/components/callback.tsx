@@ -10,7 +10,7 @@ import { useCookies } from 'react-cookie';
 import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import styles from './twoFAFt/twoFAFt.module.css';
+import styles from './style/twoFAFt.module.css';
 
 const fetchData = async (code: string | null) => {
   if (code) {

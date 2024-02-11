@@ -5,6 +5,8 @@ import Score from './Score';
 
 
 class GameEngine {
+  matchId: string;
+  userId: string;
   ready: boolean;
   running: boolean;
   height: number;
@@ -36,7 +38,7 @@ class GameEngine {
     this.ctx = undefined;
   };
 
-  init(gameRef: RefObject<HTMLCanvasElement>) {
+  init(gameRef: RefObject<HTMLCanvasElement>, matchId: string, userId: string) {
 
     let canvas = gameRef.current;
     if (! canvas || ! canvas.parentElement) {
@@ -63,6 +65,8 @@ class GameEngine {
     this.players.left.init(this);
     this.players.right.init(this);
     this.ball.init(this);
+    this.matchId = matchId;
+    this.userId = userId;
     this.render();
     this.initWs();
   }
@@ -195,6 +199,8 @@ class GameEngine {
   sendInitData() {
     let res = {
       init: {
+        matchId: this.matchId,
+        userId: this.userId,
         height: this.height,
       }
     }

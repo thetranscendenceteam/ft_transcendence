@@ -7,7 +7,7 @@ import { GetUserInput } from './dto/getUser.input';
 import { User } from './dto/user.entity';
 import { UpdateUser } from './dto/updateUser.input';
 import { EditUserInput } from './dto/editUser.input';
-import { UserPrivate } from './dto/userPrivate.entity';
+import { SearchUser, SearchUserInput, UserPrivate } from './dto/searchUser.input';
 
 @Resolver()
 export class UserResolver {
@@ -26,6 +26,13 @@ export class UserResolver {
     @Args('UserInput') userInput: GetUserInput,
   ): Promise<User | null> {
     return this.userService.getUser(userInput);
+  }
+
+  @Query(returns => [SearchUser])
+  async searchUser(
+    @Args('UserInput') userInput: SearchUserInput,
+  ): Promise<SearchUser[] | null> {
+    return this.userService.searchUser(userInput);
   }
 
   @Mutation(returns => User)

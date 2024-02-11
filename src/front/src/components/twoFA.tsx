@@ -94,7 +94,6 @@ const TwoFA = () => {
       router.push('/');
     }
   }
-  console.log(user?.twoFA);
   return (
 <div className={`${styles.container}`}>
   <Card className={`${styles.twoFACard}`}>

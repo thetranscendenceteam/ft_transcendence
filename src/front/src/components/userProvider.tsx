@@ -27,7 +27,6 @@ function useJwtCookie() {
 }
 
 const fetchData = async (ftId: number) => {
-  console.log("fetchData");
   try {
     const { data } = await apolloClient.query({
       query: gql`
@@ -50,7 +49,6 @@ const fetchData = async (ftId: number) => {
         }
       }
     });
-    console.log("data", data);
     return (data.getUser);
   } catch (error) {
     return ([]);

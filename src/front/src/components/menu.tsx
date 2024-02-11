@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { LoginDialog } from '@/components/login-dialog';
@@ -20,20 +20,40 @@ import { SearchBar } from './searchBar/searchBar';
 import { SearchResultsList } from './searchBar/searchResultsList';
 import styles from './style/menu.module.css';
 
-const Menu = () => {
+interface User {
+  id: string | null;
+  username: string | null;
+  realname: string | null;
+  avatar_url: string | null;
+  email: string | null;
+  campus: string | null;
+}
+
+const Menu: React.FC = () => {
   const { user, updateUser } = React.useContext(UserContext);
   const router = useRouter();
-  const [results, setResults] = useState([]);
-
-  useEffect(() => {
-    console.log('Results updated:', results);
-  }, [results]);
+  const [results, setResults] = useState<any[]>([]);
+  const [showResults, setShowResults] = useState(true);
+  const searchBarRef = useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     let userStorage = window.sessionStorage.getItem('user');
     if (!user && userStorage) {
       updateUser(JSON.parse(userStorage));
     }
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   function handleLogoutClick() {
@@ -75,13 +95,13 @@ const Menu = () => {
               </Button>
             </Link>
           </div>
-          <div className={`${styles.searchBarContainer} ml-auto relative`}>
-            <SearchBar setResults={setResults} />
-            {results.length > 0 && (
+          <div className={`${styles.searchBarContainer} ml-auto relative`} ref={searchBarRef}>
+            <SearchBar setResults={setResults} setShowResults={setShowResults} />
+            {showResults && results.length !== 0 ? (
               <div className="absolute top-full left-0 w-full bg-white shadow-lg rounded-b-lg overflow-hidden">
                 <SearchResultsList results={results} />
               </div>
-            )}
+            ) : null}
           </div>
           {user?.id ? (
             <li className='m-1'>

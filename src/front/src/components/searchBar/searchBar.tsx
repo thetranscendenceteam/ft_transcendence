@@ -1,24 +1,48 @@
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import styles from "../style/searchBar.module.css";
+import { gql } from "@apollo/client";
+import apolloClient from "../apolloclient";
 
-export const SearchBar = ({ setResults }: any) => {
+type SearchUser = {
+  name: string;
+  id: string;
+};
+
+export const SearchBar = ({ setResults, setShowResults }: any) => {
   const [input, setInput] = useState("");
 
-  const fetchData = (value: string) => {
-    const toto = [{ name: "toto", id: "1" }, { name: "tata", id: "2" }];
-    if (!value) {
+  const fetchData = async (value: string): Promise<SearchUser[] | null> => {
+    try {
+      const { data, errors } = await apolloClient.query({
+        query: gql`
+          query searchUser($input: SearchUserInput!) {
+            searchUser(UserInput: $input) {
+              name
+              id
+            }
+          }
+        `,
+        variables: {
+          input: { name: value }
+        },
+      });
+      if (!data || errors) return [];
+      setShowResults(true);
+      return data.searchUser;
+
+    } catch (error) {
       return [];
     }
-    const filteredResults = toto.filter((item) =>
-      item.name.toLowerCase().includes(value.toLowerCase())
-    );
-    return filteredResults;
   };
 
-  const handleChange = (value: string) => {
+  const handleChange = async (value: string) => {
     setInput(value);
-    const searchResults = fetchData(value);
+    if (value === "") {
+      setResults([]);
+      return;
+    }
+    const searchResults = await fetchData(value);
     setResults(searchResults);
   };
 
@@ -28,7 +52,7 @@ export const SearchBar = ({ setResults }: any) => {
       <input
         placeholder="Type to search..."
         value={input}
-        onChange={(e) => handleChange(e.target.value)}
+        onChange={async (e) => await handleChange(e.target.value)}
       />
     </div>
   );

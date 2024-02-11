@@ -12,6 +12,7 @@ import { UpdateUser } from './dto/updateUser.input';
 import { uid } from 'uid';
 import { EditUserInput } from './dto/editUser.input';
 import { UserPrivate } from './dto/userPrivate.entity';
+import { SearchUser, SearchUserInput } from './dto/searchUser.input';
 
 const speakeasy = require('speakeasy');
 
@@ -33,13 +34,38 @@ export class UserService {
   }
 
   public async getUser(userInput: GetUserInput): Promise<User | null> {
-    console.log("🚀 ~ UserService ~ getUser ~ userInput:", userInput)
     try {
       const user = await this.prisma.users.findFirst({
         where: userInput,
       });
-      console.log("🚀 ~ UserService ~ getUser ~ user:", user)
       if (user) return user;
+      return null;
+    }
+    catch (e) {
+      console.log("Error on getUser query" + e);
+      throw e;
+    }
+  }
+
+  public async searchUser(userInput: SearchUserInput): Promise<SearchUser[] | null> {
+    try {
+      if (userInput.name == null) return null;
+      const users = await this.prisma.users.findMany({
+        where: {
+          pseudo: {
+            contains: userInput.name,
+          },
+        },
+        take: (5),
+        orderBy: { xp: 'desc' },
+      });
+      if (users) {
+        const response = [];
+        for (const user of users) {
+          response.push({name: user.pseudo, id: user.id});
+        }
+        return response;
+      }
       return null;
     }
     catch (e) {

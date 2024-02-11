@@ -10,7 +10,6 @@ import leftArrow from '../../public/left-arrow.png';
 import Image from 'next/image';
 
 const fetchData = async () => {
-  console.log("fetchData");
   try {
     const { data } = await apolloClient.query({
       query: gql`
@@ -24,7 +23,6 @@ const fetchData = async () => {
         }
       `,
     });
-    console.log("data", data);
     return data.getUsers;
   } catch (error) {
     return [];

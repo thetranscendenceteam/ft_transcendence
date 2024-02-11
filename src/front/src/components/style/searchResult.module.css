@@ -1,7 +1,8 @@
-.search-result {
-    padding: 10px 20px;
+.searchResult {
+    padding: 5px 10px;
+    border-radius: 10px;
   }
   
-  .search-result:hover {
-    background-color: #efefef;
+  .searchResult:hover {
+    background-color: #a5a5a5;
   }

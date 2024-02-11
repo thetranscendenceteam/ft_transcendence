@@ -15,7 +15,7 @@ type UserProfileCardProps = {
   };
 };
 
-const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
+export const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
   return (
     <Card className={`${styles.card} ${styles.userProfileCard}`}>
       <img
@@ -34,7 +34,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
   );
 };
 
-const MatchHistoryCard = () => {
+export const MatchHistoryCard = () => {
   const matchHistory = [
     {
       id: "175",

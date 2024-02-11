@@ -218,12 +218,9 @@ export class AuthService {
   }
 
   async twoFaQr(id: string): Promise<string | null> { // TODO take from JWT
-    console.log("🚀 ~ AuthService ~ twoFaQr ~ id:", id);
     try {
       const user = await this.prisma.users.findFirst({where: {id: id}});
-      console.log("🚀 ~ AuthService ~ twoFaQr ~ user:", user)
       if (user && user.twoFASecret) {
-        console.log("🚀 ~ AuthService ~ twoFaQr ~ user.twoFASecret:", user.twoFASecret)
         const qrCode = await qrcode.toDataURL(user.twoFAOtpAuthUrl);
         return qrCode;
       }
@@ -233,7 +230,6 @@ export class AuthService {
       return error;
     }
   };
-
   async toggleTwoFA(id: string, code: string, toggleTwoFA: boolean): Promise<boolean | null> { // TODO take from JWT
     try {
       const userCurrent = await this.prisma.users.findFirst(
@@ -251,7 +247,6 @@ export class AuthService {
           throw new Error("2FA verification failed");
         }
       }
-
       const user = await this.prisma.users.update(
         {
           where: {id: id},

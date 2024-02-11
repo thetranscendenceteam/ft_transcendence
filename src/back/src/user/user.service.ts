@@ -2,7 +2,6 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Users } from '@prisma/client';
 import { GetUserInput } from './dto/getUser.input';
 import { CreateUserInput } from './dto/createUser.input';
 import { CreateClassicUserInput } from './dto/createClassicUser.input';

@@ -1,10 +1,14 @@
 import "../style/searchResult.module.css";
 
+const redirectToUser = (username: string) => {
+  window.location.href = `/user/${username}`;
+}
+
 export const SearchResult = ({ result }: any) => {
   return (
     <div
       className="search-result"
-      onClick={(e) => alert(`You selected ${result}!`)}
+      onClick={() => redirectToUser(result)}
     >
       {result}
     </div>

@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver, Int } from '@nestjs/graphql';
-import { Users } from '@prisma/client';
 import { UserService } from './user.service';
 import { CreateUserInput } from './dto/createUser.input';
 import { AddXp } from './dto/addXp.input';
@@ -7,7 +6,8 @@ import { GetUserInput } from './dto/getUser.input';
 import { User } from './dto/user.entity';
 import { UpdateUser } from './dto/updateUser.input';
 import { EditUserInput } from './dto/editUser.input';
-import { SearchUser, SearchUserInput, UserPrivate } from './dto/searchUser.input';
+import { SearchUser, SearchUserInput } from './dto/searchUser.input';
+import { UserPrivate } from './dto/userPrivate.entity';
 
 @Resolver()
 export class UserResolver {

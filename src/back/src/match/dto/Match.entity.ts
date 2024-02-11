@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Score } from './Score.entity';
+import { MatchDifficulty } from '@prisma/client';
 
 @ObjectType()
 export class Match {
@@ -7,7 +8,13 @@ export class Match {
     id: string;
 
     @Field(() => Date, { nullable: true })
-    startedAt: Date;
+    createdAt: Date;
+
+    @Field(() => Date, { nullable: true })
+    startedAt: Date | null;
+
+    @Field(() => MatchDifficulty, { nullable: true })
+    difficulty: MatchDifficulty;
 
     @Field(() => Score, { nullable: true })
     score: Score | null;

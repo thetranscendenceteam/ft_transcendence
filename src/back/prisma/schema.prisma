@@ -47,10 +47,13 @@ model Chats {
 }
 
 model Matchs {
-    id        String          @id @unique @default(uuid()) @db.VarChar(36)
-    startedAt DateTime        @default(now())
-    score     MatchScore?
-    users     UsersInMatchs[]
+    id         String          @id @unique @default(uuid()) @db.VarChar(36)
+    createdAt  DateTime        @default(now())
+    startedAt  DateTime?
+    finishedAt DateTime?
+    difficulty MatchDifficulty
+    score      MatchScore?
+    users      UsersInMatchs[]
 }
 
 model Messages {
@@ -98,6 +101,7 @@ model MatchScore {
     id          String @id @unique @default(uuid()) @db.VarChar(36)
     winnerScore Int    @default(0) @db.Integer
     looserScore Int    @default(0) @db.Integer
+    bestOf      Int    @db.Integer
 
     match   Matchs @relation(fields: [matchId], references: [id])
     matchId String @unique @db.VarChar(36)
@@ -122,4 +126,10 @@ enum UserChatStatus {
     normal
     muted
     banned
+}
+
+enum MatchDifficulty {
+    easy
+    normal
+    hard
 }

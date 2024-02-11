@@ -8,10 +8,11 @@ RUN npm install && npm cache clean --force
 
 ADD src/front/ /app/
 ADD infra/.env-front /app/.env.local
-RUN npm run build
 
 ARG APP_ENV=production
 ENV APP_ENV=${APP_ENV}
+
+RUN if [ "${APP_ENV}" = "production" ]; then npm run build; fi;
 
 CMD if [ "${APP_ENV}" = "production" ]; \
     then npm run start; \

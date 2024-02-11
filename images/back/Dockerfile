@@ -8,11 +8,12 @@ RUN npm install && npm cache clean --force
 
 ADD src/back /app
 ADD infra/.env-back /app/.env
-RUN npx prisma generate && \
-    npm run build
 
 ARG APP_ENV=production
 ENV APP_ENV=${APP_ENV}
+
+RUN npx prisma generate && \
+    if [ "${APP_ENV}" = "production" ]; then npm run build; fi;
 
 CMD npm run migrate && \
     npm run seed; \

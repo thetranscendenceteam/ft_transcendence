@@ -1,18 +1,19 @@
 # Build app
 FROM node:20.11.0-alpine
 
-ARG NODE_ENV=default
-ENV NODE_ENV=${NODE_ENV}
-
 WORKDIR /app
 
-ADD src/front /app
+ADD src/front/package.json /app/
+RUN npm install && npm cache clean --force
 
-RUN cd /app \
-	&& npm install \
-	&& npm run build
+ADD src/front/ /app/
+ADD infra/.env-front /app/.env.local
+RUN npm run build
 
-CMD if [ "NODE_ENV" = "production" ]; \
-	then npm run start; \
-	else npm run dev; \
-	fi;
+ARG APP_ENV=production
+ENV APP_ENV=${APP_ENV}
+
+CMD if [ "${APP_ENV}" = "production" ]; \
+    then npm run start; \
+    else npm run dev; \
+    fi;

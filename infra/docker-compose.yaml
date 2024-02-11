@@ -5,12 +5,6 @@ services:
     image: postgres:15.4-alpine
     restart: on-failure
     env_file: .env-postgres
-    environment:
-      - POSTGRES_HOST=localhost
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=johndoe
-      - POSTGRES_PASSWORD=randompassword
-      - POSTGRES_DB=mydb
     networks:
       - db
     volumes:
@@ -22,7 +16,9 @@ services:
       context: ..
       dockerfile: images/front/Dockerfile
     restart: on-failure
-    env_file: .env-front
+    #env_file: .env-front
+    environment:
+      - APP_ENV=developement
     networks:
       - back
     volumes:
@@ -35,7 +31,9 @@ services:
       context: ..
       dockerfile: images/back/Dockerfile
     restart: on-failure
-    env_file: .env-back
+    #env_file: .env-back
+    environment:
+      - APP_ENV=developement
     depends_on:
       - postgres
     platform: linux/amd64

@@ -30,6 +30,7 @@ src/back/**/**/npm-debug.log
 src/back/**/packages/**/.npmignore
 src/back/**/packages/**/LICENSE
 src/back/**/*.tsbuildinfo
+src/back/**/dist
 
 # example
 src/back/**/quick-start

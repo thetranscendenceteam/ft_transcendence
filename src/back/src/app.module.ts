@@ -15,9 +15,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      ignoreEnvFile: true,
-    }),
+    ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       validationSchema: Joi.object({
         REDIS_HOST: Joi.string().required(),
@@ -46,4 +44,4 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

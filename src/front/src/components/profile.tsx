@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from './ui/card';
 import { UserContext } from './userProvider';
 import styles from './style/profile.module.css'; // Ensure the CSS module file is correctly imported
@@ -8,17 +8,56 @@ import apolloClient from './apolloclient';
 import { gql } from '@apollo/client';
 
 type UserProfileCardProps = {
-  user: {
-    id: string;
-    username: string;
-    realname: string;
-    email: string;
-    avatar_url: string | URL;
-    campus: string;
-  };
+  id: string;
+  username: string;
+  realname: string;
+  email: string;
+  avatar_url: string | URL;
+  campus: string;
 };
 
-export const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
+interface MatchHistory {
+  matchId: string;
+  isWin: boolean;
+  createdAt: Date;
+  userScore: number;
+  adversaryScore: number;
+  adversaryUsername: string;
+}
+
+interface userAndMatch {
+  user: UserProfileCardProps;
+  matchHistory: MatchHistory[];
+}
+
+const fetchMatchHistoryData = (userId: string): Promise<MatchHistory[]> => {
+  return new Promise((resolve, reject) => {
+    apolloClient.query({
+      query: gql`
+        query getUserMatchHistory ($userId: String!) {
+          getUserMatchHistory (userId: $userId) {
+            matchId
+            isWin
+            createdAt
+            userScore
+            adversaryScore
+            adversaryUsername
+          }
+        }
+      `,
+      variables: { userId: userId },
+    }).then(({ data }) => {
+      resolve(data.getUserMatchHistory as MatchHistory[]);
+    }).catch(error => {
+      console.error("Error fetching user matchHistory:", error);
+      reject(error);
+    });
+  });
+};
+
+export const UserProfileCard: React.FC<userAndMatch> = ({ user, matchHistory }: userAndMatch) => {
+  const totalMatches = matchHistory.length;
+  const winRatio = matchHistory.filter((match) => match.isWin).length / totalMatches * 100;
   return (
     <Card className={`${styles.card} ${styles.userProfileCard}`}>
       <img
@@ -31,49 +70,13 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
       <p className={styles.text}>{user.email}</p>
       <p className={styles.text}>{user.campus === "Not a 42 Student" ? user.campus : "42 " + user.campus}</p>
       <p className={styles.text}>Ranking: Top42</p>
-      <p className={styles.text}>Win ratio: 50%</p>
-      <p className={styles.text}>Total matches: 2</p>
+      <p className={styles.text}>Win ratio: {winRatio}%</p>
+      <p className={styles.text}>Total matches: {totalMatches}</p>
     </Card>
   );
 };
 
-interface MatchHistory {
-  matchId: string;
-  isWin: boolean;
-  createdAt: Date;
-  userScore: number;
-  adversaryScore: number;
-  adversaryUsername: string;
-}
-
-export const MatchHistoryCard = async ({ user }: UserProfileCardProps) => {
-  const fetchData = (userId: string): Promise<MatchHistory[]> => {
-    return new Promise((resolve, reject) => {
-      apolloClient.query({
-        query: gql`
-          query getUserMatchHistory ($userId: String!) {
-            getUserMatchHistory (userId: $userId) {
-              matchId
-              isWin
-              createdAt
-              userScore
-              adversaryScore
-              adversaryUsername
-            }
-          }
-        `,
-        variables: { userId: userId },
-      }).then(({ data }) => {
-        resolve(data.getUserMatchHistory as MatchHistory[]);
-      }).catch(error => {
-        console.error("Error fetching user matchHistory:", error);
-        reject(error);
-      });
-    });
-  };
-
-  const matchHistory = await fetchData(user.id);
-
+export const MatchHistoryCard = ({ user, matchHistory }: userAndMatch) => {
   return (
     <Card className={`${styles.card} ${styles.matchHistoryCard}`}>
       <div className={`${styles.centerCard}`}>
@@ -116,7 +119,8 @@ export const MatchHistoryCard = async ({ user }: UserProfileCardProps) => {
 
 
 const ProfileComponent = () => {
-  const {user, updateUser} = React.useContext(UserContext);
+  const { user, updateUser } = React.useContext(UserContext);
+  const [matchHistory, setMatchHistory] = React.useState<MatchHistory[] | undefined>(undefined);
 
   React.useEffect(() => {
     let userStorage = window.sessionStorage.getItem("user");
@@ -125,11 +129,28 @@ const ProfileComponent = () => {
     }
   }, []);
 
+  React.useEffect(() => {
+    const fetchMatchHistory = async () => {
+      if (user) {
+        try {
+          const data = await fetchMatchHistoryData(user.id);
+          setMatchHistory(data);
+        } catch (error) {
+          console.error("Error fetching match history:", error);
+        }
+      }
+    };
+
+    fetchMatchHistory();
+  }, [user]);
+
   return (
-    user && <div className={styles.container}>
-      <UserProfileCard user={user} />
-      <MatchHistoryCard user={user} />
-    </div>
+    user && matchHistory !== undefined && (
+      <div className={styles.container}>
+        <UserProfileCard user={user} matchHistory={matchHistory} />
+        <MatchHistoryCard user={user} matchHistory={matchHistory} />
+      </div>
+    )
   );
 };
 

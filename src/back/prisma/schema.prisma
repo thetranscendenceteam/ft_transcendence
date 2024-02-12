@@ -35,15 +35,17 @@ model Users {
     chats           UsersInChats[]
     friends         UsersRelationships[]
     matchs          UsersInMatchs[]
+    UsersInBanLists UsersInBanLists[]
 }
 
 model Chats {
-    id        String         @id @unique @default(uuid()) @db.VarChar(36)
-    name      String         @unique @db.VarChar(255)
-    password  String?
-    createdAt DateTime       @default(now())
-    users     UsersInChats[]
-    messages  Messages[]
+    id              String            @id @unique @default(uuid()) @db.VarChar(36)
+    name            String            @unique @db.VarChar(255)
+    password        String?
+    createdAt       DateTime          @default(now())
+    users           UsersInChats[]
+    messages        Messages[]
+    UsersInBanLists UsersInBanLists[]
 }
 
 model Matchs {
@@ -66,13 +68,23 @@ model Messages {
 }
 
 model UsersInChats {
-    user     Users          @relation(fields: [userId], references: [id])
-    userId   String         @db.VarChar(36)
-    chat     Chats          @relation(fields: [chatId], references: [id])
-    chatId   String         @db.VarChar(36)
-    role     UserChatRole   @default(member)
-    status   UserChatStatus @default(normal)
-    joinedAt DateTime       @default(now())
+    user     Users        @relation(fields: [userId], references: [id])
+    userId   String       @db.VarChar(36)
+    chat     Chats        @relation(fields: [chatId], references: [id])
+    chatId   String       @db.VarChar(36)
+    role     UserChatRole @default(member)
+    joinedAt DateTime     @default(now())
+
+    @@id([userId, chatId])
+}
+
+model UsersInBanLists {
+    user       Users          @relation(fields: [userId], references: [id])
+    userId     String         @db.VarChar(36)
+    chat       Chats          @relation(fields: [chatId], references: [id])
+    chatId     String         @db.VarChar(36)
+    status     UserChatStatus
+    lastChange DateTime       @default(now())
 
     @@id([userId, chatId])
 }

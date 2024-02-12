@@ -5,6 +5,8 @@ import { Chats } from '@prisma/client';
 import { GetChatInput } from './dto/getChat.input';
 import { CreateChatInput } from './dto/createChat.input';
 import { UpdateChatInput } from './dto/updateChat.input';
+import { AddInBanList } from './dto/AddInBanList.input';
+import { UsersInBanList } from './dto/UsersInBanLists.entity';
 
 @Resolver()
 export class ChatResolver {
@@ -36,6 +38,20 @@ export class ChatResolver {
         @Args('updateChatInput') updateChatInput: UpdateChatInput,
     ): Promise<Chats> {
         return this.chatService.updateChat(updateChatInput);
+    }
+
+    @Query(returns => [UsersInBanList])
+    getBanList(
+        @Args('chatId') chatId: string,
+    ): Promise<UsersInBanList[] | null> {
+        return this.chatService.getBanList(chatId);
+    }
+
+    @Mutation(returns => String)
+    addInBanList(
+        @Args('addInBanListInput') addInBanListInput: AddInBanList,
+    ): Promise<string> {
+        return this.chatService.addInBanList(addInBanListInput);
     }
 
 }

@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql'
-import { Users } from '@prisma/client';
-import { User } from 'src/user/dto/user.entity';
+import { UserPrivate } from 'src/user/dto/userPrivate.entity';
+import { UsersInBanList } from './UsersInBanLists.entity';
 
 @ObjectType()
 export class Chat {
@@ -16,6 +16,9 @@ export class Chat {
     @Field()
     createdAt: Date;
 
-    @Field(() => [User], { nullable: true })
-    users: User[];
+    @Field(() => [UserPrivate], { nullable: true })
+    users: UserPrivate[];
+
+    @Field(() => [UsersInBanList], { nullable: true })
+    UsersInBanLists: UsersInBanList[];
 }

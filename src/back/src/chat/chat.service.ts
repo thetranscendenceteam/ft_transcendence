@@ -4,7 +4,8 @@ import { PrismaService } from 'src/prisma.service';
 import { GetChatInput } from './dto/getChat.input';
 import { CreateChatInput } from './dto/createChat.input';
 import { UpdateChatInput } from './dto/updateChat.input';
-import { Chat } from './dto/chat.entity';
+import { AddInBanList } from './dto/AddInBanList.input';
+import { UsersInBanList } from './dto/UsersInBanLists.entity';
 
 @Injectable()
 export class ChatService {
@@ -65,6 +66,49 @@ export class ChatService {
         }
         catch (e) {
             console.log("Error on updateChat query" + e);
+            throw e;
+        }
+    }
+
+    async getBanList(chatId: string): Promise<UsersInBanList[] | null> {
+        try {
+            const res = await this.prisma.usersInBanLists.findMany({
+                where: {
+                    chatId: chatId,
+                },
+            });
+            return res;
+        }
+        catch (e) {
+            console.log("Error on getBanList query");
+            throw e;
+        }
+    }
+
+    async addInBanList(input: AddInBanList): Promise<string> {
+        try {
+            const res = await this.prisma.usersInBanLists.upsert({
+                where: {
+                    userId_chatId: {
+                        userId: input.userId,
+                        chatId: input.chatId,
+                    }
+                },
+                update: {
+                    status: input.status,
+                    lastChange: new Date().toISOString(),
+                },
+                create: {
+                    userId: input.userId,
+                    chatId: input.chatId,
+                    status: input.status,
+                    lastChange: new Date().toISOString(),
+                }
+            });
+            return res.userId;
+        }
+        catch (e) {
+            console.log("Error on addInBanList mutation");
             throw e;
         }
     }

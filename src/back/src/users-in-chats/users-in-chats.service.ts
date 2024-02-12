@@ -41,7 +41,6 @@ export class UsersInChatsService {
             user.idUser = chat.user.id;
             user.pseudo = chat.user.pseudo;
             user.role = chat.role;
-            user.status = chat.status;
             user.joinedAt = chat.joinedAt;
             return user;
         }
@@ -85,7 +84,6 @@ export class UsersInChatsService {
             chat.idChat = chats.chatId;
             chat.name = chats.chat.name;
             chat.role = chats.role;
-            chat.status = chats.status;
             chat.joinedAt = chats.joinedAt;
             return chat;
         }

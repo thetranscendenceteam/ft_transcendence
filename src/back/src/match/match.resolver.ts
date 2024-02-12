@@ -33,12 +33,4 @@ export class MatchResolver {
         return this.matchService.createOrFindMatch(createOrFindMatchInput);
     }
 
-    @Mutation(returns => Match)
-    saveOrUpdateMatch(
-        @Args('saveOrUpdateMatchInput') saveOrUpdateMatchInput: SaveOrUpdateMatchInput
-    ): Promise<Match> {
-        console.log("saveOrUpdateMatch query");
-        return this.matchService.saveOrUpdateMatch(saveOrUpdateMatchInput);
-    }
-
 }

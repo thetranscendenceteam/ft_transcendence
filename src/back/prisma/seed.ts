@@ -96,7 +96,6 @@ async function main() {
             userId: 'yoda',
             chatId: '901918471',
             role: UserChatRole.admin,
-            status: UserChatStatus.normal
         },
     })
 
@@ -112,7 +111,6 @@ async function main() {
             userId: 'anakinSkywalker',
             chatId: '901918471',
             role: UserChatRole.member,
-            status: UserChatStatus.muted
         },
 
     })
@@ -129,7 +127,6 @@ async function main() {
             userId: 'anakinSkywalker',
             chatId: '824763520',
             role: UserChatRole.owner,
-            status: UserChatStatus.normal
         },
     })
 
@@ -145,7 +142,6 @@ async function main() {
             userId: 'kenobiObiwan',
             chatId: '824763520',
             role: UserChatRole.admin,
-            status: UserChatStatus.normal
         },
     })
 
@@ -161,7 +157,6 @@ async function main() {
             userId: 'yoda',
             chatId: '824763520',
             role: UserChatRole.member,
-            status: UserChatStatus.banned
         },
     })
 
@@ -316,6 +311,40 @@ async function main() {
         }
     })
 
+    // --------------------------------------------------
+
+    const addUserInBanList = await prisma.usersInBanLists.upsert({
+        where: {
+            userId_chatId: {
+                chatId: '824763520',
+                userId: 'yoda',
+            },
+        },
+        update: {},
+        create: {
+            chatId: '824763520',
+            userId: 'yoda',
+            status: UserChatStatus.banned,
+            lastChange: new Date().toISOString(),
+        }
+    })
+
+    const addUserInBanList2 = await prisma.usersInBanLists.upsert({
+        where: {
+            userId_chatId: {
+                chatId: '824763520',
+                userId: 'anakinSkywalker',
+            },
+        },
+        update: {},
+        create: {
+            chatId: '824763520',
+            userId: 'anakinSkywalker',
+            status: UserChatStatus.muted,
+            lastChange: new Date().toISOString(),
+        }
+    })
+
     //--------------------------------------------------------------
 
     console.log({
@@ -338,7 +367,9 @@ async function main() {
         UserInMatch1,
         UserInMatch2,
         UserInMatch3,
-        UserInMatch4
+        UserInMatch4,
+        addUserInBanList,
+        addUserInBanList2
     })
 
 }

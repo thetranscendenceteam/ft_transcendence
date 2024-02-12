@@ -18,7 +18,7 @@ generator client {
 model Users {
     id              String               @id @unique @default(uuid()) @db.VarChar(36)
     ftId            Int?                 @unique @db.Integer
-    pseudo          String               @db.VarChar(255)
+    pseudo          String               @unique @db.VarChar(255)
     mail            String               @unique @db.VarChar(255)
     password        String?
     firstName       String               @db.VarChar(255)

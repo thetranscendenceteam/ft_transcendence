@@ -61,7 +61,7 @@ export class UserService {
       if (users) {
         const response = [];
         for (const user of users) {
-          response.push({name: user.pseudo, id: user.id});
+          response.push({ name: user.pseudo, id: user.id });
         }
         return response;
       }

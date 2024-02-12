@@ -4,6 +4,7 @@ import { MessagesResolver } from './messages.resolver';
 import { MessagesService } from './messages.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as redisStore from 'cache-manager-redis-store';
+import { PrismaService } from 'src/prisma.service';
 
 @Module({
   imports: [
@@ -14,10 +15,10 @@ import * as redisStore from 'cache-manager-redis-store';
         store: redisStore,
         host: configService.get('REDIS_HOST'),
         port: configService.get('REDIS_PORT'),
-        ttl: 120
+        ttl: 600
       }),
     }),
   ],
-  providers: [MessagesResolver, MessagesService]
+  providers: [MessagesResolver, MessagesService, PrismaService]
 })
 export class MessagesModule { }

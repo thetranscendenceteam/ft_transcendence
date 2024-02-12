@@ -38,7 +38,7 @@ export class UserResolver {
   @Mutation(returns => User)
   createUser(
     @Args('createUserInput') createUserInput: CreateUserInput,
-  ): Promise<User> {
+  ): Promise<User | null> {
     if (!createUserInput.avatar) createUserInput.avatar = 'Default';
     return this.userService.createUser(createUserInput);
   }

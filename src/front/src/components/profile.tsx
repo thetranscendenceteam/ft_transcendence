@@ -4,9 +4,12 @@ import React from 'react';
 import { Card } from './ui/card';
 import { UserContext } from './userProvider';
 import styles from './style/profile.module.css'; // Ensure the CSS module file is correctly imported
+import apolloClient from './apolloclient';
+import { gql } from '@apollo/client';
 
 type UserProfileCardProps = {
   user: {
+    id: string;
     username: string;
     realname: string;
     email: string;
@@ -34,29 +37,42 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
   );
 };
 
-export const MatchHistoryCard = () => {
-  const matchHistory = [
-    {
-      id: "175",
-      creation_date: "2021-01-01",
-      score: [
-        { id: "4166fbb1-0431-41b5-91b4-ecaf6830ecf7", score: 5 },
-        { id: "16374", score: 1 },
-      ],
-      adversaire: "John Doe",
-      winner: "4166fbb1-0431-41b5-91b4-ecaf6830ecf7",
-    },
-    {
-      id: "134",
-      creation_date: "2021-01-01",
-      score: [
-        { id: "4166fbb1-0431-41b5-91b4-ecaf6830ecf7", score: 4 },
-        { id: "16374", score: 5 },
-      ],
-      adversaire: "John Doe",
-      winner: "16374",
-    },
-  ];
+interface MatchHistory {
+  matchId: string;
+  isWin: boolean;
+  createdAt: Date;
+  userScore: number;
+  adversaryScore: number;
+  adversaryUsername: string;
+}
+
+export const MatchHistoryCard = async ({ user }: UserProfileCardProps) => {
+  const fetchData = (userId: string): Promise<MatchHistory[]> => {
+    return new Promise((resolve, reject) => {
+      apolloClient.query({
+        query: gql`
+          query getUserMatchHistory ($userId: String!) {
+            getUserMatchHistory (userId: $userId) {
+              matchId
+              isWin
+              createdAt
+              userScore
+              adversaryScore
+              adversaryUsername
+            }
+          }
+        `,
+        variables: { userId: userId },
+      }).then(({ data }) => {
+        resolve(data.getUserMatchHistory as MatchHistory[]);
+      }).catch(error => {
+        console.error("Error fetching user matchHistory:", error);
+        reject(error);
+      });
+    });
+  };
+
+  const matchHistory = await fetchData(user.id);
 
   return (
     <Card className={`${styles.card} ${styles.matchHistoryCard}`}>
@@ -71,16 +87,17 @@ export const MatchHistoryCard = () => {
         </Card>
       </div>
       {matchHistory.map((match, index) => {
-        const won = match.winner === "16374";
+        const won = match.isWin;
         const cardColor = won ? styles.greenCard : styles.redCard;
+        const date = new Date(match.createdAt).toLocaleDateString("en-US", {month: "long", day: "2-digit", year: "numeric"});
         return (
           <div key={index} className={`${styles.centerCard}`}>
             <Card className={`${cardColor} ${styles.individualCard}`}>
               <div className={styles.gridContainer}>
-                <span className="date">{match.creation_date}</span>
-                <span className="adversaire">{match.adversaire}</span>
+                <span className="date">{String(date)}</span>
+                <span className="adversaire">{match.adversaryUsername}</span>
                 <span className="Score">
-                  {match.score[0].score + "-" + match.score[1].score}
+                  {match.userScore + "-" + match.adversaryScore}
                 </span>
                 {won ? (
                   <span className="result">Win</span>
@@ -111,7 +128,7 @@ const ProfileComponent = () => {
   return (
     user && <div className={styles.container}>
       <UserProfileCard user={user} />
-      <MatchHistoryCard />
+      <MatchHistoryCard user={user} />
     </div>
   );
 };

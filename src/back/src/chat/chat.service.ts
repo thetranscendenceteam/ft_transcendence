@@ -71,34 +71,46 @@ export class ChatService {
     }
 
     async getBanList(chatId: string): Promise<UsersInBanList[] | null> {
-        const res = await this.prisma.usersInBanLists.findMany({
-            where: {
-                chatId: chatId,
-            },
-        });
-        return res;
+        try {
+            const res = await this.prisma.usersInBanLists.findMany({
+                where: {
+                    chatId: chatId,
+                },
+            });
+            return res;
+        }
+        catch (e) {
+            console.log("Error on getBanList query");
+            throw e;
+        }
     }
 
     async addInBanList(input: AddInBanList): Promise<string> {
-        const res = await this.prisma.usersInBanLists.upsert({
-            where: {
-                userId_chatId: {
+        try {
+            const res = await this.prisma.usersInBanLists.upsert({
+                where: {
+                    userId_chatId: {
+                        userId: input.userId,
+                        chatId: input.chatId,
+                    }
+                },
+                update: {
+                    status: input.status,
+                    lastChange: new Date().toISOString(),
+                },
+                create: {
                     userId: input.userId,
                     chatId: input.chatId,
+                    status: input.status,
+                    lastChange: new Date().toISOString(),
                 }
-            },
-            update: {
-                status: input.status,
-                lastChange: new Date().toISOString(),
-            },
-            create: {
-                userId: input.userId,
-                chatId: input.chatId,
-                status: input.status,
-                lastChange: new Date().toISOString(),
-            }
-        });
-        return res.userId;
+            });
+            return res.userId;
+        }
+        catch (e) {
+            console.log("Error on addInBanList mutation");
+            throw e;
+        }
     }
 
 }

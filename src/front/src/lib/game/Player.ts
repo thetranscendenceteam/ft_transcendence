@@ -28,13 +28,27 @@ class Player {
     this.gamePad = new GamePad();
   }
 
-  update(game: GameEngine) {
+  update(game: GameEngine, dt: number) {
     if (! this.gamePad)
       return ;
     const pd = this.gamePad;
     if (pd.prevState != pd.state)
       this.gamePad.send(game);
     pd.prevState = pd.state;
+    if (! game.isLocal)
+      return ;
+    if (pd.state == "up") {
+      let y = this.y - this.speed * dt;
+      if (y < 0)
+        y = 0;
+      this.y = y;
+    }
+    else if (pd.state == "down") {
+      let y = this.y + this.speed * dt;
+      if (y + this.height > game.height)
+        y = game.height - this.height;
+      this.y = y;
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D) {

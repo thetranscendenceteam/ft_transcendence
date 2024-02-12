@@ -1,11 +1,13 @@
 "use client";
-import React, { useEffect, useRef} from 'react'
+import React, { useEffect, useRef, useState} from 'react'
 import GameEngine from '../lib/game/GameEngine'
+import { Button } from './ui/button';
 
-export const Game = ({matchId, userId}: {matchId: string, userId: string}) => {
+export const Game = ({gameParams, matchId, userId}: {gameParams: {rounds: number, difficulty: string, local: boolean}, matchId: string, userId: string}) => {
 
   const gameRef: any = useRef(null);
   const gameEngine: any = useRef(null);
+  const [menu, setMenu] = useState(false);
 
   useEffect(function launchGame() {
     if (! gameRef.current)
@@ -14,9 +16,19 @@ export const Game = ({matchId, userId}: {matchId: string, userId: string}) => {
       return ;
     console.log("launching game");
     gameEngine.current = new GameEngine();
-    gameEngine.current.init(gameRef, matchId, userId);
-    gameEngine.current.start();
-  }, [gameRef, matchId, userId]);
+    gameEngine.current.init(gameRef, gameParams, matchId, userId);
+    gameEngine.current.launch();
+    console.log("game launched");
+  }, [gameRef, gameParams, matchId, userId]);
+
+//  useEffect(function showMenu() {
+//    if (! gameEngine.current)
+//      return ;
+//    console.log(gameEngine.current.state);
+//    if (gameEngine.current.state === 'end') {
+//      setMenu(true);
+//    }
+//  }, [gameEngine]);
 
 // 
   useEffect(function handleKeys() {

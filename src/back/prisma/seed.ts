@@ -313,44 +313,35 @@ async function main() {
 
     // --------------------------------------------------
 
-    const banList = await prisma.banList.upsert({
-        where: {
-            id: '49012842958',
-        },
-        update: {},
-        create: {
-            id: '49012842958',
-            chatId: '824763520',
-            lastChange: new Date().toISOString(),
-            UsersInBanLists: {
-                connectOrCreate: {
-                    where: {
-                        userId_banListId: {
-                            userId: 'anakinSkywalker',
-                            banListId: '49012842958',
-                        }
-                    },
-                    create: {
-                        userId: 'anakinSkywalker',
-                        status: UserChatStatus.banned,
-                    }
-                }
-            }
-        }
-    })
-
     const addUserInBanList = await prisma.usersInBanLists.upsert({
         where: {
-            userId_banListId: {
-                banListId: '49012842958',
+            userId_chatId: {
+                chatId: '824763520',
                 userId: 'yoda',
             },
         },
         update: {},
         create: {
-            banListId: '49012842958',
+            chatId: '824763520',
             userId: 'yoda',
+            status: UserChatStatus.banned,
+            lastChange: new Date().toISOString(),
+        }
+    })
+
+    const addUserInBanList2 = await prisma.usersInBanLists.upsert({
+        where: {
+            userId_chatId: {
+                chatId: '824763520',
+                userId: 'anakinSkywalker',
+            },
+        },
+        update: {},
+        create: {
+            chatId: '824763520',
+            userId: 'anakinSkywalker',
             status: UserChatStatus.muted,
+            lastChange: new Date().toISOString(),
         }
     })
 
@@ -377,7 +368,8 @@ async function main() {
         UserInMatch2,
         UserInMatch3,
         UserInMatch4,
-        banList
+        addUserInBanList,
+        addUserInBanList2
     })
 
 }

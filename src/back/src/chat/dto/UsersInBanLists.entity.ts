@@ -7,10 +7,13 @@ export class UsersInBanList {
     userId: string;
 
     @Field(() => String, { nullable: true })
-    banListId: string;
+    chatId: string;
 
     @Field(() => UserChatStatus)
     status: UserChatStatus;
+
+    @Field(() => Date, { nullable: true })
+    lastChange: Date;
 }
 
 registerEnumType(UserChatStatus, {

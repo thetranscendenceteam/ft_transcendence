@@ -4,9 +4,8 @@ import { PrismaService } from 'src/prisma.service';
 import { GetChatInput } from './dto/getChat.input';
 import { CreateChatInput } from './dto/createChat.input';
 import { UpdateChatInput } from './dto/updateChat.input';
-import { BanList } from './dto/BanList.entity';
-import { TreeLevelColumn } from 'typeorm';
-import { resourceLimits } from 'worker_threads';
+import { AddInBanList } from './dto/AddInBanList.input';
+import { UsersInBanList } from './dto/UsersInBanLists.entity';
 
 @Injectable()
 export class ChatService {
@@ -71,16 +70,35 @@ export class ChatService {
         }
     }
 
-    async getBanList(chatId: string): Promise<BanList | null> {
-        const res = await this.prisma.banList.findFirst({
+    async getBanList(chatId: string): Promise<UsersInBanList[] | null> {
+        const res = await this.prisma.usersInBanLists.findMany({
             where: {
                 chatId: chatId,
             },
-            include: {
-                UsersInBanLists: true,
-            }
         });
         return res;
+    }
+
+    async addInBanList(input: AddInBanList): Promise<string> {
+        const res = await this.prisma.usersInBanLists.upsert({
+            where: {
+                userId_chatId: {
+                    userId: input.userId,
+                    chatId: input.chatId,
+                }
+            },
+            update: {
+                status: input.status,
+                lastChange: new Date().toISOString(),
+            },
+            create: {
+                userId: input.userId,
+                chatId: input.chatId,
+                status: input.status,
+                lastChange: new Date().toISOString(),
+            }
+        });
+        return res.userId;
     }
 
 }

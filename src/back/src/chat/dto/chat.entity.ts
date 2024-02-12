@@ -1,7 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql'
-import { BigIntStatsListener } from 'fs';
 import { UserPrivate } from 'src/user/dto/userPrivate.entity';
-import { BanList } from './BanList.entity';
+import { UsersInBanList } from './UsersInBanLists.entity';
 
 @ObjectType()
 export class Chat {
@@ -20,6 +19,6 @@ export class Chat {
     @Field(() => [UserPrivate], { nullable: true })
     users: UserPrivate[];
 
-    @Field(() => BanList, { nullable: true })
-    banList: BanList;
+    @Field(() => [UsersInBanList], { nullable: true })
+    UsersInBanLists: UsersInBanList[];
 }

@@ -96,7 +96,6 @@ async function main() {
             userId: 'yoda',
             chatId: '901918471',
             role: UserChatRole.admin,
-            status: UserChatStatus.normal
         },
     })
 
@@ -112,7 +111,6 @@ async function main() {
             userId: 'anakinSkywalker',
             chatId: '901918471',
             role: UserChatRole.member,
-            status: UserChatStatus.muted
         },
 
     })
@@ -129,7 +127,6 @@ async function main() {
             userId: 'anakinSkywalker',
             chatId: '824763520',
             role: UserChatRole.owner,
-            status: UserChatStatus.normal
         },
     })
 
@@ -145,7 +142,6 @@ async function main() {
             userId: 'kenobiObiwan',
             chatId: '824763520',
             role: UserChatRole.admin,
-            status: UserChatStatus.normal
         },
     })
 
@@ -161,7 +157,6 @@ async function main() {
             userId: 'yoda',
             chatId: '824763520',
             role: UserChatRole.member,
-            status: UserChatStatus.banned
         },
     })
 
@@ -316,6 +311,49 @@ async function main() {
         }
     })
 
+    // --------------------------------------------------
+
+    const banList = await prisma.banList.upsert({
+        where: {
+            id: '49012842958',
+        },
+        update: {},
+        create: {
+            id: '49012842958',
+            chatId: '824763520',
+            lastChange: new Date().toISOString(),
+            UsersInBanLists: {
+                connectOrCreate: {
+                    where: {
+                        userId_banListId: {
+                            userId: 'anakinSkywalker',
+                            banListId: '49012842958',
+                        }
+                    },
+                    create: {
+                        userId: 'anakinSkywalker',
+                        status: UserChatStatus.banned,
+                    }
+                }
+            }
+        }
+    })
+
+    const addUserInBanList = await prisma.usersInBanLists.upsert({
+        where: {
+            userId_banListId: {
+                banListId: '49012842958',
+                userId: 'yoda',
+            },
+        },
+        update: {},
+        create: {
+            banListId: '49012842958',
+            userId: 'yoda',
+            status: UserChatStatus.muted,
+        }
+    })
+
     //--------------------------------------------------------------
 
     console.log({
@@ -338,7 +376,8 @@ async function main() {
         UserInMatch1,
         UserInMatch2,
         UserInMatch3,
-        UserInMatch4
+        UserInMatch4,
+        banList
     })
 
 }

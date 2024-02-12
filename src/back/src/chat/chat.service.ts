@@ -4,7 +4,9 @@ import { PrismaService } from 'src/prisma.service';
 import { GetChatInput } from './dto/getChat.input';
 import { CreateChatInput } from './dto/createChat.input';
 import { UpdateChatInput } from './dto/updateChat.input';
-import { Chat } from './dto/chat.entity';
+import { BanList } from './dto/BanList.entity';
+import { TreeLevelColumn } from 'typeorm';
+import { resourceLimits } from 'worker_threads';
 
 @Injectable()
 export class ChatService {
@@ -67,6 +69,18 @@ export class ChatService {
             console.log("Error on updateChat query" + e);
             throw e;
         }
+    }
+
+    async getBanList(chatId: string): Promise<BanList | null> {
+        const res = await this.prisma.banList.findFirst({
+            where: {
+                chatId: chatId,
+            },
+            include: {
+                UsersInBanLists: true,
+            }
+        });
+        return res;
     }
 
 }

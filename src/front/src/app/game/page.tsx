@@ -96,16 +96,15 @@ function Page() {
   }
   else if (match && user) {
     return (
-      <div>
-        <p>Match found</p>
-        <Game matchId={match} userId={user.id} />
+      <div className='h-full'>
+        <Game gameParams={gameParams} matchId={match} userId={user.id} />
       </div>
     );
     ;
   }
   else if (user){
     return (
-      <div className="h-full">
+      <div className="flex h-full items-center justify-center">
         <GameDialog setGameParams={setGameParams} />
       </div>
     )

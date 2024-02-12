@@ -39,7 +39,7 @@ export function GameDialog({setGameParams}: {setGameParams: Function}) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="black">Play !</Button>
+        <Button variant="black" className="h-auto p-12 rounded-3xl text-8xl">Play !</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

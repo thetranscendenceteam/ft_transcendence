@@ -13,6 +13,9 @@ export class Match {
     @Field(() => Date, { nullable: true })
     startedAt: Date | null;
 
+    @Field(() => Date, { nullable: true })
+    finishedAt: Date | null;
+
     @Field(() => MatchDifficulty, { nullable: true })
     difficulty: MatchDifficulty;
 

@@ -16,7 +16,7 @@ export const PUB_SUB = 'PUB_SUB';
                 connection: {
                     host: configService.get('REDIS_HOST'),
                     port: configService.get('REDIS_PORT'),
-                }
+                },
             }),
             inject: [ConfigService]
         }

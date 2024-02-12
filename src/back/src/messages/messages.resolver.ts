@@ -7,15 +7,16 @@ import { Message } from './dto/Messages.entity';
 import { SendMessageInput } from './dto/inputMessage.input';
 import { MessageForSub } from './dto/MessageForSub.entity';
 
-const NEW_MESSAGE = 'newMessage';
+const NEW_MESSAGE = 'newMessage_';
 
 @Resolver()
 export class MessagesResolver {
     constructor(private messageService: MessagesService, @Inject(PUB_SUB) private pubSub: RedisPubSub) { }
 
     @Subscription(() => MessageForSub)
-    newMessage() {
-        return this.pubSub.asyncIterator(NEW_MESSAGE);
+    newMessage(
+        @Args('chatId') chatId: string,) {
+        return this.pubSub.asyncIterator(NEW_MESSAGE + chatId);
     }
 
     @Mutation(returns => Boolean)

@@ -3,10 +3,9 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { PUB_SUB } from 'src/pubsub/pubsub.module';
 import { SendMessageInput } from './dto/inputMessage.input';
 import { PrismaService } from 'src/prisma.service';
-import { Message } from './dto/Messages.entity';
 import { MessageForSub } from './dto/MessageForSub.entity';
 
-const NEW_MESSAGE = 'newMessage';
+const NEW_MESSAGE = 'newMessage_';
 
 @Injectable()
 export class MessagesService {
@@ -64,7 +63,7 @@ export class MessagesService {
             res.message = update.message;
             res.timestamp = update.timestamp.toISOString();
             res.username = update.username;
-            this.pubSub.publish(NEW_MESSAGE, { newMessage: res });
+            this.pubSub.publish(NEW_MESSAGE + input.chatId, { newMessage: res });
             return true;
         }
         catch (e) {

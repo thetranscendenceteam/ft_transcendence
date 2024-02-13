@@ -6,6 +6,7 @@ import { CreateChatInput } from './dto/createChat.input';
 import { UpdateChatInput } from './dto/updateChat.input';
 import { AddInBanList } from './dto/AddInBanList.input';
 import { UsersInBanList } from './dto/UsersInBanLists.entity';
+import { UpdateUserInChat } from './dto/UpdateUserInChat.input';
 
 @Injectable()
 export class ChatService {
@@ -109,6 +110,57 @@ export class ChatService {
         }
         catch (e) {
             console.log("Error on addInBanList mutation");
+            throw e;
+        }
+    }
+
+    async addUserInChat(input: UpdateUserInChat) {
+        try {
+            const res = await this.prisma.chats.update({
+                where: {
+                    id: input.chatId,
+                },
+                data: {
+                    users: {
+                        upsert: {
+                            where: {
+                                userId_chatId: {
+                                    userId: input.userId,
+                                    chatId: input.chatId,
+                                },
+                            },
+                            create: {
+                                userId: input.userId,
+                                role: input.role,
+                            },
+                            update: {
+                                userId: input.userId,
+                                role: input.role,
+                            },
+                        },
+                    },
+                },
+            });
+            if (!res) return null;
+            return await this.prisma.users.findFirst({
+                where: {
+                    id: input.userId,
+                },
+                select: {
+                    pseudo: true,
+                    firstName: true,
+                    lastName: true,
+                    avatar: true,
+                    xp: true,
+                    createdAt: true,
+                    modifiedAt: true,
+                    count: true,
+                    campus: true,
+                }
+            });
+        }
+        catch (e) {
+            console.log("Error on addUserInChat mutation");
             throw e;
         }
     }

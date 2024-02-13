@@ -7,6 +7,8 @@ import { CreateChatInput } from './dto/createChat.input';
 import { UpdateChatInput } from './dto/updateChat.input';
 import { AddInBanList } from './dto/AddInBanList.input';
 import { UsersInBanList } from './dto/UsersInBanLists.entity';
+import { UserPrivate } from 'src/user/dto/userPrivate.entity';
+import { UpdateUserInChat } from './dto/UpdateUserInChat.input';
 
 @Resolver()
 export class ChatResolver {
@@ -52,6 +54,13 @@ export class ChatResolver {
         @Args('addInBanListInput') addInBanListInput: AddInBanList,
     ): Promise<string> {
         return this.chatService.addInBanList(addInBanListInput);
+    }
+
+    @Mutation(returns => UserPrivate)
+    updateUserInChat(
+        @Args('addUserInChat') input: UpdateUserInChat,
+    ): Promise<UserPrivate | null> {
+        return this.chatService.addUserInChat(input);
     }
 
 }

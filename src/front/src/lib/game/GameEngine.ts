@@ -10,6 +10,7 @@ class GameEngine {
   matches: number;
   difficulty: string;
   isLocal: boolean;
+  setMenu: Function;
   toPrint: string;
   state: string;
   isLoop: boolean;
@@ -31,6 +32,7 @@ class GameEngine {
     this.matches = 0;
     this.difficulty = "normal";
     this.isLocal = false;
+    this.setMenu = () => {};
     this.toPrint = "";
     this.state = "stop";
     this.isLoop = false;
@@ -50,7 +52,13 @@ class GameEngine {
     this.ctx = undefined;
   };
 
-  init(gameRef: RefObject<HTMLCanvasElement>, gameParams: {rounds: number, difficulty: string, local: boolean}, matchId: string, userId: string) {
+  init(
+    gameRef: RefObject<HTMLCanvasElement>,
+    gameParams: {rounds: number, difficulty: string, local: boolean}, 
+    matchId: string, 
+    userId: string,
+    setMenu: Function
+  ) {
 
     let canvas = gameRef.current;
     if (! canvas || ! canvas.parentElement) {
@@ -67,6 +75,7 @@ class GameEngine {
     this.height = canvas.height;
     this.width = canvas.width;
     this.factor = this.height / 600;
+    this.setMenu = setMenu;
     if (matchId === "local" && gameParams) {
       this.matches = gameParams.rounds;
       this.difficulty = gameParams.difficulty;
@@ -152,6 +161,7 @@ class GameEngine {
     if (this.score.left + this.score.right === this.matches) {
       // End game
       this.state = "end";
+      this.setMenu(true);
       return ;
     }
     this.reset();
@@ -223,12 +233,14 @@ class GameEngine {
     if (this.state === "end")
       this.won();
     this.drawText(this.toPrint);
-    if (this.state === "end" || this.state === "starting")
+    if (this.state === "starting")
+      return ;
+    this.score.draw(ctx, this);
+    if (this.state === "end")
       return ;
     this.players.left.draw(ctx);
     this.players.right.draw(ctx);
     this.ball.draw(ctx);
-    this.score.draw(ctx, this);
   };
 
   drawText(text: string) {

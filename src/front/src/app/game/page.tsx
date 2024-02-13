@@ -69,6 +69,7 @@ function Page() {
   const { user } = React.useContext(UserContext);
   const [error, setError] = useState("") as [string, Function];
   const [match, setMatch] = useState(null) as [string | null, Function];
+  const [game, setGame] = useState(false) as [boolean, Function];
   const [gameParams, setGameParams] = useState(null) as [{rounds: number, difficulty: string, local: boolean} | null, Function];
 
   useEffect(() => {
@@ -85,7 +86,20 @@ function Page() {
       }
       getNewGame(setError, setMatch, gameParams, user.id);
     }
-  }, [gameParams]);
+  }, [gameParams, user]);
+
+  useEffect(() => {
+    if (user && match)
+      setGame(true);
+  }, [user, match]);
+
+  useEffect(() => {
+    if (game)
+      return;
+    setGame(false);
+    setMatch(null);
+    setGameParams(null);
+  }, [game]);
   
   async function handleCheckUserGame(userId: string) {
     await checkUserGame(setError, setMatch, userId);
@@ -94,15 +108,15 @@ function Page() {
   if (error) {
     return <div>{error}</div>;
   }
-  else if (match && user) {
+  else if (game && match && user) {
     return (
       <div className='h-full'>
-        <Game gameParams={gameParams} matchId={match} userId={user.id} />
+        <Game gameParams={gameParams} matchId={match} userId={user.id} reset={setGame}/>
       </div>
     );
     ;
   }
-  else if (user){
+  else if (user) {
     return (
       <div className="flex h-full items-center justify-center">
         <GameDialog setGameParams={setGameParams} />

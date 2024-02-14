@@ -5,6 +5,8 @@ const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 
 import { Injectable } from '@nestjs/common';
+import { uid } from 'uid';
+import * as nodemailer from 'nodemailer';
 import { PrismaService } from '../prisma.service';
 import axios from 'axios';
 import { authUser } from './dto/user.entity';
@@ -230,6 +232,7 @@ export class AuthService {
       return error;
     }
   };
+
   async toggleTwoFA(id: string, code: string, toggleTwoFA: boolean): Promise<boolean | null> { // TODO take from JWT
     try {
       const userCurrent = await this.prisma.users.findFirst(
@@ -262,4 +265,109 @@ export class AuthService {
       return error;
     }
   };
+
+  async generateEmailResetLink(email: string): Promise<boolean> {
+    try {
+      const pwdResetSecret = uid();
+
+     const user = await this.prisma.users.update({
+        where: {mail: email},
+        data: {
+          pwdResetSecret: pwdResetSecret
+        },
+      });
+     console.log("🚀 ~ AuthService ~ generateEmailResetLink ~ user:", user)
+
+      const smtp_url = process.env.SMTP_URL ? process.env.SMTP_URL : "";
+      const resetLink = `${smtp_url}${pwdResetSecret}`;
+      const smtp_user = process.env.SMTP_USER ? process.env.SMTP_HOST : "";
+      const smtp_pass = process.env.SMTP_API_KEY ? process.env.SMTP_HOST : "";
+      
+      const transport = nodemailer.createTransport({
+        host: "smtp.sendgrid.net",
+        port: 465,
+        auth: {
+          user: smtp_user,
+          pass: smtp_pass,
+        }
+      });
+
+      const message = {
+        from: "resetpassword@transcendance-pomy.ch",
+        to: email,
+        subject: "Password Reset request - Transcendance Pomy",
+        html: `<tr>
+                  <img src='https://cdn.discordapp.com/attachments/472445775549562881/1207370278863114360/ft_pomy_small.png?ex=65df6632&is=65ccf132&hm=3bf2103dbe78d66c24e58e1822970224fef1cb8f4bec45ba90cdb47d958226c0&'>
+                  <td style='padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;' height='100%' valign='top' bgcolor='' role='module-content'>
+                      <div>
+                          <div style='font-family: inherit; text-align: left'>
+                              <span style='font-size: 18px; font-family: verdana, geneva, sans-serif'>Hi !</span>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <span style='font-family: verdana, geneva, sans-serif'>A reset password has been requested for your account.</span>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <span style='font-family: verdana, geneva, sans-serif'>If you did not request a password reset, please ignore this email.</span>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <br>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <span style='font-family: verdana, geneva, sans-serif'>You can reset your password <a href='${resetLink}'>here</a>.</span>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <br>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <span style='font-family: verdana, geneva, sans-serif'>Best regards,</span>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <span style='font-family: verdana, geneva, sans-serif'>your transcendance-pomy team.</span>
+                          </div>
+                          <div></div>
+                      </div>
+                  </td>
+              </tr>`
+      };
+
+
+      transport.sendMail(message, (err, info) => {
+        if (err) {
+            console.log(err)
+        } else {
+            console.log(info);
+        }
+      });
+
+      return true;
+    } catch (error) {
+      console.error("generateEmailResetLink: ", error);
+      return error;
+    }
+  };
+
+  async resetPassword(username: string, code: string, password: string): Promise<boolean> {
+    try {
+      const user = await this.prisma.users.findFirst({
+        where: {pwdResetSecret: code, pseudo: username},
+      });
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      await this.prisma.users.update({
+        where: {pseudo: user.pseudo},
+        data: {
+          password: password,
+          pwdResetSecret: null,
+        },
+      });
+
+      return true;
+    } catch (error) {
+      console.error("resetPassword: ", error);
+      return error;
+    }
+  };
+
 }

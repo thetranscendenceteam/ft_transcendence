@@ -131,6 +131,9 @@ const LoginDialog = () => {
         <DialogFooter>
           <Button className={styles.button} type="submit" onClick={login}>Login</Button>
         </DialogFooter>
+        <div>
+          <p className="text-center" style={{fontSize: "10px", color: "darkgrey"}}><a href="/resetPassword">Forgot your password? Reset it here</a></p>
+        </div>
         <div className="flex items-center">
           <hr className="flex-1"/>
           <p className="m-2">or</p> 

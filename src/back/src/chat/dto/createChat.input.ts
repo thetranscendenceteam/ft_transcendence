@@ -5,6 +5,6 @@ export class CreateChatInput {
     @Field(() => String)
     name: string;
 
-    @Field(() => String, { nullable: true })
-    password: string;
+    @Field(() => Boolean)
+    isPrivate: boolean;
 }

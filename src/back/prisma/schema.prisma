@@ -41,8 +41,8 @@ model Users {
 model Chats {
     id              String            @id @unique @default(uuid()) @db.VarChar(36)
     name            String            @unique @db.VarChar(255)
-    password        String?
     createdAt       DateTime          @default(now())
+    isPrivate       Boolean           @default(false)
     users           UsersInChats[]
     messages        Messages[]
     UsersInBanLists UsersInBanLists[]
@@ -91,12 +91,12 @@ model UsersInBanLists {
 
 model UsersRelationships {
     id        String             @id @unique @default(uuid()) @db.VarChar(36)
-    firstId   Int
-    secondId  Int
+    firstId   String
+    secondId  String
     status    RelationshipStatus @default(unknown)
     createdAt DateTime           @default(now())
     updatedAt DateTime           @default(now())
-    Users     Users              @relation(fields: [firstId], references: [ftId])
+    Users     Users              @relation(fields: [firstId], references: [id])
 }
 
 model UsersInMatchs {

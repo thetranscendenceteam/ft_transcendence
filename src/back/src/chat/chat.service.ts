@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { Chats } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { GetChatInput } from './dto/getChat.input';
 import { CreateChatInput } from './dto/createChat.input';
 import { UpdateChatInput } from './dto/updateChat.input';
 import { AddInBanList } from './dto/AddInBanList.input';
-import { UsersInBanList } from './dto/UsersInBanLists.entity';
 import { UpdateUserInChat } from './dto/UpdateUserInChat.input';
+import { Chat } from './dto/chat.entity';
+import { RemoveUserInput } from './dto/RemoveUser.input';
 
 @Injectable()
 export class ChatService {
     constructor(private prisma: PrismaService) { }
 
-    async getAllChats(max: number | undefined): Promise<Chats[]> {
+    async getAllChats(max: number | undefined): Promise<Chat[]> {
         try {
             return await this.prisma.chats.findMany({
                 take: max,
@@ -25,7 +25,7 @@ export class ChatService {
         }
     }
 
-    async getChat(chatInput: GetChatInput): Promise<Chats | null> {
+    async getChat(chatInput: GetChatInput) {
         try {
             const chat = await this.prisma.chats.findFirst({
                 where: chatInput,
@@ -39,12 +39,12 @@ export class ChatService {
         }
     }
 
-    async createChat(createChatInput: CreateChatInput): Promise<Chats> {
+    async createChat(createChatInput: CreateChatInput) {
         try {
             const newChat = this.prisma.chats.create({
                 data: {
                     name: createChatInput.name,
-                    password: createChatInput.password,
+                    isPrivate: createChatInput.isPrivate,
                 },
             });
             return newChat;
@@ -55,13 +55,15 @@ export class ChatService {
         }
     }
 
-    async updateChat(updateChatInput: UpdateChatInput): Promise<Chats> {
+    async updateChat(updateChatInput: UpdateChatInput) {
         try {
             const updateChat = this.prisma.chats.update({
                 where: {
                     id: updateChatInput.id,
                 },
-                data: updateChatInput.var
+                data: {
+                    name: updateChatInput.name,
+                },
             });
             return updateChat;
         }
@@ -71,7 +73,7 @@ export class ChatService {
         }
     }
 
-    async getBanList(chatId: string): Promise<UsersInBanList[] | null> {
+    async getBanList(chatId: string) {
         try {
             const res = await this.prisma.usersInBanLists.findMany({
                 where: {
@@ -86,7 +88,7 @@ export class ChatService {
         }
     }
 
-    async addInBanList(input: AddInBanList): Promise<string> {
+    async addInBanList(input: AddInBanList) {
         try {
             const res = await this.prisma.usersInBanLists.upsert({
                 where: {
@@ -161,6 +163,31 @@ export class ChatService {
         }
         catch (e) {
             console.log("Error on addUserInChat mutation");
+            throw e;
+        }
+    }
+
+    async removeUserOfChat(input: RemoveUserInput) {
+        try {
+            await this.prisma.usersInChats.delete({
+                where: {
+                    userId_chatId: {
+                        userId: input.userId,
+                        chatId: input.chatId,
+                    },
+                },
+            });
+            const test = await this.prisma.usersInChats.findFirst({
+                where: {
+                    chatId: input.chatId,
+                    userId: input.userId,
+                },
+            });
+            if (!test) return true;
+            return false;
+        }
+        catch (e) {
+            console.log("Error on removeUserOfChat mutation");
             throw e;
         }
     }

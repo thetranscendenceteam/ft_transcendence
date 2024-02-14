@@ -7,4 +7,7 @@ export class GetChatInput {
 
     @Field(() => String, { nullable: true })
     name: string;
+
+    @Field(() => Boolean, { nullable: true })
+    isPrivate: boolean;
 }

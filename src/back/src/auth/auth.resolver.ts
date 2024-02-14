@@ -63,4 +63,24 @@ export class AuthResolver {
     }
     return result;
   }
+
+  @Mutation(returns => Boolean)
+  async generatePasswordReset(@Args('email') email: string): Promise<boolean> {
+    try {
+      await this.userService.generateEmailResetLink(email);
+      return true;
+    } catch (error) {
+      throw new Error('Failed to send password reset email');
+    }
+  }
+
+  @Mutation(returns => Boolean) // TODO entierement a faire
+  async resetPassword(@Args('email') email: string): Promise<boolean> {
+    try {
+      await this.userService.resetPassword(email);
+      return true;
+    } catch (error) {
+      throw new Error('Failed to send password reset email');
+    }
+  }
 }

@@ -5,6 +5,8 @@ const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 
 import { Injectable } from '@nestjs/common';
+import { uid } from 'uid';
+import * as nodemailer from 'nodemailer';
 import { PrismaService } from '../prisma.service';
 import axios from 'axios';
 import { authUser } from './dto/user.entity';
@@ -230,6 +232,7 @@ export class AuthService {
       return error;
     }
   };
+
   async toggleTwoFA(id: string, code: string, toggleTwoFA: boolean): Promise<boolean | null> { // TODO take from JWT
     try {
       const userCurrent = await this.prisma.users.findFirst(
@@ -262,4 +265,73 @@ export class AuthService {
       return error;
     }
   };
+
+  async generateEmailResetLink(email: string): Promise<boolean> {
+    try {
+      //const pwdResetSecret = uid();
+      //const pwdExpireDate = new Date();
+
+      /*this.prisma.users.update({
+        where: {mail: email},
+        data: {
+          pwdResetSecret: pwdResetSecret,
+          pwdExpireDate: pwdExpireDate
+        },
+      });*/
+
+      //const resetLink = `http://localhost:3000/resetPassword/validate/${pwdResetSecret}`;
+      //const resend = new Resend('re_esAkHVsq_QBjMnbL7UkW7KBKHohD58Gh5'); //TODO put that in .env
+      // console.log(email,pwdExpireDate, resetLink);
+      /*const { data, error} = await resend.emails.send({
+        from: 'transcendancepomy@gmail.com',
+        to: 'alain.huber91@gmail.com',
+        subject: 'Reset your password',
+        html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
+      });*/
+
+      const transport = nodemailer.createTransport({
+        host: "smtp.sendgrid.net",
+        port: 465,
+        auth: {
+          user: "apikey", // TODO env
+          pass: "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" // TODO env
+        }
+      });
+
+      const message = {
+        from: "resetpassword@transcendance-pomy.ch",
+        to: "alain.huber91@gmail.com",
+        subject: "Hello!",
+        html: "<tr><img src='https://cdn.discordapp.com/attachments/472445775549562881/1207370278863114360/ft_pomy_small.png?ex=65df6632&is=65ccf132&hm=3bf2103dbe78d66c24e58e1822970224fef1cb8f4bec45ba90cdb47d958226c0&'><td style='padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;' height='100%' valign='top' bgcolor='' role='module-content'><div><div style='font-family: inherit; text-align: left'><span style='font-size: 18px; font-family: verdana, geneva, sans-serif'>Hi !</span></div><div style='font-family: inherit; text-align: inherit'><span style='font-family: verdana, geneva, sans-serif'>A reset password have been asked for your account.</span></div><div style='font-family: inherit; text-align: inherit'><span style='font-family: verdana, geneva, sans-serif'>If you did not asked for a password reset please ignore this e-mail.</span></div><div style='font-family: inherit; text-align: inherit'><br></div><div style='font-family: inherit; text-align: inherit'><span style='font-family: verdana, geneva, sans-serif'>You can reset your password </span><a href='http://www.google.ch%22%3E/'><span style='font-family: verdana, geneva, sans-serif'>here</span></a><span style='font-family: verdana, geneva, sans-serif'>.</span></div><div style='font-family: inherit; text-align: inherit'><br></div><div style='font-family: inherit; text-align: inherit'><span style='font-family: verdana, geneva, sans-serif'>Best regards,</span></div><div style='font-family: inherit; text-align: inherit'><span style='font-family: verdana, geneva, sans-serif'>your transcendance-pomy team.</span></div><div></div></div></td></tr>"
+      }
+
+
+      transport.sendMail(message, (err, info) => {
+        if (err) {
+            console.log(err)
+        } else {
+            console.log(info);
+        }
+      });
+
+      //console.log("data: ",data);
+      //console.log("error: ",error);
+      console.log("email: ",email);
+      return true;
+    } catch (error) {
+      console.error("generateEmailResetLink: ", error);
+      return error;
+    }
+  };
+
+  async resetPassword(email: string): Promise<boolean> {
+    try {
+      console.log(email);
+      return true;
+    } catch (error) {
+      console.error("resetPassword: ", error);
+      return error;
+    }
+  };
+
 }

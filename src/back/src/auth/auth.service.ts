@@ -278,14 +278,17 @@ export class AuthService {
       });
      console.log("🚀 ~ AuthService ~ generateEmailResetLink ~ user:", user)
 
-      const resetLink = `http://localhost:8443/confirmResetPassword/${pwdResetSecret}`; // TODO env
-
+      const smtp_url = process.env.SMTP_URL ? process.env.SMTP_URL : "";
+      const resetLink = `${smtp_url}${pwdResetSecret}`;
+      const smtp_user = process.env.SMTP_USER ? process.env.SMTP_HOST : "";
+      const smtp_pass = process.env.SMTP_API_KEY ? process.env.SMTP_HOST : "";
+      
       const transport = nodemailer.createTransport({
         host: "smtp.sendgrid.net",
         port: 465,
         auth: {
-          user: "apikey", // TODO env
-          pass: "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" // TODO env
+          user: smtp_user,
+          pass: smtp_pass,
         }
       });
 
@@ -344,26 +347,22 @@ export class AuthService {
   };
 
   async resetPassword(username: string, code: string, password: string): Promise<boolean> {
-    console.log("🚀 ~ AuthService ~ resetPassword ~ code:", code)
-    console.log("🚀 ~ AuthService ~ resetPassword ~ username:", username)
     try {
       const user = await this.prisma.users.findFirst({
         where: {pwdResetSecret: code, pseudo: username},
       });
-      console.log("🚀 ~ AuthService ~ resetPassword ~ user:", user)
       if (!user) {
         throw new Error("User not found");
       }
 
-      const updatedUser = await this.prisma.users.update({
+      await this.prisma.users.update({
         where: {pseudo: user.pseudo},
         data: {
-          password: password
+          password: password,
+          pwdResetSecret: null,
         },
       });
-      console.log("🚀 ~ AuthService ~ resetPassword ~ updatedUser:", updatedUser)
-      
-      console.log("Password reset for user: ", username, code, password); 
+
       return true;
     } catch (error) {
       console.error("resetPassword: ", error);

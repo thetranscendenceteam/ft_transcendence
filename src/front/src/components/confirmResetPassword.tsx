@@ -5,6 +5,7 @@ import stylesButton from './style/profile.module.css';
 import { Button } from './ui/button';
 import apolloClient from './apolloclient';
 import { gql } from '@apollo/client';
+import { Input } from './ui/input';
 
 const ConfirmResetPasswordForm = (props: {code: string}) => {
   const code = props.code;
@@ -25,6 +26,11 @@ const ConfirmResetPasswordForm = (props: {code: string}) => {
     
     if (!form) {
       console.error('Form reference is null');
+      return;
+    }
+
+    if (!username) {
+      setError('Username is required');
       return;
     }
 
@@ -58,14 +64,13 @@ const ConfirmResetPasswordForm = (props: {code: string}) => {
         },
       });
       setIsSubmitting(false);
-      setSuccessMessage('Reset Password email sent successfully!');
+      setSuccessMessage('Password changed successfully!');
       setUsername('');
       setPassword('');
       setPassword2('');
     } catch (error) {
       setIsSubmitting(false);
-      setError('Failed to send reset password email');
-      console.error('Failed to send reset password email:', error);
+      setError('Failed to change password');
     }
   };
 
@@ -76,13 +81,13 @@ const ConfirmResetPasswordForm = (props: {code: string}) => {
           <h1 style={{ marginBottom: "30px" }}>Change Password</h1>
           <form onSubmit={handleSubmit} ref={formRef}> {/* Use formRef here */}
             <div>
-              <input type="username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} style={{ marginBottom: "30px", color: "black" }}/>
+              <Input type="username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} style={{ marginBottom: "30px" }}/>
             </div>
             <div>
-              <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ marginBottom: "30px", color: "black" }}/>
+              <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ marginBottom: "30px" }}/>
             </div>
             <div>
-              <input type="password" placeholder="Password verification" value={password2} onChange={(e) => setPassword2(e.target.value)} style={{ marginBottom: "30px", color: "black" }}/>
+              <Input type="password" placeholder="Password verification" value={password2} onChange={(e) => setPassword2(e.target.value)} style={{ marginBottom: "30px" }}/>
             </div>
             <div>
               <Button className={stylesButton.button} style={{ marginTop: "30px" }} type="submit" disabled={isSubmitting}>

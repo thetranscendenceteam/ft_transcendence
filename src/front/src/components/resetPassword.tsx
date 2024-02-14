@@ -5,6 +5,7 @@ import stylesButton from './style/profile.module.css';
 import { Button } from './ui/button';
 import apolloClient from './apolloclient';
 import { gql } from '@apollo/client';
+import { Input } from './ui/input';
 
 const ResetPasswordForm = () => {
   const [email, setEmail] = useState('');
@@ -46,7 +47,6 @@ const ResetPasswordForm = () => {
     } catch (error) {
       setIsSubmitting(false);
       setError('Failed to send reset password email');
-      console.error('Failed to send reset password email:', error);
     }
   };
 
@@ -57,7 +57,7 @@ const ResetPasswordForm = () => {
           <h1 style={{ marginBottom: "30px" }}>Reset Password</h1>
           <form onSubmit={handleSubmit} ref={formRef}> {/* Use formRef here */}
             <div>
-              <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ color: "black" }}/>
+              <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div>
               <Button className={stylesButton.button} style={{ marginTop: "30px" }} type="submit" disabled={isSubmitting}>

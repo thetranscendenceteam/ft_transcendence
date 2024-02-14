@@ -282,12 +282,6 @@ export class AuthService {
       //const resetLink = `http://localhost:3000/resetPassword/validate/${pwdResetSecret}`;
       //const resend = new Resend('re_esAkHVsq_QBjMnbL7UkW7KBKHohD58Gh5'); //TODO put that in .env
       // console.log(email,pwdExpireDate, resetLink);
-      /*const { data, error} = await resend.emails.send({
-        from: 'transcendancepomy@gmail.com',
-        to: 'alain.huber91@gmail.com',
-        subject: 'Reset your password',
-        html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
-      });*/
 
       const transport = nodemailer.createTransport({
         host: "smtp.sendgrid.net",
@@ -314,9 +308,6 @@ export class AuthService {
         }
       });
 
-      //console.log("data: ",data);
-      //console.log("error: ",error);
-      console.log("email: ",email);
       return true;
     } catch (error) {
       console.error("generateEmailResetLink: ", error);

@@ -12,6 +12,7 @@ import { MessagesModule } from './messages/messages.module';
 import { PubSubModule } from './pubsub/pubsub.module';
 import * as Joi from '@hapi/joi';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { RelationshipModule } from './relationship/relationship.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
     MatchModule,
     MessagesModule,
     PubSubModule,
+    RelationshipModule,
   ],
   controllers: [AppController],
   providers: [AppService],

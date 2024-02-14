@@ -4,6 +4,7 @@ import { PUB_SUB } from 'src/pubsub/pubsub.module';
 import { SendMessageInput } from './dto/inputMessage.input';
 import { PrismaService } from 'src/prisma.service';
 import { MessageForSub } from './dto/MessageForSub.entity';
+import { UserChatStatus } from '@prisma/client';
 
 const NEW_MESSAGE = 'newMessage_';
 
@@ -36,6 +37,7 @@ export class MessagesService {
 
     async addMessage(input: SendMessageInput) {
         try {
+            if (await this.userMuted(input)) return false;
             const date = new Date().toISOString();
             const nMessage = await this.prisma.messages.count({
                 where: {
@@ -84,6 +86,30 @@ export class MessagesService {
         }
         catch (e) {
             console.log("Error on getMessageHistoryOfChat");
+            throw e;
+        }
+    }
+
+    async userMuted(input: SendMessageInput) {
+        try {
+            const user = await this.prisma.users.findFirst({
+                where: {
+                    pseudo: input.username,
+                },
+            });
+            if (!user) return true;
+            const res = await this.prisma.usersInBanLists.findFirst({
+                where: {
+                    chatId: input.chatId,
+                    userId: user.id,
+                },
+            });
+            if (!res) return false;
+            if (res.status == UserChatStatus.muted) return true;
+            return false;
+        }
+        catch (e) {
+            console.log("Error on userMuted function");
             throw e;
         }
     }

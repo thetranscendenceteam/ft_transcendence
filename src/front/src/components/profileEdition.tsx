@@ -175,14 +175,7 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
 
 
 const ProfileComponent = () => {
-  const {user, updateUser} = React.useContext(UserContext);
-
-  React.useEffect(() => {
-    let userStorage = window.sessionStorage.getItem("user");
-    if (!user && userStorage) {
-      updateUser(JSON.parse(userStorage));
-    }
-  }, []);
+  const { user } = React.useContext(UserContext);
 
   return (
     user && <div className={styles.container}>

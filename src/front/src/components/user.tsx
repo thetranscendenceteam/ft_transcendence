@@ -8,7 +8,16 @@ import { gql } from '@apollo/client';
 import { UserProfileCard, MatchHistoryCard } from './profile';
 import { UserProfileCardProps, MatchHistory } from './profile';
 
-const fetchUserData = (username: string): Promise<UserProfileCardProps> => {
+interface UserData {
+  id: string;
+  username: string;
+  realname: string;
+  avatar_url: string;
+  email: string;
+  campus: string;
+}
+
+const fetchData = (username: string): Promise<UserData> => {
   return new Promise((resolve, reject) => {
     apolloClient.query({
       query: gql`

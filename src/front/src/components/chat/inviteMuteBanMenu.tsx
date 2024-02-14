@@ -5,6 +5,13 @@ import { gql } from "@apollo/client";
 interface PopUpProp {
   closeInviteMuteBanMenu: () => void;
   mode: string;
+  activeConv: Chat;
+}
+
+type Chat = {
+  id: string;
+  name: string;
+  avatar: string;
 }
 
 type Player = {
@@ -13,33 +20,60 @@ type Player = {
   avatar: string;
 }
 
-const fetchData = async() => {
-  try {
-    const { data } = await apolloClient.query({
-      query: gql`
-        {
-          getUsers {
-            id 
-            nickname: pseudo
-            avatar
-          }
-        }
-      `,
-    });
-    return (data.getUsers);
-  } catch (error) {
-    return ([]);
-  }
-}
-
-const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMenu, mode }) => {
+const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMenu, mode, activeConv }) => {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
+
+  const leaveChat = async(player: Player) => {
+    try {
+      await apolloClient.mutate({
+        mutation: gql`
+          mutation removeUserOfChat($input: RemoveUserInput!) {
+            removeUserOfChat(removeUser: $input)
+          }
+        `,
+        variables: {
+          input: {
+            chatId: activeConv.id,
+            userId: player.id
+          }
+        }
+      });
+    } catch (error) {
+      return ([]);
+    }
+  }
+
+  const fetchData = async() => {
+    try {
+      const { data } = await apolloClient.query({
+        query: gql`
+          query getUsersByIdChat($chatId: String!) {
+            getUsersByIdChat(chatId: $chatId) {
+              idUser 
+              pseudo
+            }
+          }
+        `,
+        variables: {
+          chatId: activeConv.id
+        }
+      });
+      return (data.getUsersByIdChat);
+    } catch (error) {
+      return ([]);
+    }
+  }
 
   useEffect(() => {
     const fetchInitialData = async () => {
       const fetchedData = await fetchData();
-      setPlayers(fetchedData);
+      const tmp = fetchedData.map((item: any) => ({
+        id: item.idUser,
+        nickname: item.pseudo,
+        avatar: ""
+      }));
+      setPlayers(tmp);
     };
     fetchInitialData();
   }, []);
@@ -54,8 +88,10 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
     };
   }, []);
 
-  const actionButton = (player: Player) => {
-    console.log(player);
+  const actionButton = (player: Player | null) => {
+    if (mode === 'Kick' && player) {
+      leaveChat(player);
+    }
     closeInviteMuteBanMenu();
   };
 
@@ -84,13 +120,13 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
             className="bg-white rounded-md px-4 mb-5 py-2 text-gray-900 origin-top"
             onChange={(e) =>{
               const playerId = e.target.value;
-              const selected = players.find((player) => player.id === playerId);
+              const selected = players.find((player) => player.nickname === playerId);
               setSelectedPlayer(selected || null);
             }}
           >
             <option value="" disabled selected>Select a player</option>
             {players.map((player) => (
-              <option key={player.id} value={player.id}>{player.nickname}</option>
+              <option key={player.id} value={player.nickname}>{player.nickname}</option>
             ))}
           </select>
         </div>
@@ -100,7 +136,7 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
             <p className="text-xl mt-2">{selectedPlayer.nickname}</p>
           </div>
         )}
-        <button className="absolute bottom-3 right-3 bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-600" onClick={() =>  selectedPlayer && actionButton(selectedPlayer)}>
+        <button className="absolute bottom-3 right-3 bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-600" onClick={() =>  actionButton(selectedPlayer)}>
           {mode === 'Invite' && 'Invite'}
           {mode === 'Ban' && 'Ban'}
           {mode === 'Kick' && 'Kick'}

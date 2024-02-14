@@ -9,11 +9,11 @@ type Entity = {
 
 type Props = {
   message: Entity;
-  userMessage: boolean;
+  userMessage: string;
 }
 
 const Message: React.FC<Props> = ({ message, userMessage }) => {
-  const messageClass = userMessage ? "flex py-1 w-full justify-end" : "flex py-1 w-full";
+  const messageClass = userMessage === message.username ? "flex py-1 w-full justify-end" : "flex py-1 w-full";
 
   return (
     <div className={messageClass}>

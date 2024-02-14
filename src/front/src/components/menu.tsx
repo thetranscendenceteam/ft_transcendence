@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 import { SearchBar } from './searchBar/searchBar';
 import { SearchResultsList } from './searchBar/searchResultsList';
 import styles from './style/menu.module.css';
+import { useCookies } from 'react-cookie';
 
 interface User {
   id: string | null;
@@ -35,13 +36,7 @@ const Menu: React.FC = () => {
   const [results, setResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(true);
   const searchBarRef = useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    let userStorage = window.sessionStorage.getItem('user');
-    if (!user && userStorage) {
-      updateUser(JSON.parse(userStorage));
-    }
-  }, []);
+  const [cookies, setCookie, removeCookie] = useCookies(['jwt']);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -57,7 +52,7 @@ const Menu: React.FC = () => {
   }, []);
 
   function handleLogoutClick() {
-    window.sessionStorage.removeItem('user');
+    removeCookie('jwt');
     updateUser({
       id: null,
       username: null,

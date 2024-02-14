@@ -17,54 +17,12 @@ import { useState } from "react";
 import { UserContext } from "./userProvider";
 import React from "react";
 import { useRouter } from 'next/navigation';
-
-const handleLogin = async (setError: Function, updateUser: Function) => {
-  const username: HTMLInputElement = document.getElementById("username") as HTMLInputElement;
-  const password: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
-  const twoFA: HTMLInputElement = document.getElementById("2FA") as HTMLInputElement;
-  try {
-    const { data, errors} = await apolloClient.mutate({
-      mutation: gql`
-        mutation standardLogin($standardLoginInput: StandardLoginInput!) {
-          standardLogin(standardLogin: $standardLoginInput) {
-            id
-            username
-            realname
-            email
-            avatar_url
-            campus
-            jwtToken
-            twoFA
-          }
-        }
-      `,
-      variables: {
-        standardLoginInput: {
-          username: username.value,
-          password: password.value,
-          twoFactorCode: twoFA.value,
-        },
-      },
-    });
-    if (errors) {
-      setError(errors[0].message);
-    } else {
-      setError("");
-    }
-    if (data && data.standardLogin) {
-      const { id, username, realname, avatar_url, email, campus, twoFA }  = data.standardLogin;
-      updateUser({ id, username, realname, avatar_url, email, campus, twoFA });
-    }
-
-    return;
-  } catch (error) {
-    setError("Invalid credentials");
-  }
-};
+import { useCookies } from 'react-cookie';
 
 const LoginDialog = () => {
   const {updateUser} = React.useContext(UserContext);
   const [error, setError] = useState("");
+  const [cookies, setCookie] = useCookies(['jwt']);
   const router = useRouter();
   const NEXT_PUBLIC_OAUTH_CLIENT_ID = process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID;
   const NEXT_PUBLIC_OAUTH_URL = process.env.NEXT_PUBLIC_OAUTH_URL;
@@ -74,6 +32,51 @@ const LoginDialog = () => {
   }
   // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
   const ft_auth = NEXT_PUBLIC_OAUTH_URL + '?client_id=' + NEXT_PUBLIC_OAUTH_CLIENT_ID + '&redirect_uri=' + NEXT_PUBLIC_OAUTH_REDIRECT + '&response_type=code';
+
+  const handleLogin = async (setError: Function, updateUser: Function) => {
+    const username: HTMLInputElement = document.getElementById("username") as HTMLInputElement;
+    const password: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
+    const twoFA: HTMLInputElement = document.getElementById("2FA") as HTMLInputElement;
+    try {
+      const { data, errors} = await apolloClient.mutate({
+        mutation: gql`
+          mutation standardLogin($standardLoginInput: StandardLoginInput!) {
+            standardLogin(standardLogin: $standardLoginInput) {
+              id
+              username
+              realname
+              email
+              avatar_url
+              campus
+              jwtToken
+              twoFA
+            }
+          }
+        `,
+        variables: {
+          standardLoginInput: {
+            username: username.value,
+            password: password.value,
+            twoFactorCode: twoFA.value,
+          },
+        },
+      });
+      if (errors) {
+        setError(errors[0].message);
+      } else {
+        setError("");
+      }
+      if (data && data.standardLogin) {
+        const { id, username, realname, avatar_url, email, campus, jwtToken, twoFA }  = data.standardLogin;
+        updateUser({ id, username, realname, avatar_url, email, campus, twoFA });
+        setCookie('jwt', { jwtToken }, { path: '/'});
+      }
+
+      return;
+    } catch (error) {
+      setError("Invalid credentials");
+    }
+  };
 
   function login(): void {
     handleLogin(setError, updateUser);

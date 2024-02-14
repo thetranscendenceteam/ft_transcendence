@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import addButton from '../../../public/add-button.png';
 import Image from 'next/image';
 import NewChannel from './newChannel';
 import apolloClient from "../apolloclient";
-import { gql } from "@apollo/client"
+import { gql } from "@apollo/client";
+import { UserContext } from '../userProvider';
 
 type Chat = {
   id: string;
@@ -17,33 +18,44 @@ type Props = {
   changeConvType: (newType: string) => void;
 }
 
-const fetchData = async() => {
-  try {
-    const { data } = await apolloClient.query({
-      query: gql`
-        {
-          getAllChats {
-            id 
-            name
-          }
-        }
-      `,
-    });
-    return (data.getAllChats);
-  } catch (error) {
-    return ([]);
-  }
-}
-
 const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
   const [activeList, setActiveList] = useState<string>('Friends');
   const [createNewChannel, setCreateNewChannel] = useState(false);
   const [data, setData]= useState<Chat[]>([]);
+  const { user } = useContext(UserContext);
+
+  const fetchData = async() => {
+    if (user) {
+      try {
+        const { data } = await apolloClient.query({
+          query: gql`
+              query getChatsByIdUser($userId: String!) {
+                getChatsByIdUser(userId: $userId) {
+                  idChat 
+                  name
+                }
+              }
+          `,
+          variables: {
+            userId: user.id
+          }
+        });
+        return (data.getChatsByIdUser);
+      } catch (error) {
+        return ([]);
+      }
+    }
+  }
 
   useEffect(() => {
     const fetchInitialData = async () => {
       const fetchedData = await fetchData();
-      setData(fetchedData);
+      const tmp = fetchedData.map((item: any) => ({
+        id: item.idChat,
+        name: item.name,
+        avatar: ""
+      }));
+      setData(tmp);
     };
     fetchInitialData();
   }, []);
@@ -87,9 +99,9 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
       </div>
       <div className='h-full overflow-y-auto'>
         <div className='flex flex-col'>
-          {data.map(conversation => (
-            <button key={conversation.id} className="cursor-pointer" onClick={() => handleClick(conversation)}>
-              <SidebarChat key={conversation.id} avatarUrl={conversation.avatar} fallback="..." nickname={conversation.name} />
+          {data.map((conversation, index) => (
+            <button key={index} className="cursor-pointer" onClick={() => handleClick(conversation)}>
+              <SidebarChat key={conversation.id} avatarUrl="" fallback="..." nickname={conversation.name} />
             </button>
           ))}
           {activeList === 'Channels' && (

@@ -6,11 +6,11 @@ import { RelationshipForUser } from './dto/RelationshipForUser.entity';
 export class RelationshipResolver {
     constructor(private relationshipService: RelationshipService) { }
 
-    @Query(returns => [RelationshipForUser])
-    getUserRelationship(
-        @Args('userId', { type: () => String, nullable: false }) userId: string,
-    ): Promise<RelationshipForUser[]> {
-        return this.relationshipService.getUserRelationship(userId);
-    }
+    // @Query(returns => [RelationshipForUser])
+    // getUserRelationship(
+    //     @Args('userId', { type: () => String, nullable: false }) userId: string,
+    // ): Promise<RelationshipForUser[]> {
+    //     return this.relationshipService.getUserRelationship(userId);
+    // }
 
 }

@@ -6,14 +6,15 @@ import NewChannel from './newChannel';
 import apolloClient from "../apolloclient";
 import { gql } from "@apollo/client"
 
-type Conv = {
+type Chat = {
   id: string;
-  nickname: string;
+  name: string;
   avatar: string;
 }
 
 type Props = {
-  changeConvType: (buttonName: string) => void;
+  changeConv: (ChatName: Chat) => void;
+  changeConvType: (newType: string) => void;
 }
 
 const fetchData = async() => {
@@ -21,24 +22,23 @@ const fetchData = async() => {
     const { data } = await apolloClient.query({
       query: gql`
         {
-          getUsers {
+          getAllChats {
             id 
-            nickname: pseudo
-            avatar
+            name
           }
         }
       `,
     });
-    return (data.getUsers);
+    return (data.getAllChats);
   } catch (error) {
     return ([]);
   }
 }
 
-const Sidebar: React.FC<Props> = ({ changeConvType }) => {
+const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
   const [activeList, setActiveList] = useState<string>('Friends');
   const [createNewChannel, setCreateNewChannel] = useState(false);
-  const [data, setData]= useState<Conv[]>([]);
+  const [data, setData]= useState<Chat[]>([]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -70,8 +70,13 @@ const Sidebar: React.FC<Props> = ({ changeConvType }) => {
     setActiveList(buttonName);
   };
 
-  const addConv = (newConv: Conv) => {
-    setData((prevData) => [...prevData, newConv]);
+  const addChat = (newChat: Chat) => {
+    setData((prevData) => [...prevData, newChat]);
+  };
+
+  const handleClick = (conv: Chat) => {
+    changeConv(conv);
+    changeConvType(activeList);
   };
 
   return (
@@ -83,8 +88,8 @@ const Sidebar: React.FC<Props> = ({ changeConvType }) => {
       <div className='h-full overflow-y-auto'>
         <div className='flex flex-col'>
           {data.map(conversation => (
-            <button key={conversation.id} className="cursor-pointer" onClick={() => changeConvType(activeList)}>
-              <SidebarChat key={conversation.id} avatarUrl={conversation.avatar} fallback="..." nickname={conversation.nickname} />
+            <button key={conversation.id} className="cursor-pointer" onClick={() => handleClick(conversation)}>
+              <SidebarChat key={conversation.id} avatarUrl={conversation.avatar} fallback="..." nickname={conversation.name} />
             </button>
           ))}
           {activeList === 'Channels' && (
@@ -92,7 +97,7 @@ const Sidebar: React.FC<Props> = ({ changeConvType }) => {
               <button onClick={openCreateChannel}>
                 <Image src={addButton} alt="Add" width={40} height={40} />
               </button>
-              {createNewChannel && <NewChannel closePopUp={closeCreateChannel} addConv={addConv} />}
+              {createNewChannel && <NewChannel closePopUp={closeCreateChannel} addChat={addChat} />}
             </div>
           )}
         </div>

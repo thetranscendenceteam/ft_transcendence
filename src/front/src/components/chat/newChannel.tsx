@@ -1,18 +1,18 @@
 import React, { FunctionComponent, useState } from 'react';
 import inputImage from '../../../public/image-input.png';
 
-type Conv = {
+type Chat = {
   id: string;
-  nickname: string;
+  name: string;
   avatar: string;
 }
 
 interface PopUpProp {
   closePopUp: () => void;
-  addConv: (newConv: Conv) => void;
+  addChat: (newConv: Chat) => void;
 }
 
-const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addConv }) => {
+const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [channelName, setChannelName] = useState<string>('');
 
@@ -31,19 +31,19 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addConv }) => {
 
   const createChannel = () => {
     if (selectedImage) {
-      const newConv: Conv = {
+      const newConv: Chat = {
         id: channelName,
-        nickname: channelName,
+        name: channelName,
         avatar: selectedImage,
       };
-      addConv(newConv); 
+      addChat(newConv); 
     } else {
-      const newConv: Conv = {
+      const newConv: Chat = {
         id: channelName,
-        nickname: channelName,
+        name: channelName,
         avatar: "https://avatars.githubusercontent.com/u/11646882",
       };
-      addConv(newConv);
+      addChat(newConv);
     }
     closePopUp();
   };

@@ -4,26 +4,73 @@ import menuIcon from '../../../public/more.png';
 import sendIcon from '../../../public/send.png';
 import Message from './message';
 import Options from './options';
+import { gql } from "@apollo/client"
+import apolloClient from "../apolloclient";
+
+type Chat = {
+  id: string;
+  name: string;
+  avatar: string;
+}
+
+type Message = {
+  id: string;
+  timestamp: string;
+  message: string;
+  username: string;
+}
 
 type Props = {
   className: string;
-  activeConvType: string;
+  activeConv?: Chat;
+  convType: string;
 }
 
-const Conversation = ({ className, activeConvType }: Props) => {
+const Conversation = ({ className, activeConv, convType }: Props) => {
   const [isMenuOpen, setIsOpen] = useState(false);
   const [newMessage, setNewMessage] = useState('');
-  const [messages, setMessages] = useState([
-    { text: 'Message 1', userMessage: false },
-    { text: 'Message 2', userMessage: true },
-    { text: 'Message 3', userMessage: false },
-  ])
+  const [messages, setMessages] = useState<Message[]>([]);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const conversationRef = useRef<HTMLDivElement | null>(null);
 
   const toggleMenu = () => {
     setIsOpen(!isMenuOpen);
   };
+
+
+  const fetchMessages = async(chatId: string) => {
+    try {
+      const { data } = await apolloClient.query({
+        query: gql`
+          query getMessageHistoryOfChat($chatId: String!) {
+            getMessageHistoryOfChat(chatId: $chatId) {
+              id 
+              timestamp
+              message
+              username
+            }
+          }
+        `,
+        variables: {
+          chatId: chatId
+        }
+      });
+      return (data.getMessageHistoryOfChat);
+    } catch (error) {
+      return ([]);
+    }
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (activeConv)
+      {
+        const fetchedData = await fetchMessages(activeConv.id);
+        console.log("TEST: ", fetchedData);
+      }
+    };
+    fetchData();
+  }, [activeConv]);
 
   useEffect(() => {
     const clickOutside = (event: MouseEvent) => {
@@ -46,7 +93,7 @@ const Conversation = ({ className, activeConvType }: Props) => {
     if (newMessage.trim() !== '') {
       const newUserMessage = { text: newMessage, userMessage: true };
       console.log('Sending message:', newMessage);
-      setMessages((prevMessages) => [...prevMessages, newUserMessage]);
+      //setMessages((prevMessages) => [...prevMessages, newUserMessage]);
       setNewMessage('');
     }
   }
@@ -65,7 +112,7 @@ const Conversation = ({ className, activeConvType }: Props) => {
       <div className="mt-auto w-full mb-2 px-1 overflow-y-auto min-h-0 " ref={conversationRef}>
         <div className="w-full flex-flex-col">
           {messages.map((message, index) => (
-            <Message key={index} index={index} message={message.text} userMessage={message.userMessage} />
+            <Message key={index} message={message} userMessage={false} />
           ))}
         </div>
       </div>
@@ -88,7 +135,7 @@ const Conversation = ({ className, activeConvType }: Props) => {
       </div>
 
       {isMenuOpen && (
-        <Options ref={menuRef} activeConvType={activeConvType} toggleMenu={toggleMenu}/>
+        <Options ref={menuRef} convType={convType} toggleMenu={toggleMenu}/>
       )}
     </div>
   );

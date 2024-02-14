@@ -74,10 +74,10 @@ export class AuthResolver {
     }
   }
 
-  @Mutation(returns => Boolean) // TODO entierement a faire
-  async resetPassword(@Args('email') email: string): Promise<boolean> {
+  @Mutation(returns => Boolean)
+  async resetPassword(@Args('user') user:string, @Args('code') code: string, @Args('password') password: string): Promise<boolean> {
     try {
-      await this.userService.resetPassword(email);
+      await this.userService.resetPassword(user, code, password);
       return true;
     } catch (error) {
       throw new Error('Failed to send password reset email');

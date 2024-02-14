@@ -32,6 +32,7 @@ model Users {
     twoFA           Boolean              @default(false)
     twoFASecret     String?              @db.VarChar(255)
     twoFAOtpAuthUrl String?              @db.VarChar(255)
+    pwdResetSecret  String?              @db.VarChar(255)
     chats           UsersInChats[]
     friends         UsersRelationships[]
     matchs          UsersInMatchs[]

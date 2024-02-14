@@ -1,11 +1,11 @@
 "use client";
 
 import React from 'react'
-import RsetPasswordForm from '@/components/resetPassword';
+import ResetPasswordForm from '@/components/resetPassword';
 
 function page() {
   return (
-    <RsetPasswordForm/>
+    <ResetPasswordForm/>
   )
 }
 

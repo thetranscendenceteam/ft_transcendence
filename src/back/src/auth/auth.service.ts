@@ -268,36 +268,64 @@ export class AuthService {
 
   async generateEmailResetLink(email: string): Promise<boolean> {
     try {
-      //const pwdResetSecret = uid();
-      //const pwdExpireDate = new Date();
+      const pwdResetSecret = uid();
 
-      /*this.prisma.users.update({
+     const user = await this.prisma.users.update({
         where: {mail: email},
         data: {
-          pwdResetSecret: pwdResetSecret,
-          pwdExpireDate: pwdExpireDate
+          pwdResetSecret: pwdResetSecret
         },
-      });*/
+      });
+     console.log("🚀 ~ AuthService ~ generateEmailResetLink ~ user:", user)
 
-      //const resetLink = `http://localhost:3000/resetPassword/validate/${pwdResetSecret}`;
-      //const resend = new Resend('re_esAkHVsq_QBjMnbL7UkW7KBKHohD58Gh5'); //TODO put that in .env
-      // console.log(email,pwdExpireDate, resetLink);
+      const resetLink = `http://localhost:8443/confirmResetPassword/${pwdResetSecret}`; // TODO env
 
       const transport = nodemailer.createTransport({
         host: "smtp.sendgrid.net",
         port: 465,
         auth: {
           user: "apikey", // TODO env
-          pass: "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" // TODO env
+          pass: "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" // TODO env
         }
       });
 
       const message = {
         from: "resetpassword@transcendance-pomy.ch",
-        to: "alain.huber91@gmail.com",
-        subject: "Hello!",
-        html: "<tr><img src='https://cdn.discordapp.com/attachments/472445775549562881/1207370278863114360/ft_pomy_small.png?ex=65df6632&is=65ccf132&hm=3bf2103dbe78d66c24e58e1822970224fef1cb8f4bec45ba90cdb47d958226c0&'><td style='padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;' height='100%' valign='top' bgcolor='' role='module-content'><div><div style='font-family: inherit; text-align: left'><span style='font-size: 18px; font-family: verdana, geneva, sans-serif'>Hi !</span></div><div style='font-family: inherit; text-align: inherit'><span style='font-family: verdana, geneva, sans-serif'>A reset password have been asked for your account.</span></div><div style='font-family: inherit; text-align: inherit'><span style='font-family: verdana, geneva, sans-serif'>If you did not asked for a password reset please ignore this e-mail.</span></div><div style='font-family: inherit; text-align: inherit'><br></div><div style='font-family: inherit; text-align: inherit'><span style='font-family: verdana, geneva, sans-serif'>You can reset your password </span><a href='http://www.google.ch%22%3E/'><span style='font-family: verdana, geneva, sans-serif'>here</span></a><span style='font-family: verdana, geneva, sans-serif'>.</span></div><div style='font-family: inherit; text-align: inherit'><br></div><div style='font-family: inherit; text-align: inherit'><span style='font-family: verdana, geneva, sans-serif'>Best regards,</span></div><div style='font-family: inherit; text-align: inherit'><span style='font-family: verdana, geneva, sans-serif'>your transcendance-pomy team.</span></div><div></div></div></td></tr>"
-      }
+        to: email,
+        subject: "Password Reset request - Transcendance Pomy",
+        html: `<tr>
+                  <img src='https://cdn.discordapp.com/attachments/472445775549562881/1207370278863114360/ft_pomy_small.png?ex=65df6632&is=65ccf132&hm=3bf2103dbe78d66c24e58e1822970224fef1cb8f4bec45ba90cdb47d958226c0&'>
+                  <td style='padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;' height='100%' valign='top' bgcolor='' role='module-content'>
+                      <div>
+                          <div style='font-family: inherit; text-align: left'>
+                              <span style='font-size: 18px; font-family: verdana, geneva, sans-serif'>Hi !</span>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <span style='font-family: verdana, geneva, sans-serif'>A reset password has been requested for your account.</span>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <span style='font-family: verdana, geneva, sans-serif'>If you did not request a password reset, please ignore this email.</span>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <br>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <span style='font-family: verdana, geneva, sans-serif'>You can reset your password <a href='${resetLink}'>here</a>.</span>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <br>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <span style='font-family: verdana, geneva, sans-serif'>Best regards,</span>
+                          </div>
+                          <div style='font-family: inherit; text-align: inherit'>
+                              <span style='font-family: verdana, geneva, sans-serif'>your transcendance-pomy team.</span>
+                          </div>
+                          <div></div>
+                      </div>
+                  </td>
+              </tr>`
+      };
 
 
       transport.sendMail(message, (err, info) => {
@@ -315,9 +343,27 @@ export class AuthService {
     }
   };
 
-  async resetPassword(email: string): Promise<boolean> {
+  async resetPassword(username: string, code: string, password: string): Promise<boolean> {
+    console.log("🚀 ~ AuthService ~ resetPassword ~ code:", code)
+    console.log("🚀 ~ AuthService ~ resetPassword ~ username:", username)
     try {
-      console.log(email);
+      const user = await this.prisma.users.findFirst({
+        where: {pwdResetSecret: code, pseudo: username},
+      });
+      console.log("🚀 ~ AuthService ~ resetPassword ~ user:", user)
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const updatedUser = await this.prisma.users.update({
+        where: {pseudo: user.pseudo},
+        data: {
+          password: password
+        },
+      });
+      console.log("🚀 ~ AuthService ~ resetPassword ~ updatedUser:", updatedUser)
+      
+      console.log("Password reset for user: ", username, code, password); 
       return true;
     } catch (error) {
       console.error("resetPassword: ", error);

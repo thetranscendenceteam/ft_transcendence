@@ -66,7 +66,7 @@ async function main() {
         create: {
             id: '901918471',
             name: 'conseil',
-            password: 'jhsfga'
+            isPrivate: true,
         },
     })
 
@@ -78,7 +78,6 @@ async function main() {
         create: {
             id: '824763520',
             name: 'discord',
-            password: 'aigjaiojgsa'
         },
     })
 
@@ -169,8 +168,8 @@ async function main() {
         update: {},
         create: {
             id: '39108715',
-            firstId: 1010,
-            secondId: 1111,
+            firstId: 'kenobiObiwan',
+            secondId: 'yoda',
             status: RelationshipStatus.friends
         },
     })
@@ -182,8 +181,8 @@ async function main() {
         update: {},
         create: {
             id: '3901851751',
-            firstId: 1010,
-            secondId: 1011,
+            firstId: 'anakinSkywalker',
+            secondId: 'kenobiObiwan',
             status: RelationshipStatus.block_second_to_first
         },
     })

@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { UserChatRole, UserChatStatus } from '@prisma/client';
 
 @ObjectType()
@@ -7,14 +7,25 @@ export class ChatUserInfo {
     idChat: string;
 
     @Field(() => String, { nullable: true })
+    userId: string;
+
+    @Field(() => String, { nullable: true })
     name: string
 
-    @Field(() => String, { nullable: true })
+    @Field(() => UserChatRole, { nullable: true })
     role: UserChatRole;
 
-    @Field(() => String, { nullable: true })
+    @Field(() => UserChatStatus, { nullable: true })
     status: UserChatStatus;
 
     @Field(() => Date, { nullable: true })
     joinedAt: Date;
 }
+
+registerEnumType(UserChatRole, {
+    name: 'UserChatRole'
+})
+
+registerEnumType(UserChatStatus, {
+    name: 'UserChatStatus'
+})

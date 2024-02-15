@@ -2,6 +2,8 @@ import { Args, Resolver, Query } from '@nestjs/graphql';
 import { UsersInChatsService } from './users-in-chats.service';
 import { UserChatInfo } from './dto/UserChatInfo.entity';
 import { ChatUserInfo } from './dto/ChatUserInfo.entity';
+import { InfoChatForUserInput } from './dto/getInfoChatForUser.input';
+import { LIMIT_COMPOUND_SELECT } from 'sqlite3';
 
 @Resolver()
 export class UsersInChatsResolver {
@@ -21,5 +23,12 @@ export class UsersInChatsResolver {
     ): Promise<ChatUserInfo[]> {
         console.log("getChatsByIdUser query with userId : " + userId);
         return this.usersInChatsService.getAllChatByUserId(userId);
+    }
+
+    @Query(returns => ChatUserInfo)
+    getInfoUserForIdChatAndIdUser(
+        @Args('InfoChatForUserInput') input: InfoChatForUserInput,
+    ): Promise<ChatUserInfo | null> {
+        return this.usersInChatsService.getInfoUser(input);
     }
 }

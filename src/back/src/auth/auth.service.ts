@@ -110,7 +110,7 @@ export class AuthService {
 
   async ftLoginTwoFA(username: string, twoFA?: string): Promise<authUser | null> {
     try {
-      const user = await this.prisma.users.findFirst({where: {pseudo: username}});
+      const user = await this.prisma.users.findFirst({ where: { pseudo: username } });
       if (user) {
         const twoFAVerification = speakeasy.totp.verify({
           secret: user.twoFASecret,
@@ -124,7 +124,7 @@ export class AuthService {
           username: user.pseudo,
           ftId: user.ftId,
         };
-        const PRIVATE_KEY= "secretKeyPlaceHolder";
+        const PRIVATE_KEY = "secretKeyPlaceHolder";
         const secretKey = PRIVATE_KEY;
         const options = {
           expiresIn: '1h',
@@ -150,7 +150,7 @@ export class AuthService {
 
   async classicRegister(input: StandardRegisterInput): Promise<boolean> {
     try {
-      this.userService.createClassicUser({
+      await this.userService.createClassicUser({
         mail: input.mail,
         password: input.password,
         firstName: input.firstname,
@@ -160,14 +160,14 @@ export class AuthService {
       });
       return true;
     } catch (error) {
-      console.error("classicRegister: ", error);
-      return false;
+      console.log("Error on classicRegister from auth.service");
+      throw error;
     }
   }
 
   async classicLogin(input: StandardLoginInput): Promise<authUser | null> {
 
-    const payload = (input: { username:string, id: string | null }) => {
+    const payload = (input: { username: string, id: string | null }) => {
       return {
         username: input.username,
         id: input.id,
@@ -195,7 +195,7 @@ export class AuthService {
             encoding: 'base32',
             token: input.twoFactorCode as string,
           });
-          if(!twoFAVerification) {
+          if (!twoFAVerification) {
             throw new Error("Logging failed");
           }
         }
@@ -206,7 +206,7 @@ export class AuthService {
           id: user.id,
           email: user.mail ? user.mail : "No email",
           campus: "Not a 42 Student",
-          jwtToken: jwt.sign(payload({username: user.pseudo, id: user.id}), secretKey, options),
+          jwtToken: jwt.sign(payload({ username: user.pseudo, id: user.id }), secretKey, options),
           twoFA: user.twoFA,
         };
       }
@@ -221,7 +221,7 @@ export class AuthService {
 
   async twoFaQr(id: string): Promise<string | null> { // TODO take from JWT
     try {
-      const user = await this.prisma.users.findFirst({where: {id: id}});
+      const user = await this.prisma.users.findFirst({ where: { id: id } });
       if (user && user.twoFASecret) {
         const qrCode = await qrcode.toDataURL(user.twoFAOtpAuthUrl);
         return qrCode;
@@ -237,7 +237,7 @@ export class AuthService {
     try {
       const userCurrent = await this.prisma.users.findFirst(
         {
-          where: {id: id},
+          where: { id: id },
         },
       );
       if (userCurrent) {
@@ -252,8 +252,8 @@ export class AuthService {
       }
       const user = await this.prisma.users.update(
         {
-          where: {id: id},
-          data: {twoFA: toggleTwoFA},
+          where: { id: id },
+          data: { twoFA: toggleTwoFA },
         },
       );
       if (user) {
@@ -270,19 +270,19 @@ export class AuthService {
     try {
       const pwdResetSecret = uid();
 
-     const user = await this.prisma.users.update({
-        where: {mail: email},
+      const user = await this.prisma.users.update({
+        where: { mail: email },
         data: {
           pwdResetSecret: pwdResetSecret
         },
       });
-     console.log("🚀 ~ AuthService ~ generateEmailResetLink ~ user:", user)
+      console.log("🚀 ~ AuthService ~ generateEmailResetLink ~ user:", user)
 
       const smtp_url = process.env.SMTP_URL ? process.env.SMTP_URL : "";
       const resetLink = `${smtp_url}${pwdResetSecret}`;
       const smtp_user = process.env.SMTP_USER ? process.env.SMTP_HOST : "";
       const smtp_pass = process.env.SMTP_API_KEY ? process.env.SMTP_HOST : "";
-      
+
       const transport = nodemailer.createTransport({
         host: "smtp.sendgrid.net",
         port: 465,
@@ -333,9 +333,9 @@ export class AuthService {
 
       transport.sendMail(message, (err, info) => {
         if (err) {
-            console.log(err)
+          console.log(err)
         } else {
-            console.log(info);
+          console.log(info);
         }
       });
 
@@ -349,14 +349,14 @@ export class AuthService {
   async resetPassword(username: string, code: string, password: string): Promise<boolean> {
     try {
       const user = await this.prisma.users.findFirst({
-        where: {pwdResetSecret: code, pseudo: username},
+        where: { pwdResetSecret: code, pseudo: username },
       });
       if (!user) {
         throw new Error("User not found");
       }
 
       await this.prisma.users.update({
-        where: {pseudo: user.pseudo},
+        where: { pseudo: user.pseudo },
         data: {
           password: password,
           pwdResetSecret: null,

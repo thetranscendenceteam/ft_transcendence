@@ -32,4 +32,9 @@ export class GameGateway {
     console.log('Received message:', message);
     this.gameEngine.handleMessage(client, message);
   }
+
+  handleDisconnect(client: WebSocket) {
+    console.log('Client disconnected');
+    this.gameEngine.handleDisconnect(client);
+  }
 }

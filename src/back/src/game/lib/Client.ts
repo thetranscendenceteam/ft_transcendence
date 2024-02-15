@@ -2,20 +2,22 @@ import WebSocket from 'ws';
 import { Response } from './Messages';
 
 class Client {
-  userId: number;
+  userId: string;
   height: number;
   width?: number;
-  factor?: number;
+  factor: number;
   ws: WebSocket;
 
-  constructor(ws: WebSocket, userId: number, height: number) {
+  constructor(ws: WebSocket, userId: string) {
     this.userId = userId;
-    this.height = height;
+    this.height = 600;
     this.ws = ws;
+    this.factor = 0;
   }
 
-  setFactor(factor: number) {
-    this.factor = factor;
+  setHeight(height: number) {
+    this.height = height;
+    this.factor = height / 600;
   }
 
   send(message: Response) {

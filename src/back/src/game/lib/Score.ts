@@ -21,6 +21,10 @@ class Score {
     this.render = true;
   }
 
+  resetRender() {
+    this.render = false;
+  }
+
   genResponse(): ScoreResponse {
     return {
       left: this.left,

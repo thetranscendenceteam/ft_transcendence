@@ -2,6 +2,7 @@ import { RefObject } from "react";
 import { Player } from './Player';
 import Ball from './Ball';
 import Score from './Score';
+import confetti from 'canvas-confetti';
 
 
 class GameEngine {
@@ -106,6 +107,7 @@ class GameEngine {
       console.log('WebSocket is ready');
       game.ws = ws;
       game.sendInitData();
+      game.sendHeight();
     };
     ws.onmessage = function(event) {
       //console.log('WebSocket message received:', event.data);
@@ -121,6 +123,7 @@ class GameEngine {
   }
 
   handleMessage(msg: any) {
+    console.log('handling message: ' + JSON.stringify(msg));
     if (msg.players) {
       if (msg.players.left)
         this.players.left.populate(msg.players.left);
@@ -141,6 +144,11 @@ class GameEngine {
       this.factor = msg.game.factor;
       //console.log("ready: " + this.ready);
     }
+    if (msg.timestamp)
+      this.lastTimestamp = msg.timestamp;
+    if (msg.toPrint || msg.toPrint === "") {
+      this.toPrint = msg.toPrint;
+    }
   }
 
   update(delta: number) {
@@ -157,16 +165,15 @@ class GameEngine {
   };
 
   nextRound() {
+    if (! this.isLocal)
+      return ;
     // Check if players score is equal to matches
     if (this.score.left + this.score.right === this.matches) {
       // End game
       this.state = "end";
-      this.setMenu(true);
       return ;
     }
     this.reset();
-    if (! this.isLocal)
-      return ;
     this.start();
   };
 
@@ -230,10 +237,12 @@ class GameEngine {
     ctx.clearRect(0, 0, this.width, this.height);
     if (this.state === "starting")
       this.startingSequence();
-    if (this.state === "end")
+    if (this.state === "end") {
       this.won();
+      this.isLoop = false;
+    }
     this.drawText(this.toPrint);
-    if (this.state === "starting")
+    if (this.state === "starting" || this.state === "waiting" || this.state === "paused")
       return ;
     this.score.draw(ctx, this);
     if (this.state === "end")
@@ -249,7 +258,7 @@ class GameEngine {
       console.log("canvas context not found");
       return ;
     }
-    let fontSize = 100;
+    let fontSize = 60 * this.factor;
     let x = this.width / 2;
     let y = this.height / 2;
 
@@ -257,10 +266,17 @@ class GameEngine {
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(text, x, y);
+    if (text.includes("\n")) {
+      let lines = text.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], x, y - fontSize * (lines.length - 1) / 2 + fontSize * i);
+      }
+    } else
+      ctx.fillText(text, x, y);
   }
 
   startingSequence() {
+    if (!this.isLocal) return;
     // Print Ready?, 3, 2, 1, GO!
     let delta = Date.now() - this.startTimestamp;
     if (delta < 500)
@@ -280,6 +296,20 @@ class GameEngine {
   };
   
   won() {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { x: 0.2, y: 0.6 },
+      angle: 60,
+    });
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { x: 0.8, y: 0.6 },
+      angle: 120,
+    });
+    this.setMenu(true);
+    if (!this.isLocal) return;
     if (this.score.left > this.score.right)
       this.toPrint = "Left player won!";
     else
@@ -300,7 +330,6 @@ class GameEngine {
       init: {
         matchId: this.matchId,
         userId: this.userId,
-        height: this.height,
       }
     }
     this.send(res);

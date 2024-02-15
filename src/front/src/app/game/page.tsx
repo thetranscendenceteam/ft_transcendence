@@ -52,14 +52,10 @@ const getNewGame = async (setError: Function, setMatch: Function, gameParams: an
         },
       }
     });
-    if (errors) {
+    if (errors)
       setError(errors[0].message);
-    } else {
-      setError("");
-    }
-    if (data && data.getMatch) {
-      setMatch(data.getMatch)
-    }
+    if (data && data.createOrFindMatch)
+      setMatch(data.createOrFindMatch)
   } catch (error) {
     setError("Invalid credentials");
   }
@@ -67,7 +63,7 @@ const getNewGame = async (setError: Function, setMatch: Function, gameParams: an
 
 function Page() {
   const { user } = React.useContext(UserContext);
-  const [error, setError] = useState("") as [string, Function];
+  const [error, setError] = useState(null) as [string | null, Function];
   const [match, setMatch] = useState(null) as [string | null, Function];
   const [game, setGame] = useState(false) as [boolean, Function];
   const [gameParams, setGameParams] = useState(null) as [{rounds: number, difficulty: string, local: boolean} | null, Function];
@@ -84,14 +80,24 @@ function Page() {
         setMatch("local");
         return;
       }
+      console.log("getting new game");
       getNewGame(setError, setMatch, gameParams, user.id);
     }
   }, [gameParams, user]);
 
   useEffect(() => {
-    if (user && match)
+    console.log("user: ", user);
+    console.log("match: ", match);
+    if (user && match) {
       setGame(true);
+    }
   }, [user, match]);
+
+  useEffect(() => {
+    if (error) {
+      console.log("error: ", error);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (game)

@@ -17,4 +17,7 @@ export class UserChatInfo {
 
     @Field(() => Date, { nullable: true })
     joinedAt: Date;
+
+    @Field(() => String, { nullable: true })
+    avatar: string;
 }

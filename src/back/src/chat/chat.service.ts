@@ -183,11 +183,38 @@ export class ChatService {
                     userId: input.userId,
                 },
             });
+            const isChanEmpty = await this.prisma.chats.findFirst({
+                where: {
+                    id: input.chatId,
+                },
+                include: {
+                    users: true,
+                },
+            });
+            if (isChanEmpty) {
+                if (isChanEmpty.users.length == 0) {
+                    await this.deleteChannel(input.chatId);
+                }
+            }
             if (!test) return true;
             return false;
         }
         catch (e) {
             console.log("Error on removeUserOfChat mutation");
+            throw e;
+        }
+    }
+
+    async deleteChannel(chatId: string) {
+        try {
+            await this.prisma.chats.delete({
+                where: {
+                    id: chatId,
+                },
+            });
+        }
+        catch (e) {
+            console.log("Error on deleteChannel method");
             throw e;
         }
     }

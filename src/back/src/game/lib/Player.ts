@@ -10,8 +10,10 @@ class Player {
   speed: number;
   render: boolean;
   position: 'left' | 'right';
-  gamePad: GamePad | undefined;
+  gamePad: GamePad;
   client: Client | undefined;
+  toPrint: string;
+  isToPrint: boolean;
 
   constructor(position: 'left' | 'right') {
     this.x = 0;
@@ -21,8 +23,10 @@ class Player {
     this.speed = 0;
     this.render = true;
     this.position = position;
-    this.gamePad = undefined;
+    this.gamePad = new GamePad();
     this.client = undefined;
+    this.toPrint = '';
+    this.isToPrint = false;
   }
 
   init(game: Game) {
@@ -33,10 +37,12 @@ class Player {
       this.position === 'left' ? this.width : game.width - 2 * this.width;
     this.y = (game.height - this.height) / 2;
     this.gamePad = new GamePad();
+    this.render = true;
   }
 
   update(game: Game, delta: number) {
     if (this.gamePad) {
+      if (this.gamePad.state === 'stop') return;
       switch (this.gamePad.state) {
         case 'up':
           this.y -= this.speed * delta;
@@ -54,6 +60,11 @@ class Player {
     }
   }
 
+  resetRender() {
+    this.render = false;
+    this.isToPrint = false;
+  }
+
   setClient(client: Client) {
     this.client = client;
   }
@@ -62,7 +73,13 @@ class Player {
     this.gamePad = gamePad;
   }
 
-  genResponse(factor: number = 1): PlayerResponse {
+  setToPrint(toPrint: string) {
+    if (toPrint === this.toPrint) return;
+    this.toPrint = toPrint;
+    this.isToPrint = true;
+  }
+
+  genResponse(factor: number): PlayerResponse {
     return {
       x: this.x * factor,
       y: this.y * factor,
@@ -81,10 +98,5 @@ class GamePad {
     this.state = 'stop';
   }
 }
-
-type User = {
-  id: string;
-  name: string;
-};
 
 export { Player, GamePad };

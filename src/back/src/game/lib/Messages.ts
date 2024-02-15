@@ -7,7 +7,7 @@ type Message = {
 
 type InitMessage = {
   height: number;
-  userId: number;
+  userId: string;
 };
 
 type GamePadMessage = {
@@ -25,8 +25,7 @@ type Response = {
 };
 
 type GameResponse = {
-  ready?: boolean;
-  running?: boolean;
+  state?: string;
   factor?: number;
 };
 
@@ -36,7 +35,7 @@ type PlayerResponse = {
   height?: number;
   width?: number;
   speed?: number;
-  userId?: number;
+  userId?: string;
 };
 
 type BallResponse = {

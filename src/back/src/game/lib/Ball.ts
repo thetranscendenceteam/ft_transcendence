@@ -74,7 +74,11 @@ class Ball {
     //this.y += this.velocityY * delta;
   }
 
-  genResponse(factor: number = 1): BallResponse {
+  resetRender() {
+    this.render = false;
+  }
+
+  genResponse(factor: number): BallResponse {
     return {
       x: this.x * factor,
       y: this.y * factor,

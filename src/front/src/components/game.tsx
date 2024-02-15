@@ -28,23 +28,6 @@ export const Game = (
     console.log("game launched");
   }, [gameRef, gameParams, matchId, userId, setMenu]);
 
-  useEffect(function handleMenu() {
-    if (! menu)
-      return ;
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { x: 0.2, y: 0.6 },
-      angle: 60,
-    });
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { x: 0.8, y: 0.6 },
-      angle: 120,
-    });
-  }, [menu]);
-
   useEffect(function handleKeys() {
     document.addEventListener('keydown', (e) => gameEngine.current.handleKeyDown(e, gameEngine.current));
     document.addEventListener('keyup', (e) => gameEngine.current.handleKeyUp(e, gameEngine.current));
@@ -62,7 +45,7 @@ export const Game = (
       {menu && 
         <div className="absolute top-[20%] left-0 w-full h-full flex items-center justify-center">
           <div className="bg-gray-800 rounded-lg">
-            <Button className='m-4' onClick={() => reset(false)}>Restart</Button>
+            <Button className='m-4' onClick={() => reset(false)}>New game</Button>
             <Link href='/'><Button className='m-4'>Home</Button></Link>
           </div>
         </div>

@@ -11,12 +11,18 @@ class GameEngine {
     this.games = [];
   }
 
+  deleteGame(game: Game) {
+    clearInterval(game.interval);
+    this.games = this.games.filter((g) => g !== game);
+    console.log('Game deleted');
+  }
+
   createGame(): Game {
     const game = new Game();
     this.games.push(game);
 
     const dt = 1 / 60;
-    game.reset();
+    game.launch();
     game.interval = setInterval(() => {
       game.loop();
     }, 1000 * dt);
@@ -25,7 +31,8 @@ class GameEngine {
     return game;
   }
 
-  searchGame(ws: WebSocket, userId: number, height: number) {
+  searchGame(ws: WebSocket, initMessage: any) {
+    // Replace with call to DB.
     console.log('searching game...');
     let game = this.games.find((game) => !game.full);
     if (!game) {
@@ -33,9 +40,7 @@ class GameEngine {
       game = this.createGame();
     } else console.log('game found');
 
-    const client = new Client(ws, userId, height);
-    const factor = height / game.height;
-    client.setFactor(factor);
+    const client = new Client(ws, initMessage.userId);
     game.addPlayer(client);
   }
 
@@ -60,23 +65,47 @@ class GameEngine {
   handleMessage(ws: WebSocket, message: Message) {
     console.log('message', message);
     if (message.init) {
+      // Prevent concurrent connections
       if (this.searchPlayerByWs(ws)) return;
-      this.searchGame(ws, message.init.userId, message.init.height);
-    }
-    if (message.gamepad) {
-      console.log(message.gamepad);
+      this.searchGame(ws, message.init);
+    } else {
+      console.log('handling message');
       const player = this.searchPlayerByWs(ws);
+      const game = this.searchGameByWs(ws);
       if (!player) {
         console.log('no player found');
         return;
       }
-      player.setGamePad(message.gamepad);
-      console.log(
-        'gamepad',
-        message.gamepad,
-        'set for player',
-        player.position,
-      );
+      if (!game) {
+        console.log('no game found');
+        return;
+      }
+      game.handleMessages(player, message);
+      if (
+        game.state === 'end' &&
+        !game.players.left.client &&
+        !game.players.right.client
+      ) {
+        this.deleteGame(game);
+      }
+    }
+  }
+
+  handleDisconnect(ws: WebSocket) {
+    const player = this.searchPlayerByWs(ws);
+    const game = this.searchGameByWs(ws);
+    if (!player) return;
+    if (!game) return;
+    if (player.client) {
+      console.log('player with id', player.client.userId, 'disconnected');
+      game.removePlayer(player.client);
+    }
+    if (
+      game.state === 'end' &&
+      !game.players.left.client &&
+      !game.players.right.client
+    ) {
+      this.deleteGame(game);
     }
   }
 }

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import apolloClient from "./apolloclient";
 import { gql } from "@apollo/client";
 import './style/board.css';
@@ -8,20 +8,23 @@ import friendIcon from '../../public/friend.png';
 import rightArrow from '../../public/right-arrow.png';
 import leftArrow from '../../public/left-arrow.png';
 import Image from 'next/image';
+import { UserContext } from './userProvider';
 
 const fetchData = async () => {
   try {
     const { data } = await apolloClient.query({
       query: gql`
-        {
-          getUsers {
-            id
-            nickname: pseudo
+        query getUsers($input: Int) {
+          getUsers(max: $input) {
+            pseudo
             avatar
             xp
           }
         }
       `,
+      variables: {
+        input: 50 
+      }
     });
     return data.getUsers;
   } catch (error) {
@@ -29,20 +32,49 @@ const fetchData = async () => {
   }
 };
 
+const getPlayer = async (userId: string) => {
+  try {
+    const { data } = await apolloClient.query({
+      query: gql`
+        query getUser($input: GetUserInput!) {
+          getUser(UserInput: $input) {
+            pseudo
+            avatar
+            xp
+          }
+        }
+      `,
+      variables: {
+        input: {
+          id: userId
+        }
+      }
+    });
+    return (data.getUser);
+  } catch (error) {
+    return ([]);
+  }
+};
+
 type Player = {
-  id: string;
-  nickname: string;
+  pseudo: string;
   avatar: string;
   xp: number;
 };
 
 export const Board = () => {
   const [data, setData] = useState<Player[]>([]);
+  const [client, setClient] = useState<Player>();
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     const fetchInitialData = async () => {
       const fetchedData = await fetchData();
       setData(fetchedData);
+      if (user && user.id) {
+        const fetchedClient = await getPlayer(user.id);
+        setClient(fetchedClient);
+      }
     };
 
     fetchInitialData();
@@ -99,16 +131,21 @@ export const Board = () => {
       <div className="h-4/6 col-span-6 col-start-3 col-end-7 grid grid-rows-7">
         <div className="scoreboard grid grid-cols-2 w-full h-full row-span-6 row-start-1 row-end-7">
           <div className="col-span-2 flex items-center justify-center bg-[#a64dff]">
-            <img src="https://avatars.githubusercontent.com/u/11646882" alt="Player profile" className="w-10 h-10 rounded-full mr-6" />
-            <span className="mr-5">Player</span>
-            <span className="ml-10">3</span>
+            {client && (
+              <>
+                <img src={client.avatar} alt="Player profile" className="w-10 h-10 rounded-full mr-6" />
+                <span className="mr-5">{client.pseudo}</span>
+                <span className="ml-10">{client.xp}</span>
+              </>
+            )}
           </div>
           {[...Array(10)].map((_,index) => (
             <div key={index} className={`w-full flex items-center justify-center ${colors[Math.floor(index / 2)]}`}>
               {playersToShow[index] ? (
                 <>
-                  <img src={playersToShow[index].avatar} alt="Profile" className="rounded-full w-10 h-10 mr-6" />
-                  <span className="mr-5">{playersToShow[index].nickname}</span>
+                  <p className="text-white text-xl">{index+1}#</p>
+                  <img src={playersToShow[index].avatar} alt="Profile" className="rounded-full w-10 h-10 mr-6 ml-4" />
+                  <span className="mr-5">{playersToShow[index].pseudo}</span>
                   <span className="ml-10">{playersToShow[index].xp}</span>
                 </>
               ) : (
@@ -119,7 +156,7 @@ export const Board = () => {
             </div>
           ))}
         </div>
-        <div className="grid-item flex justify-between">
+        <div className="grid-item flex justify-between mt-6">
           <div className="h-15 w-40 flex items-center justify-center ml-5">
             <button className="" onClick={prevPage}>
               <Image src={leftArrow} alt="Left Arrow" className="h-15 w-40" />

@@ -36,26 +36,26 @@ const Conversation = ({ className, activeConv, convType }: Props) => {
   const conversationRef = useRef<HTMLDivElement | null>(null);
   const { user } = useContext(UserContext);
 
-  const MESSAGE_SUBSCRIPTION = gql`
-    subscription OnnNewMessage($chatId: String!) {
-      newMessage(chatId: $chatId) {
-        timestamp 
-        message 
-        username
-      }
-    }
-  `;
-
-  const { data, loading, error } = useSubscription(MESSAGE_SUBSCRIPTION, {
-    variables: { chatId: activeConv.id }
-  });
-
-  useEffect(() => {
-    if (data && data.newMessage) {
-      const newMessageData = data.newMessage;
-      setMessages(prevMessages => [...prevMessages, newMessageData]);
-    }
-  }, [data]);
+//  const MESSAGE_SUBSCRIPTION = gql`
+//    subscription OnnNewMessage($chatId: String!) {
+//      newMessage(chatId: $chatId) {
+//        timestamp 
+//        message 
+//        username
+//      }
+//    }
+//  `;
+//
+//  const { data, loading, error } = useSubscription(MESSAGE_SUBSCRIPTION, {
+//    variables: { chatId: activeConv.id }
+//  });
+//
+//  useEffect(() => {
+//    if (data && data.newMessage) {
+//      const newMessageData = data.newMessage;
+//      setMessages(prevMessages => [...prevMessages, newMessageData]);
+//    }
+//  }, [data]);
 
   const toggleMenu = () => {
     setIsOpen(!isMenuOpen);

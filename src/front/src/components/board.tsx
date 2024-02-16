@@ -156,7 +156,7 @@ export const Board = () => {
             </div>
           ))}
         </div>
-        <div className="grid-item flex justify-between">
+        <div className="grid-item flex justify-between mt-6">
           <div className="h-15 w-40 flex items-center justify-center ml-5">
             <button className="" onClick={prevPage}>
               <Image src={leftArrow} alt="Left Arrow" className="h-15 w-40" />

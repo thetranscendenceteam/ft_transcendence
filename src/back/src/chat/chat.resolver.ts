@@ -9,6 +9,7 @@ import { UsersInBanList } from './dto/UsersInBanLists.entity';
 import { UserPrivate } from 'src/user/dto/userPrivate.entity';
 import { UpdateUserInChat } from './dto/UpdateUserInChat.input';
 import { RemoveUserInput } from './dto/RemoveUser.input';
+import { InfoChatForUserInput } from 'src/users-in-chats/dto/getInfoChatForUser.input';
 
 @Resolver()
 export class ChatResolver {

@@ -13,4 +13,7 @@ export class Chat {
 
     @Field(() => Boolean)
     isPrivate: boolean;
+
+    @Field(() => Boolean)
+    isWhisper: boolean;
 }

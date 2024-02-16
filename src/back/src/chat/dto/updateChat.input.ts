@@ -7,4 +7,10 @@ export class UpdateChatInput {
 
     @Field(() => String)
     id: string;
+
+    @Field(() => Boolean, { nullable: true })
+    isPrivate: boolean;
+
+    @Field(() => Boolean, { nullable: true })
+    isWhisper: boolean;
 }

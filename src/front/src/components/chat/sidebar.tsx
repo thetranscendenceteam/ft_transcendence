@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import addButton from '../../../public/add-button.png';
+import joinButton from '../../../public/joinButton.png';
 import Image from 'next/image';
 import NewChannel from './newChannel';
 import apolloClient from "../apolloclient";
@@ -127,12 +128,20 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
             ))
           }
           {activeList === 'Channels' && (
-            <div className='h-20 bg-indigo-950 flex items-center justify-center border-t border-gray-500'>
-              <button onClick={openCreateChannel}>
-                <Image src={addButton} alt="Add" width={40} height={40} />
-              </button>
-              {createNewChannel && <NewChannel closePopUp={closeCreateChannel} addChat={addChat} />}
-            </div>
+            <>
+              <div className='h-20 bg-indigo-950 flex items-center justify-center border-t border-gray-500'>
+                <button onClick={openCreateChannel}>
+                  <Image src={addButton} alt="Add" width={40} height={40} />
+                </button>
+                {createNewChannel && <NewChannel closePopUp={closeCreateChannel} addChat={addChat} />}
+              </div>
+              <div className='h-20 bg-indigo-950 flex items-center justify-center border-t border-gray-500'>
+                <button onClick={openCreateChannel}>
+                  <Image src={joinButton} alt="Add" width={40} height={40} />
+                </button>
+                {createNewChannel && <NewChannel closePopUp={closeCreateChannel} addChat={addChat} />}
+              </div>
+            </>
           )}
         </div>
       </div>

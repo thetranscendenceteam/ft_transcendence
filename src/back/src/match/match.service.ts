@@ -3,8 +3,11 @@ import { PrismaService } from '../prisma.service';
 import { UserInMatch } from './dto/UserInMatch.entity';
 import { MatchHistory } from './dto/MatchHistory.entity';
 import { CreateOrFindMatchInput } from './dto/CreateOrFindMatch.input';
-import { SaveOrUpdateMatchInput } from './dto/SaveOrUpdateMatch.input';
 import { Match } from './dto/Match.entity';
+import { CreateMatchInput } from './dto/CreateMatch.input';
+import { SetMatchScoreInput } from './dto/SetMatchScore.input';
+import { UserPrivate } from 'src/user/dto/userPrivate.entity';
+import { AddUserInMatch } from './dto/AddUserInMatch.input';
 
 @Injectable()
 export class MatchService {
@@ -164,9 +167,268 @@ export class MatchService {
         }
     }
 
-    async saveOrUpdateMatch(input: SaveOrUpdateMatchInput): Promise<Match> {
+    // async saveOrUpdateMatch(input: SaveOrUpdateMatchInput): Promise<Match> {
+    //     try {
+    //         const date = new Date();
+    //         const res = await this.prisma.matchs.update({
+    //             where: {
+    //                 id: input.id,
+    //             },
+    //             data: {
+    //                 score: {
+    //                     update: {
+    //                         where: {
+    //                             matchId: input.id,
+    //                         },
+    //                         data: {
+    //                             winnerScore: input.score.winnerScore,
+    //                             looserScore: input.score.looserScore,
+    //                         },
+    //                     },
+    //                 },
+    //                 finishedAt: date.toISOString(),
+    //                 users: {
+    //                     update: {
+    //                         where: {
+    //                             userId_matchId: {
+    //                                 matchId: input.id,
+    //                                 userId: input.winnerId,
+    //                             }
+    //                         },
+    //                         data: {
+    //                             isWin: true,
+    //                         },
+    //                     },
+    //                 }
+    //             },
+    //             include: {
+    //                 score: true,
+    //             }
+    //         })
+    //         return res;
+    //     }
+    //     catch (e) {
+    //         console.log("Error on saveOrUpdateMatch query");
+    //         throw e;
+    //     }
+    // }
+
+    async findUnstartedMatches(): Promise<Match[]> {
         try {
-            const date = new Date();
+            const res = await this.prisma.matchs.findMany({
+                where: {
+                    startedAt: null,
+                },
+                include: {
+                    score: true,
+                }
+            });
+            return res;
+        }
+        catch (e) {
+            console.log("Error on findUnstartedMatches query");
+            throw e;
+        }
+    }
+
+    async findUngoingMatches(): Promise<Match[]> {
+        try {
+            const res = await this.prisma.matchs.findMany({
+                where: {
+                    NOT: [{ startedAt: null, },],
+                    finishedAt: null,
+                },
+                include: {
+                    score: true,
+                },
+            });
+            return res;
+        }
+        catch (e) {
+            console.log("Error on findUngoingMatches query");
+            throw e;
+        }
+    }
+
+    async findFinishedMatches(): Promise<Match[]> {
+        try {
+            const res = await this.prisma.matchs.findMany({
+                where: {
+                    NOT: [
+                        { startedAt: null },
+                        { finishedAt: null },
+                    ],
+                },
+                include: {
+                    score: true,
+                }
+            });
+            return res;
+        }
+        catch (e) {
+            console.log("Error on findFinishedMatches query");
+            throw e;
+        }
+    }
+
+    async findUnstartedMatchesForUser(userId: string): Promise<Match[]> {
+        try {
+            const res = await this.prisma.usersInMatchs.findMany({
+                where: {
+                    userId: userId,
+                    match: {
+                        startedAt: null,
+                    },
+                },
+                include: {
+                    match: {
+                        include: {
+                            score: true,
+                        },
+                    },
+                },
+            });
+            let matches: Match[] = [];
+            res.forEach(um => {
+                matches.push(um.match);
+            });
+            return matches;
+        }
+        catch (e) {
+            console.log("Error on findUnstartedMatches query");
+            throw e;
+        }
+    }
+
+    async findUngoingMatchesForUser(userId: string): Promise<Match[]> {
+        try {
+            const res = await this.prisma.usersInMatchs.findMany({
+                where: {
+                    userId: userId,
+                    match: {
+                        NOT: [{ startedAt: null, },],
+                        finishedAt: null,
+                    },
+                },
+                include: {
+                    match: {
+                        include: {
+                            score: true,
+                        },
+                    },
+                },
+            });
+            let matches: Match[] = [];
+            res.forEach((um) => {
+                matches.push(um.match);
+            });
+            return matches;
+        }
+        catch (e) {
+            console.log("Error on findUngoingMatches query");
+            throw e;
+        }
+    }
+
+    async findFinishedMatchesForUser(userId: string): Promise<Match[]> {
+        try {
+            const res = await this.prisma.usersInMatchs.findMany({
+                where: {
+                    userId: userId,
+                    match: {
+                        NOT: [
+                            { startedAt: null },
+                            { finishedAt: null },
+                        ],
+                    },
+                },
+                include: {
+                    match: {
+                        include: {
+                            score: true,
+                        },
+                    },
+                },
+            });
+            let matches: Match[] = [];
+            res.forEach((um) => {
+                matches.push(um.match);
+            });
+            return matches;
+        }
+        catch (e) {
+            console.log("Error on findFinishedMatches query");
+            throw e;
+        }
+    }
+
+    async createMatch(input: CreateMatchInput): Promise<Match> {
+        try {
+            const res = await this.prisma.matchs.create({
+                data: {
+                    difficulty: input.difficulty,
+                    score: {
+                        create: {
+                            bestOf: input.bestOf,
+                        },
+                    },
+                },
+                include: {
+                    score: true,
+                }
+            });
+            return res;
+        }
+        catch (e) {
+            console.log("Error on createMatch");
+            throw e;
+        }
+    }
+
+    async setMatchAsStarted(matchId: string): Promise<Match> {
+        try {
+            const res = await this.prisma.matchs.update({
+                where: {
+                    id: matchId,
+                },
+                data: {
+                    startedAt: new Date().toISOString(),
+                },
+                include: {
+                    score: true,
+                }
+            });
+            return res;
+        }
+        catch (e) {
+            console.log("Error on setMatchAsStarted");
+            throw e;
+        }
+    }
+
+    async setMatchAsFinished(matchId: string): Promise<Match> {
+        try {
+            const res = await this.prisma.matchs.update({
+                where: {
+                    id: matchId,
+                },
+                data: {
+                    finishedAt: new Date().toISOString(),
+                },
+                include: {
+                    score: true,
+                },
+            });
+            return res;
+        }
+        catch (e) {
+            console.log("Error on setMatchAsFinished");
+            throw e;
+        }
+    }
+
+    async setMatchScore(input: SetMatchScoreInput): Promise<Match> {
+        try {
             const res = await this.prisma.matchs.update({
                 where: {
                     id: input.id,
@@ -183,29 +445,76 @@ export class MatchService {
                             },
                         },
                     },
-                    finishedAt: date.toISOString(),
                     users: {
                         update: {
                             where: {
                                 userId_matchId: {
-                                    matchId: input.id,
                                     userId: input.winnerId,
-                                }
+                                    matchId: input.id,
+                                },
                             },
                             data: {
                                 isWin: true,
                             },
                         },
-                    }
+                    },
                 },
                 include: {
                     score: true,
                 }
-            })
+            });
             return res;
         }
         catch (e) {
-            console.log("Error on saveOrUpdateMatch query");
+            console.log("Error on setMatchScore");
+            throw e;
+        }
+    }
+
+    async findUsersInMatch(matchId: string): Promise<string[]> {
+        try {
+            const res = await this.prisma.usersInMatchs.findMany({
+                where: {
+                    matchId: matchId,
+                },
+            });
+            return res.flatMap((r) => r.userId);
+        }
+        catch (e) {
+            console.log("Error on findUsersInMatch");
+            throw e;
+        }
+    }
+
+    async addUserInMatch(input: AddUserInMatch): Promise<Match> {
+        try {
+            const res = await this.prisma.matchs.update({
+                where: {
+                    id: input.matchId,
+                },
+                data: {
+                    users: {
+                        connectOrCreate: {
+                            where: {
+                                userId_matchId: {
+                                    matchId: input.matchId,
+                                    userId: input.userId,
+                                },
+                            },
+                            create: {
+                                userId: input.userId,
+                            },
+                        },
+                    },
+                },
+                include: {
+                    score: true,
+                }
+            });
+            return res;
+        }
+        catch (e) {
+            console.log("Error on addUserInMatch");
             throw e;
         }
     }

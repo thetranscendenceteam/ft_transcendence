@@ -10,6 +10,7 @@ import { UserContext } from '../userProvider';
 type Chat = {
   id: string;
   name: string;
+  isWhisper: boolean;
   avatar: string;
 }
 
@@ -33,6 +34,7 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
                 getChatsByIdUser(userId: $userId) {
                   idChat 
                   name
+                  isWhisper
                 }
               }
           `,
@@ -53,6 +55,7 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
       const tmp = fetchedData.map((item: any) => ({
         id: item.idChat,
         name: item.name,
+        isWhisper: item.isWhisper,
         avatar: ""
       }));
       setData(tmp);
@@ -99,11 +102,20 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
       </div>
       <div className='h-full overflow-y-auto'>
         <div className='flex flex-col'>
-          {data.map((conversation, index) => (
-            <button key={index} className="cursor-pointer" onClick={() => handleClick(conversation)}>
-              <SidebarChat key={conversation.id} avatarUrl="" fallback="..." nickname={conversation.name} />
-            </button>
-          ))}
+          {data
+            .filter((conversation) => {
+              if (activeList === 'Friends') {
+                return (conversation.isWhisper);
+              } else {
+                return (!conversation.isWhisper);
+              }
+            })
+            .map((conversation, index) => (
+              <button key={index} className="cursor-pointer" onClick={() => handleClick(conversation)}>
+                <SidebarChat key={conversation.id} avatarUrl="" fallback="..." nickname={conversation.name} />
+              </button>
+            ))
+          }
           {activeList === 'Channels' && (
             <div className='h-20 bg-indigo-950 flex items-center justify-center border-t border-gray-500'>
               <button onClick={openCreateChannel}>

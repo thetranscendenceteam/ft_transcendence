@@ -6,6 +6,7 @@ import { UserContext } from '../userProvider';
 type Chat = {
   id: string;
   name: string;
+  isWhisper: boolean;
   avatar: string;
 }
 
@@ -17,9 +18,13 @@ interface PopUpProp {
 const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
   const [channelName, setChannelName] = useState<string>('');
   const { user } = useContext(UserContext);
+  const [isPublic, setIsPublic] = useState(false);
 
   
   const createChannel = async() => {
+    if (channelName === "") {
+      return;
+    }
     try {
       const { data: { createChat } } = await apolloClient.mutate({
         mutation: gql`
@@ -27,13 +32,14 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
             createChat(createChatInput: $input) {
               id
               name
+              isWhisper
             }
           }
         `,
         variables: {
           input: {
             name: channelName,
-            isPrivate: false
+            isPrivate: isPublic
           }
         }
       });
@@ -41,6 +47,7 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
         const newChat: Chat = {
           id: createChat.id,
           name: createChat.name,
+          isWhisper: createChat.isWhisper,
           avatar: '' 
         };
 
@@ -72,6 +79,10 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
     closePopUp();
   };
 
+  const handlePrivacy = (privacy: boolean) => {
+    setIsPublic(privacy);
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
       <div className="relative h-1/2 w-1/2 bg-indigo-900 flex flex-col items-center justify-center rounded-xl">
@@ -80,6 +91,22 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
         </button>
         <h2 className="absolute top-6 text-3xl mb-6">Create your new channel</h2>
         <input type="text" required placeholder="Channel Name" className="text-gray-600 border rounded-md p-2 mt-16" onChange={(e) => setChannelName(e.target.value)} />
+        <div className="flex mt-6">
+          <button onClick={() => handlePrivacy(false)}
+            className={`px-4 py-2 mr-4 border rounded-md 
+              ${isPublic ? 'bg-blue-700 text-white' : 'bg-blue-500 text-white'}
+            `}
+          >
+              Private
+          </button>
+          <button onClick={() => handlePrivacy(true)}
+            className={`px-4 py-2 ml-4 border rounded-md 
+              ${isPublic ? 'bg-blue-500 text-white' : 'bg-blue-700 text-white'}
+            `}
+          >
+            Public
+          </button>
+        </div>
         <button className="absolute bottom-3 right-3 bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-600" onClick={createChannel}>Create</button>
       </div>
     </div>

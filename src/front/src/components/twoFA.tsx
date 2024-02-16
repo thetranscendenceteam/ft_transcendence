@@ -61,13 +61,6 @@ const TwoFA = () => {
   const {user, updateUser} = React.useContext(UserContext);
   const router = useRouter();
   
-  React.useEffect(() => {
-    let userStorage = window.sessionStorage.getItem("user");
-    if (!user && userStorage) {
-      updateUser(JSON.parse(userStorage));
-    }
-  }, []);
-
   useEffect(() => {
     const fetchInitialData = async () => {
       if (user) {

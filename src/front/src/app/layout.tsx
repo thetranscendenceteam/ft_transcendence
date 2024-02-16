@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Menu } from '@/components/menu'
 import { UserProvider } from '@/components/userProvider';
+import { ApolloProvider } from '@apollo/client';
+import apolloClient from '../components/apolloclient';
 
 const inter = Inter({ subsets: ['latin'] })
 

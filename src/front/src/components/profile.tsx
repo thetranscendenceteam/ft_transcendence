@@ -119,15 +119,8 @@ export const MatchHistoryCard = ({ user, matchHistory }: userAndMatch) => {
 
 
 const ProfileComponent = () => {
-  const { user, updateUser } = React.useContext(UserContext);
+  const { user } = React.useContext(UserContext);
   const [matchHistory, setMatchHistory] = React.useState<MatchHistory[] | undefined>(undefined);
-
-  React.useEffect(() => {
-    let userStorage = window.sessionStorage.getItem("user");
-    if (!user && userStorage) {
-      updateUser(JSON.parse(userStorage));
-    }
-  }, []);
 
   React.useEffect(() => {
     const fetchMatchHistory = async () => {

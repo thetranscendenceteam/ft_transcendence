@@ -5,10 +5,10 @@ import type { User } from "@/lib/user";
 import { useCookies } from 'react-cookie';
 import { jwtDecode } from 'jwt-decode';
 import apolloClient from "./apolloclient";
-import { gql } from "@apollo/client"
+import { gql } from "@apollo/client";
 
 interface DecodedToken {
-  ftId: number;
+  id: number;
   username: string;
   iat: number;
   exp: number;
@@ -26,7 +26,7 @@ function useJwtCookie() {
   return (jwtCookie ? jwtCookie : null);
 }
 
-const fetchData = async (ftId: number) => {
+const fetchData = async (id: number) => {
   try {
     const { data } = await apolloClient.query({
       query: gql`
@@ -45,7 +45,7 @@ const fetchData = async (ftId: number) => {
       `,
       variables: {
         UserInput: {
-          ftId: ftId
+          id: id
         }
       }
     });
@@ -67,7 +67,7 @@ export function UserProvider({ children }: { children: ReactNode }): JSX.Element
     const fetchDataSetUser = async () => {
       if (jwtToken?.jwtToken && !user) {
         const decodedToken = jwtDecode(jwtToken.jwtToken) as DecodedToken;
-        const fetchedData = await fetchData(decodedToken.ftId);
+        const fetchedData = await fetchData(decodedToken.id);
         if (fetchedData) {
           const user: User = {
             id: fetchedData.id,

@@ -1,29 +1,91 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import Image from 'next/image';
 import menuIcon from '../../../public/more.png';
 import sendIcon from '../../../public/send.png';
 import Message from './message';
 import Options from './options';
+import { gql, useSubscription } from "@apollo/client"
+import apolloClient from "../apolloclient";
+import { UserContext } from '../userProvider';
+
+type Chat = {
+  id: string;
+  name: string;
+  role: string;
+  status: string;
+  isPrivate: boolean;
+  isWhisper: boolean;
+  avatar: string;
+}
+
+type Message = {
+  id: string;
+  timestamp: string;
+  message: string;
+  username: string;
+}
 
 type Props = {
   className: string;
-  activeConvType: string;
+  activeConv: Chat;
+  convType: string;
 }
 
-const Conversation = ({ className, activeConvType }: Props) => {
+
+const Conversation = ({ className, activeConv, convType }: Props) => {
   const [isMenuOpen, setIsOpen] = useState(false);
   const [newMessage, setNewMessage] = useState('');
-  const [messages, setMessages] = useState([
-    { text: 'Message 1', userMessage: false },
-    { text: 'Message 2', userMessage: true },
-    { text: 'Message 3', userMessage: false },
-  ])
+  const [messages, setMessages] = useState<Message[]>([]);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const conversationRef = useRef<HTMLDivElement | null>(null);
+  const { user } = useContext(UserContext);
 
   const toggleMenu = () => {
     setIsOpen(!isMenuOpen);
   };
+
+  const formatTime = (timeStampStr: string) => {
+    const timestamp = new Date(timeStampStr);
+    return (timestamp.toLocaleDateString(undefined, { hour: 'numeric', minute: 'numeric', hour12: false }));
+  };
+
+  const fetchMessages = async(chatId: string) => {
+    try {
+      const { data } = await apolloClient.query({
+        query: gql`
+          query getMessageHistoryOfChat($chatId: String!) {
+            getMessageHistoryOfChat(chatId: $chatId) {
+              id 
+              timestamp
+              message
+              username
+            }
+          }
+        `,
+        variables: {
+          chatId: chatId
+        }
+      });
+      return (data.getMessageHistoryOfChat);
+    } catch (error) {
+      return ([]);
+    }
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (activeConv)
+      {
+        const fetchedData = await fetchMessages(activeConv.id);
+        const formattedData = fetchedData.map((message: Message) => ({
+          ...message,
+          timestamp: formatTime(message.timestamp)
+        }));
+        setMessages(formattedData);
+      }
+    };
+    fetchData();
+  }, [activeConv]);
 
   useEffect(() => {
     const clickOutside = (event: MouseEvent) => {
@@ -42,14 +104,28 @@ const Conversation = ({ className, activeConvType }: Props) => {
     }
   })
 
-  const sendMessage = () => {
-    if (newMessage.trim() !== '') {
-      const newUserMessage = { text: newMessage, userMessage: true };
-      console.log('Sending message:', newMessage);
-      setMessages((prevMessages) => [...prevMessages, newUserMessage]);
+  const sendMessage = async(message: string, username: string, chatId: string) => {
+    console.log("Username: ", username);
+    try {
+      await apolloClient.mutate({
+        mutation: gql`
+          mutation AddMessage($input: SendMessageInput!) {
+            addMessage(message: $input)
+          }
+        `,
+        variables: {
+          input: {
+            message: message,
+            username: username,
+            chatId: chatId
+          }
+        }
+      });
       setNewMessage('');
+    } catch (error) {
+      console.error("Error senging message:", error);
     }
-  }
+  };
 
   useEffect(() => {
     if (conversationRef.current) {
@@ -65,30 +141,32 @@ const Conversation = ({ className, activeConvType }: Props) => {
       <div className="mt-auto w-full mb-2 px-1 overflow-y-auto min-h-0 " ref={conversationRef}>
         <div className="w-full flex-flex-col">
           {messages.map((message, index) => (
-            <Message key={index} index={index} message={message.text} userMessage={message.userMessage} />
+            <Message key={index} message={message} userMessage={user?.username || ""} />
           ))}
         </div>
       </div>
-      <div className="px-1 pb-1 w-full">
-        <input 
-          type="text"
-          className="w-full border bg-indigo-400 placeholder-gray-300 text-white border-indigo-300 rounded-lg pl-1 pr-10 outline-none"
-          placeholder="Type here"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              sendMessage();
-            }
-          }}
-        />
-        <button className="absolute right-2 bottom-2 cursor-pointer pr-1" onClick={sendMessage}>
-          <Image src={sendIcon} alt="Send Icon" width={16} height={16} />
-        </button>
-      </div>
+      {activeConv.status !== 'muted' && (
+        <div className="px-1 pb-1 w-full">
+          <input 
+            type="text"
+            className="w-full border bg-indigo-400 placeholder-gray-300 text-white border-indigo-300 rounded-lg pl-1 pr-10 outline-none"
+            placeholder="Type here"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && user) {
+                sendMessage(newMessage, user.username, activeConv?.id || "");
+              }
+            }}
+          />
+          <button className="absolute right-2 bottom-2 cursor-pointer pr-1" onClick={() => sendMessage(newMessage, user?.username || "", activeConv.id)}>
+            <Image src={sendIcon} alt="Send Icon" width={16} height={16} />
+          </button>
+        </div>
+      )}
 
-      {isMenuOpen && (
-        <Options ref={menuRef} activeConvType={activeConvType} toggleMenu={toggleMenu}/>
+      {(isMenuOpen && activeConv) && (
+        <Options ref={menuRef} convType={convType} toggleMenu={toggleMenu} activeConv={activeConv} />
       )}
     </div>
   );

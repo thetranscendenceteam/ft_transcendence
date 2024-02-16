@@ -108,7 +108,7 @@ export const Callback = () => {
 
     fetchInitialData();
     if (data) {
-      const { id, username, realname, avatar_url, email, campus, jwtToken,twoFA }  = data;
+      const { id, username, realname, avatar_url, email, campus, jwtToken, twoFA }  = data;
       updateUser({ id, username, realname, avatar_url, email, campus, twoFA });
       setCookie('jwt', { jwtToken }, { path: '/'});
       router.push('/');

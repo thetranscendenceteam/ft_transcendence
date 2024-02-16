@@ -11,6 +11,10 @@ import { UserContext } from '../userProvider';
 type Chat = {
   id: string;
   name: string;
+  role: string;
+  status: string;
+  isPrivate: boolean;
+  isWhisper: boolean;
   avatar: string;
 }
 
@@ -162,23 +166,25 @@ const Conversation = ({ className, activeConv, convType }: Props) => {
           ))}
         </div>
       </div>
-      <div className="px-1 pb-1 w-full">
-        <input 
-          type="text"
-          className="w-full border bg-indigo-400 placeholder-gray-300 text-white border-indigo-300 rounded-lg pl-1 pr-10 outline-none"
-          placeholder="Type here"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && user) {
-              sendMessage(newMessage, user.username, activeConv?.id || "");
-            }
-          }}
-        />
-        <button className="absolute right-2 bottom-2 cursor-pointer pr-1" onClick={() => sendMessage(newMessage, user?.username || "", activeConv.id)}>
-          <Image src={sendIcon} alt="Send Icon" width={16} height={16} />
-        </button>
-      </div>
+      {activeConv.status !== 'muted' && (
+        <div className="px-1 pb-1 w-full">
+          <input 
+            type="text"
+            className="w-full border bg-indigo-400 placeholder-gray-300 text-white border-indigo-300 rounded-lg pl-1 pr-10 outline-none"
+            placeholder="Type here"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && user) {
+                sendMessage(newMessage, user.username, activeConv?.id || "");
+              }
+            }}
+          />
+          <button className="absolute right-2 bottom-2 cursor-pointer pr-1" onClick={() => sendMessage(newMessage, user?.username || "", activeConv.id)}>
+            <Image src={sendIcon} alt="Send Icon" width={16} height={16} />
+          </button>
+        </div>
+      )}
 
       {(isMenuOpen && activeConv) && (
         <Options ref={menuRef} convType={convType} toggleMenu={toggleMenu} activeConv={activeConv} />

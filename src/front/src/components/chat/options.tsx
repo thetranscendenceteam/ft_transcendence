@@ -7,6 +7,10 @@ import { UserContext } from '../userProvider';
 type Chat = {
   id: string;
   name: string;
+  role: string;
+  status: string;
+  isPrivate: boolean;
+  isWhisper: boolean;
   avatar: string;
 }
 
@@ -64,16 +68,22 @@ const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activ
         <ul className="border border-gray-300 rounded-xl flex flex-col text-gray-600 h-50 bg-white hover:border-gray-400">
           {convType === 'Friends' && (
             <>
-              <button onClick={toggleMenu}><li className="rounded-t-xl hover:bg-gray-200 pl-5 pr-7">Play with</li></button>
-              <button onClick={toggleMenu}><li className="rounded-b-xl hover:bg-gray-200 pl-5 pr-7">Block</li></button>
+              <button onClick={toggleMenu}><li className=" hover:bg-gray-200 pl-5 pr-7">Play with</li></button>
+              <button onClick={toggleMenu}><li className="hover:bg-gray-200 pl-5 pr-7">Block</li></button>
+              <button onClick={toggleMenu}><li className="rounded-b-xl hover:bg-gray-200 pl-5 pr-7">View Profile</li></button>
             </>
           )}
           {convType === 'Channels' && (
             <>
-              <button onClick={() => openInviteMuteBanMenu('Invite')}><li className="rounded-t-xl hover:bg-gray-200 pl-5 pr-7">Invite</li></button>
-              <button onClick={() => openInviteMuteBanMenu('Ban')}><li className="hover:bg-gray-200 pl-5 pr-7">Ban</li></button>
-              <button onClick={() => openInviteMuteBanMenu('Kick')}><li className="hover:bg-gray-200 pl-5 pr-7">Kick</li></button>
-              <button onClick={() => openInviteMuteBanMenu('Mute')}><li className="hover:bg-gray-200 pl-5 pr-7">Mute</li></button>
+              {(activeConv.role === 'admin' || activeConv.role === 'owner') && (
+                <>
+                  <button onClick={() => openInviteMuteBanMenu('Ban')}><li className="rounded-t-xl hover:bg-gray-200 pl-5 pr-7">Ban</li></button>
+                  <button onClick={() => openInviteMuteBanMenu('Kick')}><li className="hover:bg-gray-200 pl-5 pr-7">Kick</li></button>
+                  <button onClick={() => openInviteMuteBanMenu('Mute')}><li className="hover:bg-gray-200 pl-5 pr-7">Mute</li></button>
+                  <button onClick={() => openInviteMuteBanMenu('Set Admin')}><li className="hover:bg-gray-200 pl-5 pr-7">Set Admin</li></button>
+                </>
+              )}
+              <button onClick={() => openInviteMuteBanMenu('Add')}><li className={`hover:bg-gray-200 pl-5 pr-7 ${activeConv.role === 'member' ? 'rounded-t-xl' : ''}`}>Add</li></button>
               <button onClick={() => leaveChat()}><li className="rounded-b-xl hover:bg-gray-200 pl-5 pr-7">Leave</li></button>
             </>
           )}

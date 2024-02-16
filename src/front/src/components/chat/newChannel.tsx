@@ -6,6 +6,9 @@ import { UserContext } from '../userProvider';
 type Chat = {
   id: string;
   name: string;
+  role:string;
+  status: string;
+  isPrivate: boolean;
   isWhisper: boolean;
   avatar: string;
 }
@@ -47,6 +50,9 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
         const newChat: Chat = {
           id: createChat.id,
           name: createChat.name,
+          role: 'owner',
+          status: 'normal',
+          isPrivate: isPublic,
           isWhisper: createChat.isWhisper,
           avatar: '' 
         };

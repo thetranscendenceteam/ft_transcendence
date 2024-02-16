@@ -10,6 +10,9 @@ import { UserContext } from '../userProvider';
 type Chat = {
   id: string;
   name: string;
+  role: string;
+  status: string;
+  isPrivate: boolean;
   isWhisper: boolean;
   avatar: string;
 }
@@ -34,6 +37,9 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
                 getChatsByIdUser(userId: $userId) {
                   idChat 
                   name
+                  role 
+                  status
+                  isPrivate
                   isWhisper
                 }
               }
@@ -55,6 +61,9 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
       const tmp = fetchedData.map((item: any) => ({
         id: item.idChat,
         name: item.name,
+        role: item.role,
+        status: item.status,
+        isPrivate: item.isPrivate,
         isWhisper: item.isWhisper,
         avatar: ""
       }));
@@ -90,6 +99,7 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
   };
 
   const handleClick = (conv: Chat) => {
+    console.log("CURRENT CONV: ", conv);
     changeConv(conv);
     changeConvType(activeList);
   };

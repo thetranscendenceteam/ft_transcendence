@@ -7,6 +7,10 @@ import { UserContext } from './userProvider';
 type Chat = {
   id: string;
   name: string;
+  role: string;
+  status: string;
+  isPrivate: boolean;
+  isWhisper: boolean;
   avatar: string;
 }
 

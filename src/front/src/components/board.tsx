@@ -15,7 +15,8 @@ const fetchData = async () => {
       query: gql`
         {
           getUsers {
-            pseudo
+            id
+            nickname: pseudo
             avatar
             xp
           }
@@ -29,7 +30,8 @@ const fetchData = async () => {
 };
 
 type Player = {
-  pseudo: string;
+  id: string;
+  nickname: string;
   avatar: string;
   xp: number;
 };
@@ -106,7 +108,7 @@ export const Board = () => {
               {playersToShow[index] ? (
                 <>
                   <img src={playersToShow[index].avatar} alt="Profile" className="rounded-full w-10 h-10 mr-6" />
-                  <span className="mr-5">{playersToShow[index].pseudo}</span>
+                  <span className="mr-5">{playersToShow[index].nickname}</span>
                   <span className="ml-10">{playersToShow[index].xp}</span>
                 </>
               ) : (

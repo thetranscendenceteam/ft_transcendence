@@ -8,6 +8,7 @@ import { SetMatchScoreInput } from './dto/SetMatchScore.input';
 import { User } from 'src/user/dto/user.entity';
 import { UserPrivate } from 'src/user/dto/userPrivate.entity';
 import { AddUserInMatch } from './dto/AddUserInMatch.input';
+import { SettingsOfMatch } from './dto/SettingsOfMatch.entity';
 
 @Resolver()
 export class MatchResolver {
@@ -114,5 +115,12 @@ export class MatchResolver {
     // ): Promise<Match> {
     //     return this.matchService.addUserInMatch(input);
     // }
+
+    @Query(returns => SettingsOfMatch)
+    getSettingsOfMatch(
+        @Args('matchId', { type: () => String, nullable: false }) matchId: string,
+    ): Promise<SettingsOfMatch> {
+        return this.matchService.getSettingsOfMatch(matchId);
+    }
 
 }

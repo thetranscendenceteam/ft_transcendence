@@ -8,6 +8,7 @@ import { CreateMatchInput } from './dto/CreateMatch.input';
 import { SetMatchScoreInput } from './dto/SetMatchScore.input';
 import { UserPrivate } from 'src/user/dto/userPrivate.entity';
 import { AddUserInMatch } from './dto/AddUserInMatch.input';
+import { SettingsOfMatch } from './dto/SettingsOfMatch.entity';
 
 @Injectable()
 export class MatchService {
@@ -515,6 +516,28 @@ export class MatchService {
         }
         catch (e) {
             console.log("Error on addUserInMatch");
+            throw e;
+        }
+    }
+
+    async getSettingsOfMatch(matchId: string): Promise<SettingsOfMatch> {
+        try {
+            const query = await this.prisma.matchs.findFirst({
+                where: {
+                    id: matchId,
+                },
+                select: {
+                    difficulty: true,
+                    score: true,
+                },
+            });
+            let res: SettingsOfMatch = new SettingsOfMatch();
+            res.bestOf = query?.score?.bestOf;
+            res.difficulty = query?.difficulty;
+            return res;
+        }
+        catch (e) {
+            console.log("Error on getSettingsOfMatch");
             throw e;
         }
     }

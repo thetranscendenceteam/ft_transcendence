@@ -15,6 +15,10 @@ export class ChatService {
     async getAllChats(max: number | undefined): Promise<Chat[]> {
         try {
             return await this.prisma.chats.findMany({
+                where: {
+                    isPrivate: false,
+                    isWhisper: false,
+                },
                 take: max,
                 orderBy: { name: 'asc' },
             })
@@ -63,6 +67,8 @@ export class ChatService {
                 },
                 data: {
                     name: updateChatInput.name,
+                    isPrivate: updateChatInput.isPrivate,
+                    isWhisper: updateChatInput.isWhisper,
                 },
             });
             return updateChat;

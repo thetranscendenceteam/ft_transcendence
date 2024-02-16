@@ -106,6 +106,8 @@ export class UsersInChatsService {
                         select: {
                             id: true,
                             name: true,
+                            isPrivate: true,
+                            isWhisper: true,
                             UsersInBanLists: {
                                 where: {
                                     chatId: chatId,
@@ -130,6 +132,8 @@ export class UsersInChatsService {
                 chat.status = chats.chat.UsersInBanLists[0].status;
             else
                 chat.status = UserChatStatus.normal;
+            chat.isPrivate = chats.chat.isPrivate;
+            chat.isWhisper = chats.chat.isWhisper;
             return chat;
         }
         catch (e) {

@@ -44,6 +44,7 @@ model Chats {
     name            String            @unique @db.VarChar(255)
     createdAt       DateTime          @default(now())
     isPrivate       Boolean           @default(false)
+    isWhisper       Boolean           @default(false)
     users           UsersInChats[]
     messages        Messages[]
     UsersInBanLists UsersInBanLists[]

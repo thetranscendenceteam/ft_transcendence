@@ -7,7 +7,7 @@ import styles from './style/profile.module.css'; // Ensure the CSS module file i
 import apolloClient from './apolloclient';
 import { gql } from '@apollo/client';
 
-type UserProfileCardProps = {
+export type UserProfileCardProps = {
   id: string;
   username: string;
   realname: string;
@@ -16,7 +16,7 @@ type UserProfileCardProps = {
   campus: string;
 };
 
-interface MatchHistory {
+export interface MatchHistory {
   matchId: string;
   isWin: boolean;
   createdAt: Date;
@@ -25,7 +25,7 @@ interface MatchHistory {
   adversaryUsername: string;
 }
 
-interface userAndMatch {
+export interface userAndMatch {
   user: UserProfileCardProps;
   matchHistory: MatchHistory[];
 }
@@ -145,7 +145,7 @@ const ProfileComponent = () => {
   }, [user]);
 
   return (
-    user && matchHistory !== undefined && (
+    user && matchHistory && (
       <div className={styles.container}>
         <UserProfileCard user={user} matchHistory={matchHistory} />
         <MatchHistoryCard user={user} matchHistory={matchHistory} />

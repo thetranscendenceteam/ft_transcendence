@@ -352,12 +352,17 @@ export class AuthService {
   };
 
   async resetPassword(username: string, code: string, password: string): Promise<boolean> {
+    if (!code)
+      throw new Error("Invalid reset code");
     try {
-      const user = await this.prisma.users.findFirst({
-        where: { pwdResetSecret: code, pseudo: username },
+      const user = await this.prisma.users.findUnique({
+        where: { pseudo: username },
       });
       if (!user) {
         throw new Error("User not found");
+      }
+      if (user.pwdResetSecret !== code) {
+        throw new Error("Invalid reset code");
       }
 
       await this.prisma.users.update({

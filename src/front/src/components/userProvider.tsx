@@ -26,7 +26,7 @@ function useJwtCookie() {
   return (jwtCookie ? jwtCookie : null);
 }
 
-const fetchData = async (id: number) => {
+const fetchData = async (username: string) => {
   try {
     const { data } = await apolloClient.query({
       query: gql`
@@ -45,7 +45,7 @@ const fetchData = async (id: number) => {
       `,
       variables: {
         UserInput: {
-          id: id
+          pseudo: username
         }
       }
     });
@@ -67,7 +67,7 @@ export function UserProvider({ children }: { children: ReactNode }): JSX.Element
     const fetchDataSetUser = async () => {
       if (jwtToken?.jwtToken && !user) {
         const decodedToken = jwtDecode(jwtToken.jwtToken) as DecodedToken;
-        const fetchedData = await fetchData(decodedToken.id);
+        const fetchedData = await fetchData(decodedToken.username);
         if (fetchedData) {
           const user: User = {
             id: fetchedData.id,

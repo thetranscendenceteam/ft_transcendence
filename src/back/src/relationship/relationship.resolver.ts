@@ -50,4 +50,12 @@ export class RelationshipResolver {
         return this.relationshipService.findPendingFriendForUser(userId);
     }
 
+	@Mutation(returns => Boolean)
+	acceptOrRefusePending(
+		@Args('acceptOrNot', { type: () => Boolean, nullable: false}) accept: boolean,
+		@Args('relationshipInput') input: RelationshipInput,
+	): Promise<boolean> {
+		return this.relationshipService.acceptOrRefusePending(accept, input);
+	}
+
 }

@@ -3,7 +3,6 @@ import InviteMuteBanMenu from './inviteMuteBanMenu';
 import { gql } from "@apollo/client"
 import apolloClient from "../apolloclient";
 import { UserContext } from '../userProvider';
-import refresh from './sidebar';
 
 type Chat = {
   id: string;
@@ -19,9 +18,10 @@ type Props = {
   convType: string;
   toggleMenu: () => void;
   activeConv: Chat;
+  refresh: () => void;
 };
 
-const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activeConv }, ref) => {
+const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activeConv, refresh }, ref) => {
   const [isInviteMuteBan, setIsInviteMuteBan] = useState(false);
   const [mode, setMode] = useState('');
   const { user } = useContext(UserContext);
@@ -46,7 +46,6 @@ const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activ
         return ([]);
       }
       refresh();
-      window.location.reload();
       toggleMenu();
     }
   }

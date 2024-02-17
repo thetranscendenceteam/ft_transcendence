@@ -29,6 +29,7 @@ type Props = {
   className: string;
   activeConv: Chat;
   convType: string;
+  refresh: () => void;
 }
 
 const GET_COMMENTS =  gql`
@@ -57,7 +58,7 @@ const formatTime = (timeStampStr: string) => {
   return (timestamp.toLocaleDateString(undefined, { hour: 'numeric', minute: 'numeric', hour12: false }));
 };
 
-const Conversation = ({ className, activeConv, convType }: Props) => {
+const Conversation = ({ className, activeConv, convType, refresh }: Props) => {
   const [isMenuOpen, setIsOpen] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   let [messages, setMessages] = useState<Message[]>([]);
@@ -181,7 +182,7 @@ const Conversation = ({ className, activeConv, convType }: Props) => {
       )}
 
       {(isMenuOpen && activeConv) && (
-        <Options ref={menuRef} convType={convType} toggleMenu={toggleMenu} activeConv={activeConv} />
+        <Options ref={menuRef} convType={convType} toggleMenu={toggleMenu} activeConv={activeConv} refresh={refresh}/>
       )}
     </div>
   );

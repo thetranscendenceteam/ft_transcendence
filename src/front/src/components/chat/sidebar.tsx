@@ -22,14 +22,14 @@ type Chat = {
 type Props = {
   changeConv: (ChatName: Chat) => void;
   changeConvType: (newType: string) => void;
+  refresh: boolean;
 }
 
-const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
+const Sidebar = ({ changeConv, changeConvType, refresh }: Props) => {
   const [activeList, setActiveList] = useState<string>('Friends');
   const [createNewChannel, setCreateNewChannel] = useState(false);
   const [joinPublicChannel, setJoinPublicChannel] = useState(false);
   const [data, setData] = useState<Chat[]>([]);
-  const [rifresh, setRifresh] = useState<boolean>(false);
   const { user } = useContext(UserContext);
 
   const fetchData = async() => {
@@ -74,7 +74,7 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
       setData(tmp);
     };
     fetchInitialData();
-  }, []);
+  }, [refresh]);
 
   useEffect(() => {
     const handleReload = () => {
@@ -117,10 +117,6 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
       return prevData;
     });
   };
-
-  const refresh = () => {
-    setRifresh(!rifresh);
-  }
 
   const handleClick = (conv: Chat) => {
     changeConv(conv);

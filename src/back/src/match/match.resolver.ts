@@ -10,6 +10,7 @@ import { UserPrivate } from 'src/user/dto/userPrivate.entity';
 import { AddUserInMatch } from './dto/AddUserInMatch.input';
 import { SettingsOfMatch } from './dto/SettingsOfMatch.entity';
 import { AddXpInput } from './dto/AddXp.input';
+import { FindUsers } from './dto/FindUsers.entity';
 
 @Resolver()
 export class MatchResolver {
@@ -110,12 +111,12 @@ export class MatchResolver {
     //     return this.matchService.setMatchScore(input);
     // }
 
-    // @Query(returns => [String])
-    // findUsersInMatch(
-    //     @Args('matchId', { type: () => String, nullable: false }) matchId: string,
-    // ): Promise<string[]> {
-    //     return this.matchService.findUsersInMatch(matchId);
-    // }
+/*     @Query(returns => [FindUsers])
+     findUsersInMatch(
+         @Args('matchId', { type: () => String, nullable: false }) matchId: string,
+     ): Promise<FindUsers[]> {
+         return this.matchService.findUsersInMatch(matchId);
+    }*/
 
     // @Mutation(returns => Match)
     // addUserInMatch(
@@ -130,5 +131,4 @@ export class MatchResolver {
     ): Promise<SettingsOfMatch> {
         return this.matchService.getSettingsOfMatch(matchId);
     }
-
 }

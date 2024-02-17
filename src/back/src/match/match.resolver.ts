@@ -9,6 +9,7 @@ import { User } from 'src/user/dto/user.entity';
 import { UserPrivate } from 'src/user/dto/userPrivate.entity';
 import { AddUserInMatch } from './dto/AddUserInMatch.input';
 import { SettingsOfMatch } from './dto/SettingsOfMatch.entity';
+import { AddXpInput } from './dto/AddXp.input';
 
 @Resolver()
 export class MatchResolver {
@@ -37,6 +38,13 @@ export class MatchResolver {
         console.log("createMatch query");
         return this.matchService.createOrFindMatch(createOrFindMatchInput);
     }
+
+	@Mutation(returns => Boolean)
+	addXpPostMatch(
+	@Args('addXpInput') input: AddXpInput
+	): Promise<boolean> {
+		return this.matchService.addXpPostMatch(input);
+	}
 
     // @Query(returns => [Match])
     // findUnstartedMatches(): Promise<Match[]> {

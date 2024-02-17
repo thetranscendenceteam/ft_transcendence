@@ -1,7 +1,6 @@
 import { Args, Mutation, Query, Resolver, Int } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { CreateUserInput } from './dto/createUser.input';
-import { AddXp } from './dto/addXp.input';
 import { GetUserInput } from './dto/getUser.input';
 import { User } from './dto/user.entity';
 import { UpdateUser } from './dto/updateUser.input';
@@ -56,11 +55,6 @@ export class UserResolver {
   ): Promise<User | null> {
     console.log("UpdateUser query for UserId : " + updateUser.id);
     return this.userService.updateUser(updateUser);
-  }
-
-  @Mutation(returns => User)
-  addXpByNickname(@Args('addXp') addXp: AddXp): Promise<User> {
-    return this.userService.addXpByNickname(addXp);
   }
 
 }

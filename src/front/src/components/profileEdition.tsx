@@ -30,26 +30,14 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
     password:null,
     password2:null,
     username: null,
+    file: null,
   });
 
   const handleImageChange = async (e: any) => {
     const file = e.target.files[0];
     if (file) {
       console.log("🚀 ~ handleImageChange ~ file:", file)
-      const formData = new FormData();
-      formData.append('avatar', file, file.name);
-      
-      await axios.post(`https://localhost:8443/avatar`, formData, { // TODO change to env var
-        params: { username: user.username },
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        withCredentials: true,
-      }).then((response: any) => {
-        console.log('avatar uploaded', response); // TODO: reload avatar
-      }).catch((error: any) => {
-        console.error('Error uploading the file:', error);
-      });
+      setFormData({...formData, file: file});
     }
   };
 
@@ -75,6 +63,22 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
     const formDataReady = formData.hasOwnProperty('password2') ? { ...formData, password2: undefined } : { ...formData };
     console.log(formData);
     try {
+      if (formDataReady.file) {
+        const formdata = new FormData();
+        const file  = formDataReady.file as File;
+        formdata.append('avatar', file, file.name);
+        await axios.post(`https://localhost:8443/avatar`, formdata, { // TODO change to env var
+          params: { username: user.username },
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          withCredentials: true,
+        }).then((response: any) => {
+          console.log('avatar uploaded', response); // TODO: reload avatar
+        }).catch((error: any) => {
+          console.error('Error uploading the file:', error);
+        });
+      }
       const { data } = await apolloClient.mutate({
         mutation: gql`
           mutation ($inputUser: EditUserInput!){

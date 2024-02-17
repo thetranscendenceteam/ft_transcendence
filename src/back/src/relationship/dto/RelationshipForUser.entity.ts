@@ -8,6 +8,12 @@ export class RelationshipForUser {
     @Field(() => String, { nullable: true })
     relationId: string;
 
+	@Field(() => String, { nullable: true})
+	relationUsername: string | undefined;
+
+	@Field(() => String, { nullable: true })
+	avatar: string | undefined;
+
     @Field(() => String, { nullable: true })
     status: string;
 

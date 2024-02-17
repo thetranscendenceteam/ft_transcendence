@@ -20,7 +20,7 @@ export class RelationshipService {
                     ],
                 },
             });
-            return this.mapUser(userId, res);
+            return await this.mapUser(userId, res);
         }
         catch (e) {
             console.log("Error on getUserRelationship query");
@@ -30,7 +30,7 @@ export class RelationshipService {
 
     async mapUser(userId: string, input: UsersRelationships[]) {
         let res: RelationshipForUser[] = [];
-        input.forEach(r => {
+        await Promise.all(input.map(async (r) => {
             let t = new RelationshipForUser();
             t.userId = userId;
             if (r.firstId != userId) t.relationId = r.firstId;
@@ -38,10 +38,53 @@ export class RelationshipService {
             t.status = r.status;
             t.createdAt = r.createdAt;
             t.updatedAt = r.updatedAt;
+			await this.internalGetUsernameById(t.relationId).then((r) => {
+				t.relationUsername = r;
+			});
+			await this.internalGetAvatarById(t.relationId).then((r) => {
+				t.avatar = r;
+			});
             res.push(t);
-        });
+        }));
         return res;
     }
+
+	async internalGetAvatarById(relationId: string) {
+		try {
+			const res = await this.prisma.users.findFirst({
+				where: {
+					id: relationId,
+				},
+				select: {
+					avatar: true,
+				}
+			});
+			return res?.avatar;
+		}
+		catch (e) {
+			console.log("Error on internalGetAvatarById");
+			throw e;
+		}
+	}
+
+	async internalGetUsernameById(relationId: string) {
+		try {
+			const res = await this.prisma.users.findFirst({
+				where: {
+					id: relationId,
+				},
+				select: {
+					pseudo: true,
+				},
+			});
+			console.log(res);
+			return res?.pseudo;
+		}
+		catch (e) {
+			console.log("Error on internalGetUsernameById");
+			throw e;
+		}
+	}
 
     async addFriend(input: RelationshipInput): Promise<boolean> {
         const usersIds = await this.sortUsersIds(input.userId, input.targetId);

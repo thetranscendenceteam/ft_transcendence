@@ -270,18 +270,17 @@ export class AuthService {
     try {
       const pwdResetSecret = uid();
 
-      const user = await this.prisma.users.update({
+      await this.prisma.users.update({
         where: { mail: email },
         data: {
           pwdResetSecret: pwdResetSecret
         },
       });
-      console.log("🚀 ~ AuthService ~ generateEmailResetLink ~ user:", user)
 
       const smtp_url = process.env.SMTP_URL ? process.env.SMTP_URL : "";
       const resetLink = `${smtp_url}${pwdResetSecret}`;
-      const smtp_user = process.env.SMTP_USER ? process.env.SMTP_HOST : "";
-      const smtp_pass = process.env.SMTP_API_KEY ? process.env.SMTP_HOST : "";
+      const smtp_user = process.env.SMTP_USER ? process.env.SMTP_USER : "";
+      const smtp_pass = process.env.SMTP_API_KEY ? process.env.SMTP_API_KEY : "";
 
       const transport = nodemailer.createTransport({
         host: "smtp.sendgrid.net",

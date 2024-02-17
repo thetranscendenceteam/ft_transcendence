@@ -69,7 +69,6 @@ export const UserProfileCard: React.FC<userAndMatch> = ({ user, matchHistory }: 
       <p className={styles.text}>{user.realname}</p>
       <p className={styles.text}>{user.email}</p>
       <p className={styles.text}>{user.campus === "Not a 42 Student" ? user.campus : "42 " + user.campus}</p>
-      <p className={styles.text}>Ranking: Top42</p>
       <p className={styles.text}>Win ratio: {winRatio}%</p>
       <p className={styles.text}>Total matches: {totalMatches}</p>
     </Card>

@@ -4,6 +4,7 @@ import addButton from '../../../public/add-button.png';
 import joinButton from '../../../public/joinButton.png';
 import Image from 'next/image';
 import NewChannel from './newChannel';
+import JoinPublicChannel from './joinPublicChannel';
 import apolloClient from "../apolloclient";
 import { gql } from "@apollo/client";
 import { UserContext } from '../userProvider';
@@ -26,6 +27,7 @@ type Props = {
 const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
   const [activeList, setActiveList] = useState<string>('Friends');
   const [createNewChannel, setCreateNewChannel] = useState(false);
+  const [joinPublicChannel, setJoinPublicChannel] = useState(false);
   const [data, setData]= useState<Chat[]>([]);
   const { user } = useContext(UserContext);
 
@@ -91,16 +93,31 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
     setCreateNewChannel(false);
   };
 
+  const openJoinPublicChannel = () => {
+    setJoinPublicChannel(true);
+  };
+
+  const closeJoinPublicChannel = () => {
+    setJoinPublicChannel(false);
+  };
+
   const changeActiveList = (buttonName: string) => {
     setActiveList(buttonName);
   };
 
   const addChat = (newChat: Chat) => {
-    setData((prevData) => [...prevData, newChat]);
+    setData((prevData) => {
+      const isChatExists = prevData.some(chat => chat.id === newChat.id);
+
+      if (!isChatExists) {
+        return [...prevData, newChat];
+      }
+
+      return prevData;
+    });
   };
 
   const handleClick = (conv: Chat) => {
-    console.log("CURRENT CONV: ", conv);
     changeConv(conv);
     changeConvType(activeList);
   };
@@ -136,10 +153,11 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
                 {createNewChannel && <NewChannel closePopUp={closeCreateChannel} addChat={addChat} />}
               </div>
               <div className='h-20 bg-indigo-950 flex items-center justify-center border-t border-gray-500'>
-                <button onClick={openCreateChannel}>
+                <button onClick={openJoinPublicChannel}>
                   <Image src={joinButton} alt="Add" width={40} height={40} />
                 </button>
                 {createNewChannel && <NewChannel closePopUp={closeCreateChannel} addChat={addChat} />}
+                {joinPublicChannel && <JoinPublicChannel closePopUp={closeJoinPublicChannel} addChat={addChat} />}
               </div>
             </>
           )}

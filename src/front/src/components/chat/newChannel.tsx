@@ -21,7 +21,7 @@ interface PopUpProp {
 const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
   const [channelName, setChannelName] = useState<string>('');
   const { user } = useContext(UserContext);
-  const [isPublic, setIsPublic] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(true);
 
   
   const createChannel = async() => {
@@ -42,17 +42,18 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
         variables: {
           input: {
             name: channelName,
-            isPrivate: isPublic
+            isPrivate: isPrivate
           }
         }
       });
+      console.log("Private : ", isPrivate);
       if (createChat && user) {
         const newChat: Chat = {
           id: createChat.id,
           name: createChat.name,
           role: 'owner',
           status: 'normal',
-          isPrivate: isPublic,
+          isPrivate: isPrivate,
           isWhisper: createChat.isWhisper,
           avatar: '' 
         };
@@ -86,7 +87,7 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
   };
 
   const handlePrivacy = (privacy: boolean) => {
-    setIsPublic(privacy);
+    setIsPrivate(privacy);
   };
 
   return (
@@ -95,19 +96,19 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
         <button className="absolute top-2 h-6 w-6 right-2 bg-indigo-900 p-2 flex justify-center items-center text-gray-400 hover:text-gray-500" onClick={closePopUp}>
           <h1 className="text-2xl">x</h1>
         </button>
-        <h2 className="absolute top-6 text-3xl mb-6">Create your new channel</h2>
+        <h2 className="absolute top-6 text-5xl mb-6">Create your new channel</h2>
         <input type="text" required placeholder="Channel Name" className="text-gray-600 border rounded-md p-2 mt-16" onChange={(e) => setChannelName(e.target.value)} />
         <div className="flex mt-6">
-          <button onClick={() => handlePrivacy(false)}
+          <button onClick={() => handlePrivacy(true)}
             className={`px-4 py-2 mr-4 border rounded-md 
-              ${isPublic ? 'bg-blue-700 text-white' : 'bg-blue-500 text-white'}
+              ${isPrivate ? 'bg-blue-500 text-white' : 'bg-blue-700 text-white'}
             `}
           >
               Private
           </button>
-          <button onClick={() => handlePrivacy(true)}
+          <button onClick={() => handlePrivacy(false)}
             className={`px-4 py-2 ml-4 border rounded-md 
-              ${isPublic ? 'bg-blue-500 text-white' : 'bg-blue-700 text-white'}
+              ${isPrivate ? 'bg-blue-700 text-white' : 'bg-blue-500 text-white'}
             `}
           >
             Public

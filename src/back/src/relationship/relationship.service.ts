@@ -234,4 +234,40 @@ export class RelationshipService {
         }
     }
 
+	async acceptOrRefusePending(accept: boolean, input: RelationshipInput): Promise<boolean> {
+		try {
+            const users = await this.sortUsersIds(input.userId, input.targetId);
+			const query = await this.prisma.usersRelationships.findFirst({
+				where: {
+					firstId: users.smallerId,
+					secondId: users.biggerId,
+				},
+			});
+			if (!query) return false;
+			if (accept) {
+				const res = await this.prisma.usersRelationships.update({
+					where: {
+						id: query.id,
+					},
+					data: {
+						status: RelationshipStatus.friends,
+					},
+				});
+				if (!res) return false;
+			}
+			else {
+				const res = await this.prisma.usersRelationships.delete({
+					where: {
+						id: query.id,
+					},
+				});
+			}
+			return true;
+		}
+		catch (e) {
+			console.log("Error on acceptOrRefusePending");
+			throw e;
+		}
+	}
+
 }

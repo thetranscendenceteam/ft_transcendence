@@ -139,7 +139,9 @@ const ProfileComponent = () => {
   return (
     user && matchHistory && (
       <div className={styles.container}>
-        <UserProfileCard user={user} matchHistory={matchHistory} />
+        <div className="w-1/4">
+          <UserProfileCard user={user} matchHistory={matchHistory} />
+        </div>
         <MatchHistoryCard user={user} matchHistory={matchHistory} />
       </div>
     )

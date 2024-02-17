@@ -146,7 +146,6 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
     const fetchInitialData = async () => {
       if (mode === 'Add') {
         const fetchedData = await fetchFriends();
-        console.log("FETCHED : ", fetchedData);
         const tmp = fetchedData.map((item: any) => ({
           id: item.relationId,
           nickname: item.relationUsername,

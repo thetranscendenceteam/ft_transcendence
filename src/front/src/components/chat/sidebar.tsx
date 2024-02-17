@@ -28,7 +28,8 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
   const [activeList, setActiveList] = useState<string>('Friends');
   const [createNewChannel, setCreateNewChannel] = useState(false);
   const [joinPublicChannel, setJoinPublicChannel] = useState(false);
-  const [data, setData]= useState<Chat[]>([]);
+  const [data, setData] = useState<Chat[]>([]);
+  const [rifresh, setRifresh] = useState<boolean>(false);
   const { user } = useContext(UserContext);
 
   const fetchData = async() => {
@@ -116,6 +117,10 @@ const Sidebar: React.FC<Props> = ({ changeConv, changeConvType }) => {
       return prevData;
     });
   };
+
+  const refresh = () => {
+    setRifresh(!rifresh);
+  }
 
   const handleClick = (conv: Chat) => {
     changeConv(conv);

@@ -3,6 +3,7 @@ import InviteMuteBanMenu from './inviteMuteBanMenu';
 import { gql } from "@apollo/client"
 import apolloClient from "../apolloclient";
 import { UserContext } from '../userProvider';
+import refresh from './sidebar';
 
 type Chat = {
   id: string;
@@ -44,6 +45,7 @@ const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activ
       } catch (error) {
         return ([]);
       }
+      refresh();
       window.location.reload();
       toggleMenu();
     }

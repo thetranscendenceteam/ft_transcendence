@@ -35,7 +35,6 @@ const fetchUserData = (username: string): Promise<UserData> => {
       `,
       variables: { userinput: { pseudo: username } },
     }).then(({ data }) => {
-      console.log("data user: ", data);
       const resolvedData = {...data.getUser, realname: `${data.getUser.firstName} ${data.getUser.lastName}`};
       resolve(resolvedData as UserData);
     }).catch(error => {
@@ -62,7 +61,6 @@ const fetchMatchHistoryData = (userId: string): Promise<MatchHistory[]> => {
       `,
       variables: { userId: userId },
     }).then(({ data }) => {
-      console.log("data history", data);
       resolve(data.getUserMatchHistory as MatchHistory[]);
     }).catch(error => {
       console.error("Error fetching user matchHistory:", error);
@@ -79,16 +77,13 @@ const UserComponent = (props: {username: string}) => {
     const fetchUser = async (username: string) => {
       try {
         const userData = await fetchUserData(username as string);
-        console.log("🚀 ~ fetchUser ~ userData:", userData)
         setUser(userData);
       } catch (error) {
         throw(error);
       }
     };
 
-    console.log("toto");
     fetchUser(username as string);
-    console.log("user", user);
   }, [username]);
 
   useEffect(() => {
@@ -96,16 +91,13 @@ const UserComponent = (props: {username: string}) => {
       if (user) {
         try {
           const data = await fetchMatchHistoryData(user.id);
-          console.log("🚀 ~ fetchMatchHistory ~ data:", data)
           setMatchHistory(data);
         } catch (error) {
           console.error("Error fetching match history:", error);
         }
       }
     };
-    console.log("tata");
     fetchMatchHistory();
-    console.log("matchHistory", matchHistory);
   }, [user]);
 
 

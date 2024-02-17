@@ -7,6 +7,7 @@ const qrcode = require('qrcode');
 import { Injectable } from '@nestjs/common';
 import { uid } from 'uid';
 import * as nodemailer from 'nodemailer';
+import { comparePassword, hashPassword } from 'src/utils/bcrypt';
 import { PrismaService } from '../prisma.service';
 import axios from 'axios';
 import { authUser } from './dto/user.entity';
@@ -182,12 +183,17 @@ export class AuthService {
       const options = {
         expiresIn: '1h',
       };
-      const user = await this.prisma.users.findFirst({
+      const user = await this.prisma.users.findUnique({
         where: {
           pseudo: input.username,
-          password: input.password,
         },
       });
+      if (input.username === "" || input.password === "") {
+        throw new Error("Empty input");
+      }
+      if (user && await comparePassword(input.password, user.password) === false) {
+        throw new Error("Wrong password");
+      }
       if (user) {
         if (user.twoFA) {
           const twoFAVerification = speakeasy.totp.verify({
@@ -357,7 +363,7 @@ export class AuthService {
       await this.prisma.users.update({
         where: { pseudo: user.pseudo },
         data: {
-          password: password,
+          password: await hashPassword(password),
           pwdResetSecret: null,
         },
       });

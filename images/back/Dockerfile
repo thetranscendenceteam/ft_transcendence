@@ -1,5 +1,5 @@
 # Build app
-FROM node:20.11.0-alpine
+FROM --platform=linux/amd64 node:20.11.0-alpine
 
 WORKDIR /app
 

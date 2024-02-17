@@ -39,7 +39,7 @@ export class RelationshipResolver {
     @Query(returns => RelationshipStatus)
     findRelationshipBetweenUsers(
         @Args('relationshipInput') input: RelationshipInput
-    ): Promise<RelationshipStatus | undefined> {
+    ): Promise<RelationshipStatus> {
         return this.relationshipService.findRelationshipBetweenUsers(input);
     }
 

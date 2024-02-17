@@ -208,7 +208,7 @@ export class RelationshipService {
         }
     }
 
-    async findRelationshipBetweenUsers(input: RelationshipInput): Promise<RelationshipStatus | undefined> {
+    async findRelationshipBetweenUsers(input: RelationshipInput): Promise<RelationshipStatus> {
         try {
             const users = await this.sortUsersIds(input.userId, input.targetId);
             const res = await this.prisma.usersRelationships.findFirst({
@@ -220,7 +220,9 @@ export class RelationshipService {
                     status: true,
                 },
             });
-            return res?.status;
+			console.log(res);
+			if (!res) return RelationshipStatus.unknown;
+            return res.status;
         }
         catch (e) {
             console.log("Error on findRelationshipBetweenUsers");

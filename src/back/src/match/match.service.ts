@@ -10,6 +10,7 @@ import { UserPrivate } from 'src/user/dto/userPrivate.entity';
 import { AddUserInMatch } from './dto/AddUserInMatch.input';
 import { SettingsOfMatch } from './dto/SettingsOfMatch.entity';
 import { AddXpInput } from './dto/AddXp.input';
+import { FindUsers } from './dto/FindUsers.entity';
 
 @Injectable()
 export class MatchService {
@@ -473,14 +474,24 @@ export class MatchService {
         }
     }
 
-    async findUsersInMatch(matchId: string): Promise<string[]> {
+    async findUsersInMatch(matchId: string): Promise<FindUsers[]> {
         try {
-            const res = await this.prisma.usersInMatchs.findMany({
+            const query = await this.prisma.usersInMatchs.findMany({
                 where: {
                     matchId: matchId,
                 },
+				include: {
+					user: true,
+				},
             });
-            return res.flatMap((r) => r.userId);
+			let res: FindUsers[] = [];
+			query.forEach((q) => {
+				let temp: FindUsers = new FindUsers();
+				temp.userId = q.user.id;
+				temp.username = q.user.pseudo;
+				res.push(temp);
+			});
+			return res;
         }
         catch (e) {
             console.log("Error on findUsersInMatch");

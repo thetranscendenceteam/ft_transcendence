@@ -254,6 +254,7 @@ export class RelationshipService {
 					},
 				});
 				if (!res) return false;
+				await this.createWhisperChat(input);
 			}
 			else {
 				const res = await this.prisma.usersRelationships.delete({
@@ -266,6 +267,28 @@ export class RelationshipService {
 		}
 		catch (e) {
 			console.log("Error on acceptOrRefusePending");
+			throw e;
+		}
+	}
+
+	async createWhisperChat(input: RelationshipInput) {
+		try {
+			const res = await this.prisma.chats.create({
+				data: {
+					name: "Whisper_" + input.userId + "_" + input.targetId,
+					isPrivate: false,
+					isWhisper: true,
+					users: {
+						create: [
+							{ userId: input.userId },
+							{ userId: input.targetId },
+						],
+					},
+				},
+			});
+		}
+		catch (e) {
+			console.log("Error on createWhisperChat");
 			throw e;
 		}
 	}

@@ -51,7 +51,7 @@ const ConfirmResetPasswordForm = (props: {code: string}) => {
 
     try {
       setIsSubmitting(true);
-      apolloClient.mutate({
+      await apolloClient.mutate({
         mutation: gql`
         mutation resetPassword($user: String!, $code: String!, $password: String!){
           resetPassword(user: $user, code: $code, password: $password)

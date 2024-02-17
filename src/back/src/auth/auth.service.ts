@@ -347,17 +347,22 @@ export class AuthService {
       return true;
     } catch (error) {
       console.error("generateEmailResetLink: ", error);
-      return error;
+      throw error;
     }
   };
 
   async resetPassword(username: string, code: string, password: string): Promise<boolean> {
     try {
-      const user = await this.prisma.users.findFirst({
-        where: { pwdResetSecret: code, pseudo: username },
+      if (!code)
+        throw new Error("Invalid reset code");
+      const user = await this.prisma.users.findUnique({
+        where: { pseudo: username },
       });
       if (!user) {
         throw new Error("User not found");
+      }
+      if (user.pwdResetSecret !== code) {
+        throw new Error("Invalid reset code");
       }
 
       await this.prisma.users.update({
@@ -371,7 +376,7 @@ export class AuthService {
       return true;
     } catch (error) {
       console.error("resetPassword: ", error);
-      return error;
+      throw error;
     }
   };
 

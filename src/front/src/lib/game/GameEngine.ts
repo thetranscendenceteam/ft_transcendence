@@ -6,6 +6,7 @@ import confetti from 'canvas-confetti';
 
 
 class GameEngine {
+  ready: boolean = false;
   matchId: string;
   userId: string;
   matches: number;
@@ -103,7 +104,7 @@ class GameEngine {
       return;
     let ws = new WebSocket('wss://localhost:8443/ws/game');
     let game = this;
-    ws.onopen = function () {
+    ws.onopen = async function () {
       console.log('WebSocket is ready');
       game.ws = ws;
       game.sendInitData();
@@ -123,31 +124,29 @@ class GameEngine {
   }
 
   handleMessage(msg: any) {
-    console.log('handling message: ' + JSON.stringify(msg));
     if (msg.players) {
       if (msg.players.left)
         this.players.left.populate(msg.players.left);
       if (msg.players.right)
         this.players.right.populate(msg.players.right);
-      //console.log("players: " + JSON.stringify(this.players));
     }
     if (msg.ball) {
       this.ball.populate(msg.ball);
-      //console.log("ball: " + JSON.stringify(this.ball));
     }
     if (msg.score) {
       this.score.populate(msg.score);
-      //console.log("score: " + JSON.stringify(this.score));
     }
     if (msg.game) {
       this.state = msg.game.state;
       this.factor = msg.game.factor;
-      //console.log("ready: " + this.ready);
     }
     if (msg.timestamp)
       this.lastTimestamp = msg.timestamp;
     if (msg.toPrint || msg.toPrint === "") {
       this.toPrint = msg.toPrint;
+    }
+    if (msg.init && msg.init === true) {
+      this.ready = true;
     }
   }
 
@@ -335,7 +334,10 @@ class GameEngine {
     this.send(res);
   }
 
-  sendHeight() {
+  async sendHeight() {
+    while (! this.ready) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
     let res = {
       height: this.height,
     }

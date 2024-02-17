@@ -9,6 +9,7 @@ class Player {
   width: number;
   speed: number;
   render: boolean;
+  userId: string;
   position: 'left' | 'right';
   gamePad: GamePad;
   client: Client | undefined;
@@ -22,6 +23,7 @@ class Player {
     this.width = 0;
     this.speed = 0;
     this.render = true;
+    this.userId = '';
     this.position = position;
     this.gamePad = new GamePad();
     this.client = undefined;
@@ -67,6 +69,10 @@ class Player {
 
   setClient(client: Client) {
     this.client = client;
+  }
+
+  setUserId(userId: string) {
+    this.userId = userId;
   }
 
   setGamePad(gamePad: GamePad) {

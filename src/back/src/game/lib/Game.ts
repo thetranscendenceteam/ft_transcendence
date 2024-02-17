@@ -3,11 +3,16 @@ import Client from './Client';
 import Ball from './Ball';
 import Score from './Score';
 import { Response, GameResponse } from './Messages';
+import { Match } from 'src/match/dto/Match.entity';
+import { MatchService } from 'src/match/match.service';
+import { SetMatchScoreInput } from 'src/match/dto/SetMatchScore.input';
+import { ScoreInput } from 'src/match/dto/Score.input';
 
 class Game {
   state: string;
   lastState: string;
   matchId: string;
+  matchService: MatchService;
   bestOf: number;
   difficulty: string;
   height: number;
@@ -21,12 +26,13 @@ class Game {
   interval: NodeJS.Timeout | undefined;
   full: boolean;
 
-  constructor() {
+  constructor(match: Match, matchService: MatchService) {
     this.state = 'stop';
     this.lastState = 'stop';
-    this.matchId = '';
-    this.bestOf = 3;
-    this.difficulty = 'normal';
+    this.matchId = match.id;
+    this.matchService = matchService;
+    this.bestOf = match.score?.bestOf || 0;
+    this.difficulty = match.difficulty;
     this.height = 600;
     this.width = 960;
     this.players = {
@@ -55,9 +61,29 @@ class Game {
     }
   }
 
+  registerScore() {
+    const winner = this.score.left > this.score.right ? 'left' : 'right';
+    const scoreInput: ScoreInput = {
+      id: this.matchId,
+      winnerScore: this.score[winner],
+      looserScore: this.score[winner === 'left' ? 'right' : 'left'],
+      matchId: this.matchId,
+      bestOf: this.bestOf,
+    };
+    const input: SetMatchScoreInput = {
+      id: this.matchId,
+      score: scoreInput,
+      winnerId: this.players[winner].userId,
+    };
+
+    this.matchService.setMatchScore(input);
+    this.matchService.setMatchAsFinished(this.matchId);
+  }
+
   nextRound() {
     if (this.score.left + this.score.right === this.bestOf && this.bestOf > 0) {
       this.state = 'end';
+      this.registerScore();
       return;
     }
     this.reset();
@@ -120,8 +146,10 @@ class Game {
     const delta = (timestamp - this.lastTimestamp) / 1000;
     this.lastTimestamp = timestamp;
 
-    if (this.state === 'waiting' && this.full)
+    if (this.state === 'waiting' && this.full) {
+      this.matchService.setMatchAsStarted(this.matchId);
       this.start();
+    }
     if (this.state === 'paused' && this.full)
       this.resume();
     this.update(delta);
@@ -129,25 +157,32 @@ class Game {
     this.sendGameState();
     if (!this.isLoop)
       clearInterval(this.interval);
-    //console.log("ball", this.ball);
   }
 
-  addPlayer(client: Client) {
-    if (this.full) {
+  bindClientToPlayer(client: Client, userId: string) {
+    if (this.full)
       return;
+    let playerFound = false;
+    for (const player of Object.values(this.players)) {
+      if (!player.client && player.userId === userId) {
+        player.setClient(client);
+        playerFound = true;
+        console.log('userId' + userId + ' already binded to ' + player.position);
+        break;
+      }
     }
-
-    if (this.players.left.client) {
-      this.players.right.setClient(client);
-      console.log('right player added');
-    } else {
-      this.players.left.setClient(client);
-      console.log('left player added');
+    if (!playerFound) {
+      for (const player of Object.values(this.players)) {
+        if (!player.client && player.userId === '') {
+          player.setClient(client);
+          player.setUserId(userId);
+          console.log('userId' + userId + ' binded to ' + player.position);
+          break;
+        }
+      }
     }
-
     if (this.players.left.client && this.players.right.client) {
       this.full = true;
-      console.log('game is full !!!');
     }
     this.renderAll();
     this.sendGameState();

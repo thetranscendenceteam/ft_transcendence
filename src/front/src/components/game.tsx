@@ -21,11 +21,9 @@ export const Game = (
       return ;
     if (gameEngine.current)
       return ;
-    console.log("launching game");
     gameEngine.current = new GameEngine();
     gameEngine.current.init(gameRef, gameParams, matchId, userId, setMenu);
     gameEngine.current.launch();
-    console.log("game launched");
   }, [gameRef, gameParams, matchId, userId, setMenu]);
 
   useEffect(function handleKeys() {

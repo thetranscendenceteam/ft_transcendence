@@ -70,9 +70,9 @@ model Messages {
 }
 
 model UsersInChats {
-    user     Users        @relation(fields: [userId], references: [id])
+    user     Users        @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId   String       @db.VarChar(36)
-    chat     Chats        @relation(fields: [chatId], references: [id])
+    chat     Chats        @relation(fields: [chatId], references: [id], onDelete: Cascade)
     chatId   String       @db.VarChar(36)
     role     UserChatRole @default(member)
     joinedAt DateTime     @default(now())

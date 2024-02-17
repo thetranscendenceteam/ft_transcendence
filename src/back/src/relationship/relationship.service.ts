@@ -165,6 +165,7 @@ export class RelationshipService {
     async removeRelationship(input: RelationshipInput): Promise<boolean> {
         try {
             const users = await this.sortUsersIds(input.userId, input.targetId);
+			// Find if there is a relationship between those users
             const relation = await this.prisma.usersRelationships.findFirst({
                 where: {
                     firstId: users.smallerId,
@@ -172,11 +173,33 @@ export class RelationshipService {
                 },
             });
             if (!relation) return false;
+			// Delete relationship if it exists
             const res = await this.prisma.usersRelationships.delete({
                 where: {
                     id: relation.id,
                 },
             });
+			// Delete whisper channel if thoses users had one
+			const chan = await this.prisma.chats.findFirst({
+				where: {
+					isWhisper: true,
+					users: {
+						some: {
+							OR: [
+								{ userId: input.userId },
+								{ userId: input.targetId },
+							],
+						},
+					},
+				},
+			});
+			console.log(chan);
+			if (!chan) return true;
+			await this.prisma.chats.delete({
+				where: {
+					id: chan.id,
+				},
+			});
             return true;
         }
         catch (e) {

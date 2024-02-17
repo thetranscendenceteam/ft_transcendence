@@ -17,7 +17,7 @@ interface UserData {
   campus: string;
 }
 
-const fetchData = (username: string): Promise<UserData> => {
+const fetchUserData = (username: string): Promise<UserData> => {
   return new Promise((resolve, reject) => {
     apolloClient.query({
       query: gql`
@@ -37,7 +37,7 @@ const fetchData = (username: string): Promise<UserData> => {
     }).then(({ data }) => {
       console.log("data user: ", data);
       const resolvedData = {...data.getUser, realname: `${data.getUser.firstName} ${data.getUser.lastName}`};
-      resolve(resolvedData as UserProfileCardProps);
+      resolve(resolvedData as UserData);
     }).catch(error => {
       console.error("Error fetching user data:", error);
       reject(error);

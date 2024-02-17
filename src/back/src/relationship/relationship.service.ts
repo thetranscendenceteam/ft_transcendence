@@ -5,6 +5,7 @@ import { RelationshipForUser } from './dto/RelationshipForUser.entity';
 import { RelationshipInput } from './dto/Relationship.input';
 import { SortedUsers } from './dto/sortedUsersIds.entity';
 import { InternalAddRelationshipInput } from './dto/InternalAddRelationship.input';
+import { DetailRelationship } from './dto/DetailRelationship.entity';
 
 @Injectable()
 export class RelationshipService {
@@ -208,21 +209,22 @@ export class RelationshipService {
         }
     }
 
-    async findRelationshipBetweenUsers(input: RelationshipInput): Promise<RelationshipStatus> {
+    async findRelationshipBetweenUsers(input: RelationshipInput): Promise<DetailRelationship> {
         try {
             const users = await this.sortUsersIds(input.userId, input.targetId);
-            const res = await this.prisma.usersRelationships.findFirst({
+            const query = await this.prisma.usersRelationships.findFirst({
                 where: {
                     firstId: users.smallerId,
                     secondId: users.biggerId,
                 },
-                select: {
-                    status: true,
-                },
             });
-			console.log(res);
-			if (!res) return RelationshipStatus.unknown;
-            return res.status;
+			if (!query) return new DetailRelationship();
+			console.log(query);
+			let res: DetailRelationship = new DetailRelationship();
+			res.user1 = query.firstId;
+			res.user2 = query.secondId;
+			res.status = query.status;
+			return res;
         }
         catch (e) {
             console.log("Error on findRelationshipBetweenUsers");

@@ -2,6 +2,7 @@ import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { RelationshipService } from './relationship.service';
 import { RelationshipForUser } from './dto/RelationshipForUser.entity';
 import { RelationshipInput } from './dto/Relationship.input';
+import { DetailRelationship } from './dto/DetailRelationship.entity';
 import { RelationshipStatus } from '@prisma/client';
 
 @Resolver()
@@ -36,10 +37,10 @@ export class RelationshipResolver {
         return this.relationshipService.removeRelationship(input);
     }
 
-    @Query(returns => RelationshipStatus)
+    @Query(returns => DetailRelationship)
     findRelationshipBetweenUsers(
         @Args('relationshipInput') input: RelationshipInput
-    ): Promise<RelationshipStatus> {
+    ): Promise<DetailRelationship> {
         return this.relationshipService.findRelationshipBetweenUsers(input);
     }
 

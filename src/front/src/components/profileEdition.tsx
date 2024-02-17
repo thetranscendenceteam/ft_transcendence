@@ -14,6 +14,7 @@ import { gql } from '@apollo/client';
 
 type UserProfileEditionCardProps = {
   user: {
+    id: string;
     username: string;
     realname: string;
     email: string;
@@ -89,7 +90,7 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
           }
         `,
         variables: {
-          inputUser: formData,
+          inputUser: { id: user.id, mail: formDataReady.email, password: formDataReady.password, pseudo: formDataReady.username },
         },
       });
       } catch (error) {

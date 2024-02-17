@@ -14,9 +14,19 @@ import * as Joi from '@hapi/joi';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { RelationshipModule } from './relationship/relationship.module';
 import { GameGateway } from './game/game.gateway';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
+    PassportModule,
+    JwtModule.register({
+        secret: process.env.JWT_PRIVATE_KEY,
+        signOptions: {
+            expiresIn: 3600,
+        },
+    }),
     ConfigModule.forRoot({
       validationSchema: Joi.object({
         REDIS_HOST: Joi.string().required(),
@@ -44,6 +54,6 @@ import { GameGateway } from './game/game.gateway';
     RelationshipModule,
   ],
   controllers: [AppController],
-  providers: [AppService, GameGateway],
+  providers: [AppService, GameGateway, JwtStrategy],
 })
 export class AppModule {}

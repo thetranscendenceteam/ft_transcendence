@@ -7,12 +7,15 @@ import { UpdateUser } from './dto/updateUser.input';
 import { EditUserInput } from './dto/editUser.input';
 import { SearchUser, SearchUserInput } from './dto/searchUser.input';
 import { UserPrivate } from './dto/userPrivate.entity';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from 'src/gql-auth.guards';
 
 @Resolver()
 export class UserResolver {
   constructor(private userService: UserService) { }
 
   @Query(returns => [UserPrivate])
+  @UseGuards(GqlAuthGuard)
   getUsers(
     @Args('max', { type: () => Int, nullable: true }) max: number | undefined,
   ): Promise<UserPrivate[]> {

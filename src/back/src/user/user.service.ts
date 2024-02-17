@@ -5,7 +5,6 @@ import { PrismaService } from '../prisma.service';
 import { GetUserInput } from './dto/getUser.input';
 import { CreateUserInput } from './dto/createUser.input';
 import { CreateClassicUserInput } from './dto/createClassicUser.input';
-import { AddXp } from './dto/addXp.input';
 import { User } from './dto/user.entity';
 import { UpdateUser } from './dto/updateUser.input';
 import { uid } from 'uid';
@@ -170,28 +169,6 @@ export class UserService {
     }
     catch (e) {
       console.log("Error on editUser query" + e);
-      throw e;
-    }
-  }
-
-  async addXpByNickname(input: AddXp): Promise<User> {
-    const xpToAdd = Number(input.xp);
-
-    if (isNaN(xpToAdd)) {
-      throw new Error('Invalid xp value');
-    }
-    try {
-      return this.prisma.users.update({
-        where: { id: input.id },
-        data: {
-          xp: {
-            increment: xpToAdd,
-          },
-        },
-      });
-    }
-    catch (e) {
-      console.log("Error on addXpByNickname query" + e);
       throw e;
     }
   }

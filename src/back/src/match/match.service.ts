@@ -9,6 +9,7 @@ import { SetMatchScoreInput } from './dto/SetMatchScore.input';
 import { UserPrivate } from 'src/user/dto/userPrivate.entity';
 import { AddUserInMatch } from './dto/AddUserInMatch.input';
 import { SettingsOfMatch } from './dto/SettingsOfMatch.entity';
+import { AddXpInput } from './dto/AddXp.input';
 
 @Injectable()
 export class MatchService {
@@ -541,5 +542,30 @@ export class MatchService {
             throw e;
         }
     }
+
+	async addXpPostMatch(input: AddXpInput): Promise<boolean> {
+		try {
+			const res = await this.prisma.users.update({
+				where: {
+					id: input.userId,
+				},
+				data: {
+					xp: {
+			 			increment: input.xp,
+					},
+					modifiedAt: new Date().toISOString(),
+					count: {
+						increment: 1,
+					}
+				},
+			});
+			if (!res) return false;
+			return true;
+		}
+		catch (e) {
+			console.log("Error on addXpPostMatch");
+			throw e;
+		}
+	}
 
 }

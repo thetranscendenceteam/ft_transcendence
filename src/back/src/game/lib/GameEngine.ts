@@ -2,13 +2,16 @@ import Game from './Game';
 import Client from './Client';
 import { Player } from './Player';
 import WebSocket from 'ws';
-import { Message } from './Messages';
+import { MatchService } from 'src/match/match.service';
+import { Match } from 'src/match/dto/Match.entity';
 
-class GameEngine {
+export class GameEngine {
   games: Game[];
+  matchService: MatchService;
 
-  constructor() {
+  constructor(matchService: MatchService) {
     this.games = [];
+    this.matchService = matchService;
   }
 
   deleteGame(game: Game) {
@@ -17,8 +20,8 @@ class GameEngine {
     console.log('Game deleted');
   }
 
-  createGame(): Game {
-    const game = new Game();
+  createGame(match: Match): Game {
+    const game = new Game(match, this.matchService);
     this.games.push(game);
 
     const dt = 1 / 60;
@@ -31,17 +34,33 @@ class GameEngine {
     return game;
   }
 
-  searchGame(ws: WebSocket, initMessage: any) {
+  async searchGame(ws: WebSocket, init: { matchId: string; userId: string }) {
     // Replace with call to DB.
     console.log('searching game...');
-    let game = this.games.find((game) => !game.full);
-    if (!game) {
-      console.log('no game found, creating one');
-      game = this.createGame();
-    } else console.log('game found');
-
-    const client = new Client(ws, initMessage.userId);
-    game.addPlayer(client);
+    let match: Match | undefined;
+    let game: Game | undefined;
+    const ongoingMatches: Match[] =
+      await this.matchService.findUngoingMatchesForUser(init.userId);
+    const unstartedMatches: Match[] =
+      await this.matchService.findUnstartedMatchesForUser(init.userId);
+    if ( // If the match is ongoing, find the game and bind the client to the player.
+      ongoingMatches &&
+      ongoingMatches.find((match) => match.id === init.matchId) &&
+      (game = this.games.find((game) => game.matchId === init.matchId))
+    ) {
+      console.log('ongoing match found');
+      const client = new Client(ws);
+      game.bindClientToPlayer(client, init.userId);
+    } else if ( // If the match is unstarted, create a new game and bind the client to the player.
+      (match = unstartedMatches.find((match) => match.id === init.matchId))
+    ) {
+      const game = this.createGame(match);
+      console.log('unstarted match found');
+      const client = new Client(ws);
+      game.bindClientToPlayer(client, init.userId);
+    } else {
+      console.log('no match found');
+    }
   }
 
   searchPlayerByWs(ws: WebSocket): Player | undefined {
@@ -62,20 +81,18 @@ class GameEngine {
     return undefined;
   }
 
-  handleMessage(ws: WebSocket, message: Message) {
-    console.log('message', message);
+  async handleMessage(ws: WebSocket, message: any) {
     if (message.init) {
       // Prevent concurrent connections
       if (this.searchPlayerByWs(ws)) return;
       this.searchGame(ws, message.init);
     } else {
-      console.log('handling message');
       const player = this.searchPlayerByWs(ws);
-      const game = this.searchGameByWs(ws);
       if (!player) {
         console.log('no player found');
         return;
       }
+      const game = this.searchGameByWs(ws);
       if (!game) {
         console.log('no game found');
         return;
@@ -97,11 +114,11 @@ class GameEngine {
     if (!player) return;
     if (!game) return;
     if (player.client) {
-      console.log('player with id', player.client.userId, 'disconnected');
+      console.log('player with id', player.userId, 'disconnected');
       game.removePlayer(player.client);
     }
     if (
-      game.state === 'end' &&
+      (game.state === 'end' || game.state === 'waiting') &&
       !game.players.left.client &&
       !game.players.right.client
     ) {
@@ -109,5 +126,3 @@ class GameEngine {
     }
   }
 }
-
-export default GameEngine;

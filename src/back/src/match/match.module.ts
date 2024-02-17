@@ -4,6 +4,7 @@ import { MatchService } from './match.service';
 import { PrismaService } from '../prisma.service';
 
 @Module({
-  providers: [MatchResolver, MatchService, PrismaService]
+  providers: [MatchResolver, MatchService, PrismaService],
+  exports: [MatchService],
 })
-export class MatchModule { }
+export class MatchModule {}

@@ -8,11 +8,11 @@ class Client {
   factor: number;
   ws: WebSocket;
 
-  constructor(ws: WebSocket, userId: string) {
-    this.userId = userId;
+  constructor(ws: WebSocket) {
     this.height = 600;
     this.ws = ws;
     this.factor = 0;
+    this.sendInitOk();
   }
 
   setHeight(height: number) {
@@ -20,10 +20,16 @@ class Client {
     this.factor = height / 600;
   }
 
+  sendInitOk() {
+    const message: Response = {
+      timestamp: Date.now(),
+      init: true,
+    };
+    this.send(message);
+  }
+
   send(message: Response) {
-    //console.log("send", message);
     const data: string = JSON.stringify(message);
-    //console.log("send", data);
     this.ws.send(data);
   }
 }

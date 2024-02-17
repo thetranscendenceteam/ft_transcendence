@@ -5,17 +5,22 @@ import {
 } from '@nestjs/websockets';
 import { WebSocket, WebSocketServer } from 'ws';
 
-import GameEngine from './lib/GameEngine';
+import { GameEngine } from './lib/GameEngine';
+import { Injectable } from '@nestjs/common';
+import { MatchService } from 'src/match/match.service';
 
+@Injectable()
 @NestWebSocketGateway({ path: '/ws/game' })
 export class GameGateway {
   @NestWebSocketServer() server: WebSocketServer;
 
   private gameEngine: GameEngine;
+  private matchService: MatchService;
 
-  constructor() {
+  constructor(matchService: MatchService) {
     console.log('================ GameGateway created ==============');
-    this.gameEngine = new GameEngine();
+    this.matchService = matchService;
+    this.gameEngine = new GameEngine(this.matchService);
   }
 
   @SubscribeMessage('update')

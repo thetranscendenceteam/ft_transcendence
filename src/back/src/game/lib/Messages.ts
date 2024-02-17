@@ -22,6 +22,7 @@ type Response = {
   players?: { left?: PlayerResponse; right?: PlayerResponse };
   ball?: BallResponse;
   score?: ScoreResponse;
+  init?: boolean;
 };
 
 type GameResponse = {

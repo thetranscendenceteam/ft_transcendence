@@ -199,8 +199,8 @@ export class UserService {
   async updateUser(updateUser: UpdateUser): Promise<User | null> {
     try {
       const date = new Date();
-      if (updateUser.password) {
-        updateUser.password = await hashPassword(updateUser.password)
+      if (!updateUser.password) {
+        throw new Error('Password is required');
       }
       const res = await this.prisma.users.update({
         where: {
@@ -208,7 +208,7 @@ export class UserService {
         },
         data: {
           pseudo: updateUser.pseudo,
-          password: updateUser.password, // hashed on line 162
+          password: await hashPassword(updateUser.password),
           avatar: updateUser.avatar,
           xp: updateUser.xp,
           campus: updateUser.campus,

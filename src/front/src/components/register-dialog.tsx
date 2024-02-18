@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import apolloClient from "./apolloclient";
 import { gql } from "@apollo/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 
 export type ButtonVariant = "link" | "ghost" | "transparent" | "black" | "default" | "destructive" | "outline" | "secondary";
@@ -78,7 +78,7 @@ const RegisterDialog = ({ variant }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={variant}>Register</Button>
+        <Button variant={variant} onClick={() => setOpened(true)}>Register</Button>
       </DialogTrigger>
       { opened &&
         <DialogContent className="sm:max-w-[425px] max-w-72">

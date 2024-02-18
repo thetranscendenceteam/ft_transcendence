@@ -35,7 +35,7 @@ export class UserService {
 
   public async getUser(userInput: GetUserInput): Promise<User | null> {
     try {
-      const user = await this.prisma.users.findFirst({
+      const user = await this.prisma.users.findUnique({
         where: userInput,
       });
       if (user) return user;

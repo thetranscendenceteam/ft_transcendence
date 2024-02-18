@@ -136,6 +136,8 @@ const ProfileComponent = () => {
     fetchMatchHistory();
   }, [user]);
 
+  console.log("USER : ", user);
+  console.log("HISTORY : ", matchHistory);
   return (
     user && matchHistory && (
       <div className={styles.container}>

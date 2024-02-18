@@ -167,18 +167,19 @@ const UserComponent = (props: {username: string}) => {
   }
 
   const changePending = async(userId: string, targetId: string, accept: boolean) => {
+    console.log("OKSKDIJSDIJ");
     try {
       const { data } = await apolloClient.mutate({
         mutation: gql`
-          mutation acceptOrRefusePending($input: acceptOrNot, relationshipInput) {
-            acceptOrRefusePending(acceptOrNot, relationshipInput)
+          mutation acceptOrRefusePending($acceptOrNot: Boolean!, $relationshipInput: RelationshipInput!) {
+            acceptOrRefusePending(acceptOrNot: $acceptOrNot, relationshipInput: $relationshipInput)
           }
         `,
         variables: {
-          input: {
+          acceptOrNot: accept,
+          relationshipInput: {
             userId: userId,
-            targetId: targetId,
-            acceptOrNot: accept
+            targetId: targetId
           }
         }
       });
@@ -214,7 +215,6 @@ const UserComponent = (props: {username: string}) => {
     const fetchRelation = async (userId: string, targetId: string) => {
       try {
         const rel = await getRelationship(userId, targetId);
-        console.log("RELATION : ", rel);
         setRelationship(rel.status);
         setUser1(rel.user1);
         setUser2(rel.user2);
@@ -230,9 +230,9 @@ const UserComponent = (props: {username: string}) => {
 
   useEffect(() => {
     const fetchMatchHistory = async () => {
-      if (user) {
+      if (target) {
         try {
-          const data = await fetchMatchHistoryData(user.id);
+          const data = await fetchMatchHistoryData(target.id);
           setMatchHistory(data);
         } catch (error) {
           console.error("Error fetching match history:", error);
@@ -240,13 +240,9 @@ const UserComponent = (props: {username: string}) => {
       }
     };
     fetchMatchHistory();
-  }, [user]);
+  }, [target]);
 
   useEffect(() => {
-    console.log("USER 1 : ", user1);
-    if (user)
-      console.log("CURRENT USER : ", user.id);
-    console.log("RELAFUCK : ", relationship);
     if (relationship === 'friends') {
       setStatus('friends');
     } else if (!relationship || relationship === 'unknown') {
@@ -258,9 +254,7 @@ const UserComponent = (props: {username: string}) => {
     } else if (user && relationship === 'block_first_to_second' && user.id === user2) {
       setStatus('was_blocked');
     } else if (user && relationship === 'block_second_to_first' && user.id === user1) {
-      console.log("TEST");
       setStatus('was_blocked');
-      console.log("DINGUERIE", status)
     } else if (user && relationship === 'pending_first_to_second' && user.id === user1) {
       setStatus('has_invited');
     } else if (user && relationship === 'pending_second_to_first' && user.id === user2) {
@@ -270,7 +264,6 @@ const UserComponent = (props: {username: string}) => {
     } else if (user && relationship === 'pending_second_to_first' && user.id === user1) {
       setStatus('was_invited');
     }
-    console.log("STATUS : ", status);
   }, [relationship]);
 
   const addFriend = () => {
@@ -289,6 +282,13 @@ const UserComponent = (props: {username: string}) => {
     }
   }
 
+  const dealPending = (accept: boolean) => {
+    if (user && target) {
+      changePending(user.id, target.id, accept);
+      setRefresh(!refresh);
+    }
+  }
+
   const removeRelation = () => {
     if (user && target) {
       removeRelationship(user.id, target.id);
@@ -298,35 +298,40 @@ const UserComponent = (props: {username: string}) => {
   
   if (target && status != "was_blocked") {
     return (
-      (target && matchHistory) && (
+      target && matchHistory && (
         <div className={styles.container}>
           <div className="w-1/4 flex flex-col">
             <UserProfileCard user={target} matchHistory={matchHistory} />
-            {status === 'friends' && (
+            {user && user.id != target.id && (
               <>
-                <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Unfriend</button>
-                <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
-              </>
-            )}
-            {status === 'unknown' && (
-              <>
-                <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={addFriend}>Add Friend</button>
-                <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
-              </>
-            )}
-            {status === 'has_blocked' && (
-              <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Unblock</button>
-            )}
-            {status === 'has_invited' && (
-              <>
-                <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Cancel Invite</button>
-                <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
-              </>
-            )}
-            {status === 'was_invited' && (
-              <>
-                <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80">Accept invitation</button>
-                <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
+                {status === 'friends' && (
+                  <>
+                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Unfriend</button>
+                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
+                  </>
+                )}
+                {status === 'unknown' && (
+                  <>
+                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={addFriend}>Add Friend</button>
+                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
+                  </>
+                )}
+                {status === 'has_blocked' && (
+                  <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Unblock</button>
+                )}
+                {status === 'has_invited' && (
+                  <>
+                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Cancel Invite</button>
+                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
+                  </>
+                )}
+                {status === 'was_invited' && (
+                  <>
+                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={() => dealPending(true)}>Accept invitation</button>
+                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={() => dealPending (false)}>Refuse invitation</button>
+                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -334,8 +339,12 @@ const UserComponent = (props: {username: string}) => {
         </div>
       )
     );
-  } else if (target && status == "was_blocked") {
-    <p className="text-10xl">YOU WERE BLOKED FUCKER KEK</p>
+  } else if (target && status == 'was_blocked') {
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <p className="text-6xl">{target.username} has blocked you</p>
+      </div>
+    );
   }
   return (
     <div className={styles.container}>

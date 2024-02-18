@@ -1,9 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Context } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { authUser } from './dto/user.entity';
 import { StandardLoginInput } from './dto/standardLogin.input';
 import { StandardRegisterInput } from './dto/standardRegister.input';
+import { GqlAuthGuard } from './gql-auth.guards';
+import { RequestWithUser } from '../user/dto/requestwithuser.interface';
 
 
 @Resolver()
@@ -47,7 +50,13 @@ export class AuthResolver {
   }
 
   @Mutation(returns => String)
-  async getTwoFaQr(@Args('id') id: string): Promise<string> { // TODO take id from JWT
+	@UseGuards(GqlAuthGuard)
+  async getTwoFaQr(
+		@Context('req') req: RequestWithUser,
+		@Args('id') id: string
+	): Promise<string> {
+		const user = req.user;
+		if (user.id !== id) throw new Error("Unauthorized");
     const result = await this.userService.twoFaQr(id);
     if (result === null) {
       throw new Error('2FA QR generation failed');
@@ -56,7 +65,16 @@ export class AuthResolver {
   }
 
   @Mutation(returns => String)
-  async toggleTwoFA(@Args('id') id: string, @Args('code') code: string, @Args('toggleTwoFA') toggleTwoFA: boolean): Promise<boolean> { // TODO take id from JWT
+	@UseGuards(GqlAuthGuard)
+  async toggleTwoFA(
+		@Context('req') req: RequestWithUser,
+		@Args('id') id: string,
+		@Args('code') code: string,
+		@Args('toggleTwoFA') toggleTwoFA: boolean
+
+	): Promise<boolean> {
+		const user = req.user;
+		if (user.id !== id) throw new Error("Unauthorized");
     const result = await this.userService.toggleTwoFA(id, code, toggleTwoFA);
     if (result === null) {
       throw new Error('2FA activation failed');
@@ -75,8 +93,16 @@ export class AuthResolver {
   }
 
   @Mutation(returns => Boolean)
-  async resetPassword(@Args('user') user:string, @Args('code') code: string, @Args('password') password: string): Promise<boolean> {
+	@UseGuards(GqlAuthGuard)
+  async resetPassword(
+		@Context('req') req: RequestWithUser,
+		@Args('user') user:string,
+		@Args('code') code: string,
+		@Args('password') password: string
+	): Promise<boolean> {
     try {
+			const user = req.user;
+			if (user.username !== user) throw new Error("Unauthorized");
       await this.userService.resetPassword(user, code, password);
       return true;
     } catch (error) {

@@ -1,4 +1,7 @@
-import { Args, Resolver, Query } from '@nestjs/graphql';
+import { Args, Resolver, Query, Context } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from 'src/auth/gql-auth.guards';
+import { RequestWithUser } from 'src/user/dto/requestwithuser.interface';
 import { UsersInChatsService } from './users-in-chats.service';
 import { UserChatInfo } from './dto/UserChatInfo.entity';
 import { ChatUserInfo } from './dto/ChatUserInfo.entity';
@@ -11,22 +14,29 @@ export class UsersInChatsResolver {
 	constructor(private usersInChatsService: UsersInChatsService) { }
 
 	@Query(returns => [UserChatInfo])
+	@UseGuards(GqlAuthGuard)
 	getUsersByIdChat(
-  	@Args('chatId', { type: () => String, nullable: false }) chatId: string
+		@Context('req') req: RequestWithUser,
+		@Args('chatId', { type: () => String, nullable: false }) chatId: string
 	): Promise<UserChatInfo[]> {
-    console.log("getUsersByIdChat query with chatId : " + chatId);
-    return this.usersInChatsService.getAllUsersByChatId(chatId);
+		const user = req.user;
+		console.log("getUsersByIdChat query with chatId : " + chatId);
+		return this.usersInChatsService.getAllUsersByChatId(chatId, user.id);
 	}
 
 	@Query(returns => [ChatsInfoWithUser])
+	@UseGuards(GqlAuthGuard)
 	async getChatsByIdUser(
-    @Args('userId', { type: () => String, nullable: false }) userId: string
+		@Context('req') req: RequestWithUser,
+		@Args('userId', { type: () => String, nullable: false }) userId: string
 	): Promise<ChatsInfoWithUser[]> {
-    console.log("getChatsByIdUser query with userId : " + userId);
+		const reqUser = req.user;
+		if (reqUser.id !== userId) throw new Error("Unauthorized");
+		console.log("getChatsByIdUser query with userId : " + userId);
 		const chats = await this.usersInChatsService.getAllChatByUserId(userId);
 		for (const i of chats) {
 			if (i.isWhisper) {
-				const users = await this.usersInChatsService.getAllUsersByChatId(i.idChat);
+				const users = await this.usersInChatsService.getAllUsersByChatId(i.idChat, reqUser.id);
 				const user = users.filter((u) => u.idUser != userId);
 				i.userInfo = user[0];
 			}
@@ -35,9 +45,13 @@ export class UsersInChatsResolver {
 	}
 
 	@Query(returns => ChatUserInfo)
+	@UseGuards(GqlAuthGuard)
 	getInfoUserForIdChatAndIdUser(
-    @Args('InfoChatForUserInput') input: InfoChatForUserInput,
+		@Context('req') req: RequestWithUser,
+		@Args('InfoChatForUserInput') input: InfoChatForUserInput
 	): Promise<ChatUserInfo | null> {
-    return this.usersInChatsService.getInfoUser(input);
+		const user = req.user;
+		if (user.id !== input.userId) throw new Error("Unauthorized");
+		return this.usersInChatsService.getInfoUser(input);
 	}
 }

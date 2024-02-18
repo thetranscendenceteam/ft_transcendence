@@ -18,8 +18,13 @@ import { UserContext } from "./userProvider";
 import React from "react";
 import { useRouter } from 'next/navigation';
 import { useCookies } from 'react-cookie';
+import { ButtonVariant } from './register-dialog';
 
-const LoginDialog = () => {
+type Props = {
+  variant: ButtonVariant;
+}
+
+const LoginDialog = ({ variant }: Props) => {
   const {updateUser} = React.useContext(UserContext);
   const [error, setError] = useState("");
   const [cookies, setCookie] = useCookies(['jwt']);
@@ -86,7 +91,7 @@ const LoginDialog = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="black">Login</Button>
+        <Button variant={variant}>Login</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] max-w-72">
         <DialogHeader>

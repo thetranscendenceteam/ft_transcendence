@@ -20,6 +20,7 @@ import { SearchBar } from './searchBar/searchBar';
 import { SearchResultsList } from './searchBar/searchResultsList';
 import styles from './style/menu.module.css';
 import { useCookies } from 'react-cookie';
+import { ButtonVariant } from './register-dialog';
 
 interface User {
   id: string | null;
@@ -37,6 +38,7 @@ const Menu: React.FC = () => {
   const [showResults, setShowResults] = useState(true);
   const searchBarRef = useRef<HTMLDivElement>(null);
   const [cookies, setCookie, removeCookie] = useCookies(['jwt']);
+  const variant: ButtonVariant = "black";
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -117,8 +119,8 @@ const Menu: React.FC = () => {
             </li>
           ) : (
             <div className="flex items-center">
-              <RegisterDialog />
-              <LoginDialog />
+              <RegisterDialog variant={variant}/>
+              <LoginDialog variant={variant}/>
             </div>
           )}
         </div>

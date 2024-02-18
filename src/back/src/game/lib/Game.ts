@@ -159,7 +159,7 @@ class Game {
       clearInterval(this.interval);
   }
 
-  bindClientToPlayer(client: Client, userId: string) {
+  async bindClientToPlayer(client: Client, userId: string) {
     if (this.full)
       return;
     let playerFound = false;
@@ -182,6 +182,15 @@ class Game {
       }
     }
     if (this.players.left.client && this.players.right.client) {
+      const users = await this.matchService.findUsersInMatch(this.matchId);
+      for (const user of users) {
+        if (user.userId === this.players.left.userId) {
+          this.players.left.username = user.username;
+        }
+        if (user.userId === this.players.right.userId) {
+          this.players.right.username = user.username;
+        }
+      }
       this.full = true;
     }
     this.renderAll();

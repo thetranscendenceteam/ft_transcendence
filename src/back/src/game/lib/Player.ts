@@ -10,6 +10,7 @@ class Player {
   speed: number;
   render: boolean;
   userId: string;
+  username: string;
   position: 'left' | 'right';
   gamePad: GamePad;
   client: Client | undefined;
@@ -89,6 +90,7 @@ class Player {
     return {
       x: this.x * factor,
       y: this.y * factor,
+      username: this.username,
       height: this.height * factor,
       width: this.width * factor,
       speed: this.speed * factor,

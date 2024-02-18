@@ -6,6 +6,7 @@ class Player {
   height: number;
   width: number;
   speed: number;
+  username: string;
   position: "left" | "right";
   gamePad: GamePad | undefined;
 
@@ -15,6 +16,7 @@ class Player {
     this.height = 0;
     this.width = 0;
     this.speed = 0;
+    this.username = '';
     this.position = position;
     this.gamePad = undefined;
   }
@@ -61,6 +63,8 @@ class Player {
       this.x = msg.x;
     if (msg.y)
       this.y = msg.y;
+    if (msg.username)
+      this.username = msg.username;
     if (msg.height)
       this.height = msg.height;
     if (msg.width)

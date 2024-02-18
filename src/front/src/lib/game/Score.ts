@@ -18,10 +18,13 @@ class Score {
   }
 
   draw(ctx: CanvasRenderingContext2D, game: GameEngine) {
-    ctx.font = "48px monospace";
+    let fontSize = 48 * game.factor;
+    ctx.font = fontSize + "px monospace";
     ctx.fillStyle = "white";
-    ctx.fillText(this.left.toString(), game.width / 4, 50);
-    ctx.fillText(this.right.toString(), game.width * 3 / 4, 50);
+    ctx.fillText(game.players.left.username, game.width / 4, 50);
+    ctx.fillText(this.left.toString(), game.width / 4, 100);
+    ctx.fillText(game.players.right.username, game.width * 3 / 4, 50);
+    ctx.fillText(this.right.toString(), game.width * 3 / 4, 100);
   }
 
   populate(msg: any) {

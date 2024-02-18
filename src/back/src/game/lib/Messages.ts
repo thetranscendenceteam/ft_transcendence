@@ -33,6 +33,7 @@ type GameResponse = {
 type PlayerResponse = {
   x?: number;
   y: number;
+  username?: string;
   height?: number;
   width?: number;
   speed?: number;

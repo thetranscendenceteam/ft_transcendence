@@ -6,6 +6,7 @@ import { RelationshipInput } from './dto/Relationship.input';
 import { SortedUsers } from './dto/sortedUsersIds.entity';
 import { InternalAddRelationshipInput } from './dto/InternalAddRelationship.input';
 import { DetailRelationship } from './dto/DetailRelationship.entity';
+import { RelationshipRequest } from './dto/RelationshipRequest.entity';
 
 @Injectable()
 export class RelationshipService {

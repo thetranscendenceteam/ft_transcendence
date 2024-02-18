@@ -19,27 +19,6 @@ export class UserResolver {
   getUsers(
     @Args('max', { type: () => Int, nullable: true }) max: number | undefined,
   ): Promise<UserPrivate[]> {
-
-    const cookieHeader = context.req.headers.cookie;
-    if (cookieHeader) {
-      const cookies = cookieHeader.split(';').map((cookie) => cookie.trim());
-      // Find the jwt cookie
-      const jwtCookie = cookies.find((cookie) => cookie.startsWith('jwt='));
-      if (jwtCookie) {
-        // Extract the value part
-        const jwtValue = jwtCookie.split('=')[1];
-        // Decode the JWT token
-        const jwtToken = decodeURIComponent(jwtValue);
-        console.log('JWT Token:', jwtToken);
-        // Now you can use this JWT token as needed
-      } else {
-        console.log('JWT cookie not found');
-      }
-    } else {
-      console.log('No cookies found in the request');
-    }
-
-    console.log('🚀 ~ UserResolver ~ context:', context.req.headers.cookie);
     console.log("getUsers with max arg : " + max);
     return this.userService.getAllUser(max);
   }

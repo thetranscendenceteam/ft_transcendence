@@ -31,7 +31,7 @@ import { JwtStrategy } from './jwt.strategy';
       validationSchema: Joi.object({
         REDIS_HOST: Joi.string().required(),
         REDIS_PORT: Joi.number().required(),
-      })
+      }),
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -41,8 +41,9 @@ import { JwtStrategy } from './jwt.strategy';
         configService: ConfigService,
       ) => ({
         autoSchemaFile: 'schema.gql',
-        installSubscriptionHandlers: true
-      })
+        installSubscriptionHandlers: true,
+        subscriptions: { 'graphql-ws': true, 'subscriptions-transport-ws': false, },
+      }),
     }),
     ChatModule,
     UserModule,

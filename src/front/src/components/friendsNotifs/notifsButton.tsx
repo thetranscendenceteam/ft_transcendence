@@ -1,16 +1,17 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { UserContext } from '../userProvider';
 import apolloClient from '../apolloclient';
-import { gql } from '@apollo/client';
+import { OnSubscriptionDataOptions, gql, useQuery, useSubscription } from "@apollo/client"
 
 type FriendsNotifs = {
   name: string,
 	userId: string,
 };
 
+const NEW_FRIENDREQUEST = 'newFriendRequest_';
+
 const NotificationsButton = () => {
   const [showNotifications, setShowNotifications] = useState(false);
-  const [newNotif, setNewNotif] = useState(false);
   const [friendsNotifs, setFriendsNotifs] = useState<FriendsNotifs[]>([]);
   const { user } = useContext(UserContext);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -36,6 +37,15 @@ const NotificationsButton = () => {
       return [];
     }
   };
+
+  const NEW_FRIENDREQUEST_SUBSCRIPTION = gql`
+  subscription newPendingRequest($userId: String!) {
+    newPendingRequest(userId: $userId) {
+      userId
+      username
+    }
+  }
+`;
 
   const refuse = async (userId: string) => {
     try {
@@ -87,12 +97,23 @@ const NotificationsButton = () => {
 
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
-    setNewNotif(false);
   };
+
+  const onMessage = useCallback((result: OnSubscriptionDataOptions) => {
+    if (!result.subscriptionData.data) return;
+    console.log(result.subscriptionData.data.newPendingRequest);
+    const lastMessage = result.subscriptionData.data.newPendingRequest;
+    setFriendsNotifs((prevMessages) => [...prevMessages, lastMessage]);
+  }, []);
+
+  useSubscription(NEW_FRIENDREQUEST_SUBSCRIPTION, {
+    variables: { "userId": user?.id },
+    fetchPolicy: "no-cache",
+    onSubscriptionData: onMessage
+  });
 
   useEffect(() => {
     if (friendsNotifs.length > 0) {
-      setNewNotif(true);
     }
   }, [friendsNotifs]);
 
@@ -122,7 +143,7 @@ const NotificationsButton = () => {
 
   return (
 		<div style={{ position: 'relative', marginLeft: '10px', marginRight: '10px' }}>
-			{newNotif ? (
+			{friendsNotifs.length > 0 ? (
 				<button ref={buttonRef} onClick={toggleNotifications}>
 					🟢
 				</button>

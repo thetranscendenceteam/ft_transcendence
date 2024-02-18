@@ -101,10 +101,20 @@ export class RelationshipService {
     try {
       const res = await this.internalAddRelationship(internalInput);
 
-      const resSub: FriendRequestForSub = new FriendRequestForSub();
-      resSub.userId = input.userId;
-      resSub.username = input.targetId;
-      this.pubSub.publish(NEW_FRIENDREQUEST + input.userId, resSub);
+      const user = await this.prisma.users.findFirst({
+        where: {
+          id: input.userId,
+        },
+        select: {
+          pseudo: true,
+        },
+      });
+      if (user) {
+        const resSub: FriendRequestForSub = new FriendRequestForSub();
+        resSub.userId = input.userId;
+        resSub.username = user.pseudo;
+        this.pubSub.publish(NEW_FRIENDREQUEST + input.targetId, { newPendingRequest: resSub });
+      }
 
       return res;
     } catch (e) {

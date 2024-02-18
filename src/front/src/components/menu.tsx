@@ -21,6 +21,8 @@ import { SearchResultsList } from './searchBar/searchResultsList';
 import styles from './style/menu.module.css';
 import { useCookies } from 'react-cookie';
 import NotificationsButton from './friendsNotifs/notifsButton';
+import { ApolloProvider } from '@apollo/client';
+import apolloClient from '@/components/apolloclient';
 
 interface User {
   id: string | null;
@@ -116,7 +118,9 @@ const Menu: React.FC = () => {
           </div>
 
           {user?.id ? (
-          <NotificationsButton />) : (null)
+          <ApolloProvider client={apolloClient}>
+            <NotificationsButton />
+          </ApolloProvider>) : (null)
           }
 
           {user?.id ? (

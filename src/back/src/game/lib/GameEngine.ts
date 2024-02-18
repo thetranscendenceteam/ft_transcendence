@@ -12,6 +12,11 @@ export class GameEngine {
   constructor(matchService: MatchService) {
     this.games = [];
     this.matchService = matchService;
+    this.matchService.findUngoingMatches().then((matches) => {
+      matches.forEach((match) => {
+        this.createGame(match);
+      });
+    });
   }
 
   deleteGame(game: Game) {
@@ -58,6 +63,13 @@ export class GameEngine {
       console.log('unstarted match found');
       const client = new Client(ws);
       game.bindClientToPlayer(client, init.userId);
+    } else if (
+      (game = this.games.find((game) => game.matchId === init.matchId)) &&
+      init.userId === ''
+    ) {
+      console.log('spectator found');
+      const client = new Client(ws);
+      game.bindClientToSpectator(client);
     } else {
       console.log('no match found');
     }
@@ -77,6 +89,18 @@ export class GameEngine {
       for (const player of Object.values(game.players)) {
         if (player.client && player.client.ws === ws) return game;
       }
+      for (const spectator of game.spectators) {
+        if (spectator.ws === ws) return game;
+      }
+    }
+    return undefined;
+  }
+
+  searchSpectatorByWs(ws: WebSocket): Client | undefined {
+    for (const game of this.games) {
+      for (const spectator of game.spectators) {
+        if (spectator.ws === ws) return spectator;
+      }
     }
     return undefined;
   }
@@ -88,16 +112,24 @@ export class GameEngine {
       this.searchGame(ws, message.init);
     } else {
       const player = this.searchPlayerByWs(ws);
+      const spectator = this.searchSpectatorByWs(ws);
       if (!player) {
         console.log('no player found');
-        return;
+        if (!spectator) {
+          console.log('no spectator found');
+          return;
+        }
       }
       const game = this.searchGameByWs(ws);
       if (!game) {
         console.log('no game found');
         return;
       }
-      game.handleMessages(player, message);
+      if (spectator) {
+        game.handleSpectatorMessages(spectator, message);
+        return;
+      } else if (player)
+        game.handleMessages(player, message);
       if (
         game.state === 'end' &&
         !game.players.left.client &&

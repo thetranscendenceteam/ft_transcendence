@@ -105,20 +105,24 @@ class GameEngine {
     let ws = new WebSocket('wss://localhost:8443/ws/game');
     let game = this;
     ws.onopen = async function () {
-      console.log('WebSocket is ready');
+      //console.log('WebSocket is ready');
       game.ws = ws;
       game.sendInitData();
       game.sendHeight();
     };
     ws.onmessage = function(event) {
-      //console.log('WebSocket message received:', event.data);
+      //console.log('WebSocket message received:', JSON.stringify(event.data, null, 2));
       game.handleMessage(JSON.parse(event.data));
     };
     ws.onclose = function() {
-      console.log('WebSocket is closed');
+      //console.log('WebSocket is closed');
+      //game.ws = null;
+      //game.initWs();
     };
     ws.onerror = function(event) {
       console.log('WebSocket error:', event);
+      //game.ws = null;
+      //game.initWs();
     };
     this.ws = ws;
   }

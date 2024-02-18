@@ -3,7 +3,7 @@ import GameEngine from "./GameEngine";
 enum Difficulty {
   easy = 170,
   normal = 280,
-  hard = 350,
+  hard = 390,
 }
 
 class Ball {

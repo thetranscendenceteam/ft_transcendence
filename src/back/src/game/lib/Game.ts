@@ -17,7 +17,10 @@ class Game {
   difficulty: string;
   height: number;
   width: number;
+  toPrint: string;
+  isToPrint: boolean;
   players: { left: Player; right: Player };
+  spectators: Client[];
   ball: Ball;
   score: Score;
   isLoop: boolean;
@@ -35,10 +38,13 @@ class Game {
     this.difficulty = match.difficulty;
     this.height = 600;
     this.width = 960;
+    this.toPrint = '';
+    this.isToPrint = false;
     this.players = {
       left: new Player('left'),
       right: new Player('right'),
     };
+    this.spectators = [];
     this.ball = new Ball();
     this.score = new Score();
     this.isLoop = false;
@@ -205,6 +211,12 @@ class Game {
     this.sendGameState();
   }
 
+  bindClientToSpectator(client: Client) {
+    this.spectators.push(client);
+
+  }
+
+
   removePlayer(client: Client) {
     if (this.players.left.client === client) {
       this.players.left.client = undefined;
@@ -263,6 +275,13 @@ class Game {
       else
         player.setToPrint(text);
     }
+    if (this.state === 'end') {
+      this.toPrint = this.score.left > this.score.right ? this.players.left.username + ' won' : this.players.right.username + ' won';
+      this.isToPrint = true;
+    } else {
+      this.toPrint = text;
+      this.isToPrint = true;
+    }
   }
 
   startingSequence(): string {
@@ -302,34 +321,56 @@ class Game {
           this.ball.render ||
           this.score.render)
       ) {
-        const response: Response = {
-          timestamp: Date.now(),
-          game: this.genResponse(player.client.factor),
-          ...(player.isToPrint && {
-            toPrint: player.toPrint,
-          }),
-          ...((this.players.left.render || this.players.right.render) && {
-            players: {
-              ...(this.players.left.render && {
-                left: this.players.left.genResponse(player.client.factor),
-              }),
-              ...(this.players.right.render && {
-                right: this.players.right.genResponse(player.client.factor),
-              }),
-            },
-          }),
-          ...(this.ball.render && {
-            ball: this.ball.genResponse(player.client.factor),
-          }),
-          ...(this.score.render && {
-            score: this.score.genResponse(),
-          }),
-        };
+        const toPrint = player ? player.toPrint : this.toPrint;
+        const isToPrint = player ? player.isToPrint : this.isToPrint;
+        const factor = player.client.factor;
+        const response = this.genGameState(isToPrint, toPrint, factor);
         player.client.send(response);
+      }
+    }
+    for (const spectator of this.spectators) {
+      if (
+        this.isToPrint ||
+        this.players.left.render ||
+        this.players.right.render ||
+        this.ball.render ||
+        this.score.render
+      ) {
+        const factor = spectator.factor;
+        const response = this.genGameState(this.isToPrint, this.toPrint, factor);
+        spectator.send(response);
       }
     }
     this.resetRender();
   }
+
+  genGameState(isToPrint: boolean, toPrint: string, factor: number): Response {
+    const response: Response = {
+      timestamp: Date.now(),
+      game: this.genResponse(factor),
+      ...(isToPrint && {
+        toPrint: toPrint,
+      }),
+      ...((this.players.left.render || this.players.right.render) && {
+        players: {
+          ...(this.players.left.render && {
+            left: this.players.left.genResponse(factor),
+          }),
+          ...(this.players.right.render && {
+            right: this.players.right.genResponse(factor),
+          }),
+        },
+      }),
+      ...(this.ball.render && {
+        ball: this.ball.genResponse(factor),
+      }),
+      ...(this.score.render && {
+        score: this.score.genResponse(),
+      }),
+    };
+    return response;
+  }
+
 
   handleMessages(player: Player, message: any) {
     if (message.gamepad) {
@@ -338,6 +379,13 @@ class Game {
     if (message.height && player.client) {
       player.client.setHeight(message.height);
       player.render = true;
+    }
+  }
+
+  handleSpectatorMessages(spectator: Client, message: any) {
+    if (message.height && spectator) {
+      spectator.setHeight(message.height);
+      console.log('spectator factor: ' + spectator.factor);
     }
   }
 }

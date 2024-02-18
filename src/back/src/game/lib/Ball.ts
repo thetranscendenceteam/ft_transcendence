@@ -1,6 +1,12 @@
 import Game from './Game';
 import { BallResponse } from './Messages';
 
+enum Difficulty {
+  easy = 170,
+  normal = 280,
+  hard = 390,
+}
+
 class Ball {
   x: number;
   y: number;
@@ -24,7 +30,7 @@ class Ball {
     this.diameter = 12;
     this.x = (game.width - this.diameter) / 2;
     this.y = (game.height - this.diameter) / 2;
-    this.speed = 170;
+    this.speed = game.difficulty === "easy" ? Difficulty.easy : game.difficulty === "normal" ? Difficulty.normal : Difficulty.hard;
     this.velocityX = this.speed * Math.cos(Math.PI / 4);
     this.velocityY = this.speed * Math.sin(Math.PI / 4);
     this.render = true;

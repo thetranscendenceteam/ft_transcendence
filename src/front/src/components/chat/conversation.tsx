@@ -24,6 +24,7 @@ type Message = {
   timestamp: string;
   message: string;
   username: string;
+  avatar?: string;
   link?: string;
 }
 
@@ -41,6 +42,7 @@ const GET_COMMENTS =  gql`
       timestamp
       message
       username
+      avatar
     }
   }
 `;
@@ -51,6 +53,7 @@ const COMMENTS_SUBSCRIPTION = gql`
       timestamp
       message
       username
+      avatar
     }
   }
 `;

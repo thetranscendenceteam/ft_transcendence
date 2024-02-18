@@ -43,8 +43,8 @@ export const Game = (
     <div className="h-full flex items-center justify-center rounded-lg backdrop-blur">
       <canvas ref={gameRef} className="bg-gray-950"></canvas>
       {menu && !watch && reset &&
-        <div className="absolute top-[20%] left-0 w-full h-full flex items-center justify-center">
-          <div className="bg-gray-800 rounded-lg">
+        <div className="absolute left-0 w-full h-full flex items-center justify-center">
+          <div className="bg-gray-800 mt-[20%] rounded-lg">
             <Button className='m-4' onClick={() => reset(false)}>New game</Button>
             <Link href='/'><Button className='m-4'>Home</Button></Link>
           </div>

@@ -71,7 +71,6 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
         const file  = formDataReady.file as File;
         formdata.append('avatar', file, file.name);
         await axios.post(`https://localhost:8443/avatar`, formdata, {
-          params: { username: userEdit.username },
           headers: {
             'Content-Type': 'multipart/form-data'
           },

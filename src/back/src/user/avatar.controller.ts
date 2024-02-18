@@ -1,9 +1,11 @@
-import { Controller, Get, Param, Post, Query, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Request, Response } from 'express';
 import path, { extname } from 'path';
 import { UserService } from './user.service';
+import { RequestWithUser } from './dto/requestwithuser.interface';
+import { GqlAuthGuard } from 'src/auth/gql-auth.guards';
 
 
 export const storage = {
@@ -36,26 +38,22 @@ export class AvatarController {
       }
   
     @Post()
+    @UseGuards(GqlAuthGuard)
     @UseInterceptors(FileInterceptor('avatar', storage))
     async uploadImage(
       @UploadedFile() file: Express.Multer.File,
-      @Query('username') username: string,  // TODO take id from JWT
-      @Req() req: Request,
+      @Req() req: RequestWithUser,
       @Res() res: Response,
       ){
-        console.log("🚀 ~ AppController ~ uploadImage ~ username", username)
-        let user = await this.userService.getUserByUserName(username);
-        if (!user) {
-            res.status(400).send('User not found');
-            return;
+        console.log("req.user", req.user);
+        const user = req.user;
+        if (user  === undefined) {
+          res.status(401).send('Unauthorized');
+          return;
         }
-        console.log("🚀 ~ AppController ~ uploadImage ~ user", user)
-        let id = user.id;
-        console.log("🚀 ~ AppController ~ uploadImage ~ file:", file);
-        console.log("🚀 ~ AppController ~ uploadImage ~ file:", __filename);
         // Handle the uploaded file here, e.g., save it to a database or return its details.
         let editedUser = await this.userService.editUser({
-            id: id,
+            id: user.id,
             mail: null,
             password: null,
             firstName: null,
@@ -64,7 +62,6 @@ export class AvatarController {
             pseudo: null,
         }
         );
-        console.log("🚀 ~ AppController ~ uploadImage ~ editedUser:", editedUser);
         if (editedUser) {
             res.status(200).send('Avatar updated');
             return;

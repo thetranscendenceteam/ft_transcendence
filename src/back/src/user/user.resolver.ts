@@ -30,6 +30,7 @@ export class UserResolver {
   }
 
   @Query(returns => User)
+  @UseGuards(GqlAuthGuard)
   async getUser(
     @Args('UserInput') userInput: GetUserInput,
   ): Promise<User | null> {
@@ -52,6 +53,7 @@ export class UserResolver {
   }
 
   @Mutation(returns => User)
+	@UseGuards(GqlAuthGuard)
   editUser(
     @Args('editUserInput') editUserInput: EditUserInput,
   ): Promise<User> {

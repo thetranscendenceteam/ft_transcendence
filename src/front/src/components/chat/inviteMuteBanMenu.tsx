@@ -20,6 +20,13 @@ type Chat = {
   avatar: string;
 }
 
+type Banned = {
+  userId: string;
+  status: string;
+  username: string;
+  avatar: string;
+}
+
 type Player = {
   id: string;
   nickname: string;
@@ -52,6 +59,24 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
     }
   }
 
+  const removeBan = async (player: Player) => {
+    try {
+      await apolloClient.mutate({
+        mutation: gql`
+          mutation removeFromBanList($userId: String!, $chatId: String!) {
+            removeFromBanList(userId: $userId, chatId: $chatId)
+          }
+        `,
+        variables: {
+          userId: player.id,
+          chatId: activeConv.id
+        }
+      });
+    } catch (error) {
+      return ([]);
+    }
+  }
+
   const banMuteFromChat = async (player: Player, status: string) => {
     try {
       await apolloClient.mutate({
@@ -68,6 +93,29 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
           }
         }
       });
+    } catch (error) {
+      return ([]);
+    }
+  }
+
+  const getBanList = async (chatId: string): Promise<Banned[]> => {
+    try {
+      const { data } = await apolloClient.query({
+        query: gql`
+            query getBanList($input: String!) {
+              getBanList(chatId: $input) {
+                userId
+                status
+                username 
+                avatar
+              }
+            }
+        `,
+        variables: {
+          input: chatId 
+        }
+      });
+      return (data.getBanList);
     } catch (error) {
       return ([]);
     }
@@ -153,6 +201,26 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
           avatar: item.avatar
         }));
         setPlayers(tmp);
+      } else if (mode === 'Ban' && !upgrade) {
+        const fetchedData = await getBanList(activeConv.id);
+        const tmp = fetchedData
+          .filter((item: any) => item.status === 'banned')
+          .map((item: any) => ({
+            id: item.userId,
+            nickname: item.username,
+            avatar: item.avatar
+        }));
+        setPlayers(tmp);
+      } else if (mode === 'Mute' && !upgrade) {
+        const fetchedData = await getBanList(activeConv.id);
+        const tmp = fetchedData
+          .filter((item: any) => item.status === 'muted')
+          .map((item: any) => ({
+            id: item.userId,
+            nickname: item.username,
+            avatar: item.avatar
+        }));
+        setPlayers(tmp);
       } else {
         const fetchedData = await fetchData();
         const tmp = fetchedData.map((item: any) => ({
@@ -164,7 +232,7 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
       }
     };
     fetchInitialData();
-  }, []);
+  }, [upgrade]);
 
   useEffect(() => {
     const handleReload = () => {
@@ -176,28 +244,45 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
     };
   }, []);
 
-  const actionButton = (player: Player | null) => {
+  const actionButton = async (player: Player | null) => {
     if (mode === 'Kick' && player) {
-      leaveChat(player);
+      await leaveChat(player);
     } else if (mode === 'Ban' && player) {
-      banMuteFromChat(player, 'banned');
-      leaveChat(player);
+      if (upgrade) {
+        await banMuteFromChat(player, 'banned');
+        await leaveChat(player);
+      }
+      else
+        await removeBan(player);
     } else if (mode === 'Mute' && player) {
-      banMuteFromChat(player, 'muted');
-    } else if (mode === 'Add' && player) {
-      updateSomeoneInChat(player, 'member');
+      if (upgrade)
+        await banMuteFromChat(player, 'muted');
+      else
+        await removeBan(player);
     } else if (mode === 'Set Admin' && player) {
       if (upgrade) {
-        updateSomeoneInChat(player, 'admin');
+        await updateSomeoneInChat(player, 'admin');
       }
       else {
-        updateSomeoneInChat(player, 'member');
+        await updateSomeoneInChat(player, 'member');
       }
     }
     if (player) {
       closeInviteMuteBanMenu();
     }
   };
+
+  const addSomeone = async(player: Player | null) => {
+    if (!player)
+      return;
+    const fetchedData = await getBanList(activeConv.id);
+    const isBanned = fetchedData.some(bannedUser => bannedUser.userId === player.id && bannedUser.status === 'banned');
+    if (isBanned) {
+      return;
+    }
+    updateSomeoneInChat(player, 'member');
+    closeInviteMuteBanMenu();
+  }
 
   const upgradeRemove = (change: boolean) => {
     setUpgrade(change);
@@ -216,21 +301,49 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
           {mode === 'Mute' && 'Mute someone from the channel.'}
           {mode === 'Set Admin' && 'Change privileges.'}
         </h1>
-          {mode === 'Set Admin' && (
+          {(mode === 'Set Admin' || mode === 'Mute' || mode === 'Ban') && (
             <div className="flex mt-20">
               <button onClick={() => upgradeRemove(true)}
                 className={`px-4 py-2 mr-4 border rounded-md 
                   ${upgrade ? 'bg-blue-500 text-white' : 'bg-blue-700 text-white'}
                 `}
               >
-                  Set as Admin
+                {mode === 'Set Admin' && (
+                  <>
+                    Set as Admin
+                  </>
+                )}
+                {mode === 'Mute' && (
+                  <>
+                    Mute
+                  </>
+                )}
+                {mode === 'Ban' && (
+                  <>
+                    Ban
+                  </>
+                )}
               </button>
               <button onClick={() => upgradeRemove(false)}
                 className={`px-4 py-2 ml-4 border rounded-md 
                   ${upgrade ? 'bg-blue-700 text-white' : 'bg-blue-500 text-white'}
                 `}
               >
-                Remove Admin Privileges
+                {mode === 'Set Admin' && (
+                  <>
+                    Remove Admin Privileges
+                  </>
+                )}
+                {mode === 'Mute' && (
+                  <>
+                    Unmute
+                  </>
+                )}
+                {mode === 'Ban' && (
+                  <>
+                    Unban
+                  </>
+                )}
               </button>
             </div>
           )}
@@ -255,14 +368,22 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
             <p className="text-xl mt-2">{selectedPlayer.nickname}</p>
           </div>
         )}
-        <button className="absolute bottom-3 right-3 bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-600" onClick={() =>  actionButton(selectedPlayer)}>
-          {mode === 'Invite' && 'Invite'}
-          {mode === 'Ban' && 'Ban'}
-          {mode === 'Kick' && 'Kick'}
-          {mode === 'Mute' && 'Mute'}
-          {mode === 'Set Admin' && 'Change'}
-          {mode === 'Add' && 'Add'}
-        </button>
+        {mode === 'Add' && (
+          <button className="absolute bottom-3 right-3 bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-600" onClick={() =>  addSomeone(selectedPlayer)}>
+            Add
+          </button>
+        )}
+        {mode !== 'Add' && (
+          <button className="absolute bottom-3 right-3 bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-600" onClick={() =>  actionButton(selectedPlayer)}>
+            {mode === 'Invite' && 'Invite'}
+            {mode === 'Ban'  && upgrade && 'Ban'}
+            {mode === 'Ban' && !upgrade && 'Unban'}
+            {mode === 'Kick' && 'Kick'}
+            {mode === 'Mute' && upgrade && 'Mute'}
+            {mode === 'Unmute' && upgrade && 'Unmute'}
+            {mode === 'Set Admin' && 'Change'}
+          </button>
+        )}
       </div>
     </div>
   );

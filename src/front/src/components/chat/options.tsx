@@ -46,8 +46,8 @@ const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activ
       } catch (error) {
         return ([]);
       }
-      refresh();
       toggleMenu();
+      refresh();
     }
   }
 

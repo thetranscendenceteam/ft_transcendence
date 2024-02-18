@@ -10,7 +10,7 @@ import { Injectable } from '@nestjs/common';
 import { MatchService } from 'src/match/match.service';
 
 @Injectable()
-@NestWebSocketGateway({ path: '/ws/game' })
+@NestWebSocketGateway(3001, { path: '/ws/game' })
 export class GameGateway {
   @NestWebSocketServer() server: WebSocketServer;
 

@@ -4,7 +4,9 @@ import * as cors from 'cors';
 import { WsAdapter } from '@nestjs/platform-ws';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'fatal', 'error', 'warn', 'debug', 'verbose'],
+  });
   console.log("FAUT FAIRE LE SANITIZE, AUTH GUARD");
   app.use(
     cors({

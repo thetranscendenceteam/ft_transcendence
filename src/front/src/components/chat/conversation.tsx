@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import Image from 'next/image';
 import menuIcon from '../../../public/more.png';
 import sendIcon from '../../../public/send.png';
 import Message from './message';
 import Options from './options';
-import { gql, useSubscription } from "@apollo/client"
+import { OnSubscriptionDataOptions, gql, useQuery, useSubscription } from "@apollo/client"
 import apolloClient from "../apolloclient";
 import { UserContext } from '../userProvider';
 
@@ -31,61 +31,76 @@ type Props = {
   convType: string;
 }
 
+const GET_COMMENTS =  gql`
+  query getMessageHistoryOfChat($chatId: String!) {
+    getMessageHistoryOfChat(chatId: $chatId) {
+      id
+      timestamp
+      message
+      username
+    }
+  }
+`;
+
+const COMMENTS_SUBSCRIPTION = gql`
+  subscription OnNewMessage($chatId: String!) {
+    newMessage(chatId: $chatId) {
+      timestamp
+      message
+      username
+    }
+  }
+`;
+
+const formatTime = (timeStampStr: string) => {
+  const timestamp = new Date(timeStampStr);
+  return (timestamp.toLocaleDateString(undefined, { hour: 'numeric', minute: 'numeric', hour12: false }));
+};
 
 const Conversation = ({ className, activeConv, convType }: Props) => {
   const [isMenuOpen, setIsOpen] = useState(false);
   const [newMessage, setNewMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  let [messages, setMessages] = useState<Message[]>([]);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const conversationRef = useRef<HTMLDivElement | null>(null);
   const { user } = useContext(UserContext);
 
+  let { data:datam, loading:loadingm } = useQuery(GET_COMMENTS,
+    {
+      variables: {
+        chatId: activeConv.id
+      }
+    }
+  );
+
+  useEffect(() => {
+    if (!loadingm && datam) {
+      console.log("Data: ", datam);
+      let m = datam.getMessageHistoryOfChat;
+      const formattedData = m.map((message: Message) => ({
+        ...message,
+        timestamp: formatTime(message.timestamp)
+      }));
+      setMessages(formattedData);
+    }
+  }, [datam, loadingm]);
+
+  const onMessage = useCallback((result: OnSubscriptionDataOptions) => {
+    if (!result.subscriptionData.data) return;
+    console.log(result.subscriptionData.data.newMessage.message);
+    const lastMessage = result.subscriptionData.data.newMessage;
+    setMessages((prevMessages) => [...prevMessages, lastMessage]);
+  }, []);
+
+  useSubscription(COMMENTS_SUBSCRIPTION, {
+    variables: { "chatId": activeConv.id },
+    fetchPolicy: "no-cache",
+    onSubscriptionData: onMessage
+  });
+
   const toggleMenu = () => {
     setIsOpen(!isMenuOpen);
   };
-
-  const formatTime = (timeStampStr: string) => {
-    const timestamp = new Date(timeStampStr);
-    return (timestamp.toLocaleDateString(undefined, { hour: 'numeric', minute: 'numeric', hour12: false }));
-  };
-
-  const fetchMessages = async(chatId: string) => {
-    try {
-      const { data } = await apolloClient.query({
-        query: gql`
-          query getMessageHistoryOfChat($chatId: String!) {
-            getMessageHistoryOfChat(chatId: $chatId) {
-              id 
-              timestamp
-              message
-              username
-            }
-          }
-        `,
-        variables: {
-          chatId: chatId
-        }
-      });
-      return (data.getMessageHistoryOfChat);
-    } catch (error) {
-      return ([]);
-    }
-  }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (activeConv)
-      {
-        const fetchedData = await fetchMessages(activeConv.id);
-        const formattedData = fetchedData.map((message: Message) => ({
-          ...message,
-          timestamp: formatTime(message.timestamp)
-        }));
-        setMessages(formattedData);
-      }
-    };
-    fetchData();
-  }, [activeConv]);
 
   useEffect(() => {
     const clickOutside = (event: MouseEvent) => {

@@ -21,7 +21,7 @@ import { GameGateway } from './game/game.gateway';
       validationSchema: Joi.object({
         REDIS_HOST: Joi.string().required(),
         REDIS_PORT: Joi.number().required(),
-      })
+      }),
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -31,8 +31,9 @@ import { GameGateway } from './game/game.gateway';
         configService: ConfigService,
       ) => ({
         autoSchemaFile: 'schema.gql',
-        installSubscriptionHandlers: true
-      })
+        installSubscriptionHandlers: true,
+        subscriptions: { 'graphql-ws': true, 'subscriptions-transport-ws': false, },
+      }),
     }),
     ChatModule,
     UserModule,

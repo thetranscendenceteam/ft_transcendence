@@ -62,7 +62,7 @@ export class ChatResolver {
 			@Args('userId') userId: string,
 			@Args('chatId') chatId: string
 		): Promise<boolean> {
-			return this.removeFromBanList(userId, chatId);
+			return this.chatService.removeFromBanList(userId, chatId);
 		}
 
     @Mutation(returns => UserPrivate)

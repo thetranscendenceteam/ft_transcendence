@@ -63,6 +63,7 @@ model Matchs {
 model Messages {
     id        String   @id @unique @default(uuid()) @db.VarChar(36)
     timestamp DateTime @default(now())
+		link			String?
     message   String
     username  String   @db.VarChar(255)
     chatId    String   @db.VarChar(36)

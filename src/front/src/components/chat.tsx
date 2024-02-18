@@ -6,6 +6,7 @@ import { UserContext } from './userProvider';
 
 type Chat = {
   id: string;
+  targetId: string;
   name: string;
   role: string;
   status: string;

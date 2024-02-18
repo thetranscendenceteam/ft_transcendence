@@ -15,7 +15,6 @@ export class UserResolver {
   constructor(private userService: UserService) { }
 
   @Query(returns => [UserPrivate])
-  @UseGuards(GqlAuthGuard)
   getUsers(
     @Args('max', { type: () => Int, nullable: true }) max: number | undefined,
   ): Promise<UserPrivate[]> {

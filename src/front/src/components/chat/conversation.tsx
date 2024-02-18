@@ -10,6 +10,7 @@ import { UserContext } from '../userProvider';
 
 type Chat = {
   id: string;
+  targetId: string;
   name: string;
   role: string;
   status: string;
@@ -23,6 +24,7 @@ type Message = {
   timestamp: string;
   message: string;
   username: string;
+  link?: string;
 }
 
 type Props = {
@@ -76,7 +78,6 @@ const Conversation = ({ className, activeConv, convType, refresh }: Props) => {
 
   useEffect(() => {
     if (!loadingm && datam) {
-      console.log("Data: ", datam);
       let m = datam.getMessageHistoryOfChat;
       const formattedData = m.map((message: Message) => ({
         ...message,
@@ -121,7 +122,8 @@ const Conversation = ({ className, activeConv, convType, refresh }: Props) => {
   })
 
   const sendMessage = async(message: string, username: string, chatId: string) => {
-    console.log("Username: ", username);
+    if (message === "")
+      return;
     try {
       await apolloClient.mutate({
         mutation: gql`
@@ -157,7 +159,7 @@ const Conversation = ({ className, activeConv, convType, refresh }: Props) => {
       <div className="mt-auto w-full mb-2 px-1 overflow-y-auto min-h-0 " ref={conversationRef}>
         <div className="w-full flex-flex-col">
           {messages.map((message, index) => (
-            <Message key={index} message={message} userMessage={user?.username || ""} />
+            <Message key={index} message={message} isMine={user?.username || ""} />
           ))}
         </div>
       </div>

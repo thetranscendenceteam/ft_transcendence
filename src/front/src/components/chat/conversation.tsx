@@ -93,7 +93,11 @@ const Conversation = ({ className, activeConv, convType, refresh }: Props) => {
   const onMessage = useCallback((result: OnSubscriptionDataOptions) => {
     if (!result.subscriptionData.data) return;
     console.log(result.subscriptionData.data.newMessage.message);
-    const lastMessage = result.subscriptionData.data.newMessage;
+    let lastMessage = result.subscriptionData.data.newMessage;
+    lastMessage = {
+      ...lastMessage,
+      timestamp: formatTime(lastMessage.timestamp)
+    }
     setMessages((prevMessages) => [...prevMessages, lastMessage]);
   }, []);
 

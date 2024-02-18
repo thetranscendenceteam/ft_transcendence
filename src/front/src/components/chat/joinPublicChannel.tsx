@@ -14,6 +14,11 @@ type Chat = {
   avatar: string;
 }
 
+type User = {
+  userId: string;
+  status: string;
+}
+
 interface PopUpProp {
   closePopUp: () => void;
   addChat: (newConv: Chat) => void;
@@ -48,6 +53,27 @@ const JoinPublicChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }
     }
   }
 
+  const getBanList = async (chatId: string): Promise<User[]> => {
+    try {
+      const { data } = await apolloClient.query({
+        query: gql`
+            query getBanList($input: String!) {
+              getBanList(chatId: $input) {
+                userId
+                status
+              }
+            }
+        `,
+        variables: {
+          input: chatId 
+        }
+      });
+      return (data.getBanList);
+    } catch (error) {
+      return ([]);
+    }
+  }
+
   const addUserToChat = async () => {
     if (user && selectedChat) {
       try {
@@ -76,7 +102,6 @@ const JoinPublicChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }
     }
   }
 
-
   useEffect(() => {
     const fetchInitialData = async () => {
       const fetchedData = await fetchChats();
@@ -104,8 +129,12 @@ const JoinPublicChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }
     };
   }, []);
 
-  const joinChat = () => {
-    if (selectedChat) {
+  const joinChat = async () => {
+    if (user && selectedChat) {
+      const banList = await getBanList(selectedChat.id);
+      const isBanned = banList.some(bannedUser => bannedUser.userId === user.id && bannedUser.status === 'banned');
+      if (isBanned)
+        return;
       addUserToChat();
       closePopUp();
     }

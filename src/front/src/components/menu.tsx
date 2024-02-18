@@ -20,6 +20,9 @@ import { SearchBar } from './searchBar/searchBar';
 import { SearchResultsList } from './searchBar/searchResultsList';
 import styles from './style/menu.module.css';
 import { useCookies } from 'react-cookie';
+import NotificationsButton from './friendsNotifs/notifsButton';
+import { ApolloProvider } from '@apollo/client';
+import apolloClient from '@/components/apolloclient';
 import { ButtonVariant } from './register-dialog';
 
 interface User {
@@ -34,22 +37,37 @@ interface User {
 const Menu: React.FC = () => {
   const { user, updateUser } = React.useContext(UserContext);
   const router = useRouter();
-  const [results, setResults] = useState<any[]>([]);
+  const [resultsSearch, setResultsSearch] = useState<any[]>([]);
+  const [resultsNotif, setResultsNotif] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(true);
-  const searchBarRef = useRef<HTMLDivElement>(null);
+  const searchBarRefSearch = useRef<HTMLDivElement>(null);
+  const searchBarRefNotif = useRef<HTMLDivElement>(null);
   const [cookies, setCookie, removeCookie] = useCookies(['jwt']);
   const variant: ButtonVariant = "black";
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
+    function handleClickOutsideSearch(event: MouseEvent) {
+      if (searchBarRefSearch.current && !searchBarRefSearch.current.contains(event.target as Node)) {
         setShowResults(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutsideSearch);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutsideSearch);
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutsideNotif(event: MouseEvent) {
+      if (searchBarRefNotif.current && !searchBarRefNotif.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutsideNotif);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideNotif);
     };
   }, []);
 
@@ -92,16 +110,22 @@ const Menu: React.FC = () => {
               </Button>
             </Link>
           </div>
-          <div className={`${styles.searchBarContainer} ml-auto relative`} ref={searchBarRef}>
-            <SearchBar setResults={setResults} setShowResults={setShowResults} />
-            {showResults && results.length !== 0 ? (
+          <div className={`${styles.searchBarContainer} ml-auto relative`} ref={searchBarRefSearch}>
+            <SearchBar setResults={setResultsSearch} setShowResults={setShowResults} />
+            {showResults && resultsSearch.length !== 0 ? (
               <div className="absolute top-full left-0 w-full bg-white shadow-lg rounded-b-lg overflow-hidden">
-                <SearchResultsList results={results} />
+                <SearchResultsList results={resultsSearch} />
               </div>
             ) : null}
           </div>
+
           {user?.id ? (
-            <li className='m-1'>
+          <ApolloProvider client={apolloClient}>
+            <NotificationsButton />
+          </ApolloProvider>) : (null)
+          }
+
+          {user?.id ? (
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar className="h-8 w-8" style={{ objectFit: 'cover' }}>
@@ -116,7 +140,6 @@ const Menu: React.FC = () => {
                   <DropdownMenuItem onClick={handleLogoutClick}>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </li>
           ) : (
             <div className="flex items-center">
               <RegisterDialog variant={variant}/>

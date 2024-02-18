@@ -18,9 +18,10 @@ type Props = {
   convType: string;
   toggleMenu: () => void;
   activeConv: Chat;
+  refresh: () => void;
 };
 
-const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activeConv }, ref) => {
+const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activeConv, refresh }, ref) => {
   const [isInviteMuteBan, setIsInviteMuteBan] = useState(false);
   const [mode, setMode] = useState('');
   const { user } = useContext(UserContext);
@@ -44,7 +45,7 @@ const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activ
       } catch (error) {
         return ([]);
       }
-      window.location.reload();
+      refresh();
       toggleMenu();
     }
   }
@@ -68,7 +69,7 @@ const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activ
         <ul className="border border-gray-300 rounded-xl flex flex-col text-gray-600 h-50 bg-white hover:border-gray-400">
           {convType === 'Friends' && (
             <>
-              <button onClick={toggleMenu}><li className=" hover:bg-gray-200 pl-5 pr-7">Play with</li></button>
+              <button onClick={toggleMenu}><li className="rounded-t-xl hover:bg-gray-200 pl-5 pr-7">Play with</li></button>
               <button onClick={toggleMenu}><li className="hover:bg-gray-200 pl-5 pr-7">Block</li></button>
               <button onClick={toggleMenu}><li className="rounded-b-xl hover:bg-gray-200 pl-5 pr-7">View Profile</li></button>
             </>

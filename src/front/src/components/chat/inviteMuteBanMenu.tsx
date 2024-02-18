@@ -1,6 +1,7 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { FunctionComponent, useState, useEffect, useContext } from 'react';
 import apolloClient from "../apolloclient";
 import { gql } from "@apollo/client";
+import { UserContext } from '../userProvider';
 
 interface PopUpProp {
   closeInviteMuteBanMenu: () => void;
@@ -28,6 +29,7 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [upgrade, setUpgrade] = useState<boolean>(true);
+  const { user } = useContext(UserContext);
 
   const leaveChat = async(player: Player) => {
     try {
@@ -75,7 +77,9 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
       await apolloClient.mutate({
         mutation: gql`
           mutation updateUserInChat($input: UpdateUserInChat!) {
-            updateUserInChat(addUserInChat: $input)
+            updateUserInChat(addUserInChat: $input) {
+              pseudo
+            }
           }
         `,
         variables: {
@@ -113,15 +117,50 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
     }
   }
 
+  const fetchFriends = async () => {
+    if (user) {
+      try {
+        const { data } = await apolloClient.query({
+          query: gql`
+            query getUserRelationship($input: String!) {
+              getUserRelationship(userId: $input) {
+                relationId
+                relationUsername
+                avatar
+                status
+              }
+            }
+          `,
+          variables: {
+            input: user.id
+          }
+        })
+        return (data.getUserRelationship);
+      } catch (error) {
+        return ([]);
+      }
+    }
+  }
+
   useEffect(() => {
     const fetchInitialData = async () => {
-      const fetchedData = await fetchData();
-      const tmp = fetchedData.map((item: any) => ({
-        id: item.idUser,
-        nickname: item.pseudo,
-        avatar: item.avatar
-      }));
-      setPlayers(tmp);
+      if (mode === 'Add') {
+        const fetchedData = await fetchFriends();
+        const tmp = fetchedData.map((item: any) => ({
+          id: item.relationId,
+          nickname: item.relationUsername,
+          avatar: item.avatar
+        }));
+        setPlayers(tmp);
+      } else {
+        const fetchedData = await fetchData();
+        const tmp = fetchedData.map((item: any) => ({
+          id: item.idUser,
+          nickname: item.pseudo,
+          avatar: item.avatar
+        }));
+        setPlayers(tmp);
+      }
     };
     fetchInitialData();
   }, []);
@@ -178,16 +217,16 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
         </h1>
           {mode === 'Set Admin' && (
             <div className="flex mt-20">
-              <button onClick={() => upgradeRemove(false)}
+              <button onClick={() => upgradeRemove(true)}
                 className={`px-4 py-2 mr-4 border rounded-md 
-                  ${upgrade ? 'bg-blue-700 text-white' : 'bg-blue-500 text-white'}
+                  ${upgrade ? 'bg-blue-500 text-white' : 'bg-blue-700 text-white'}
                 `}
               >
                   Set as Admin
               </button>
-              <button onClick={() => upgradeRemove(true)}
+              <button onClick={() => upgradeRemove(false)}
                 className={`px-4 py-2 ml-4 border rounded-md 
-                  ${upgrade ? 'bg-blue-500 text-white' : 'bg-blue-700 text-white'}
+                  ${upgrade ? 'bg-blue-700 text-white' : 'bg-blue-500 text-white'}
                 `}
               >
                 Remove Admin Privileges
@@ -221,6 +260,7 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
           {mode === 'Kick' && 'Kick'}
           {mode === 'Mute' && 'Mute'}
           {mode === 'Set Admin' && 'Change'}
+          {mode === 'Add' && 'Add'}
         </button>
       </div>
     </div>

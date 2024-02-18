@@ -16,4 +16,7 @@ export class Message {
 
     @Field(() => String, { nullable: true })
     chatId: string;
+
+		@Field(() => String, {nullable: true})
+		link: string | null;
 }

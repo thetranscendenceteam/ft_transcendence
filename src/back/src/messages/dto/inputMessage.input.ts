@@ -10,4 +10,7 @@ export class SendMessageInput {
 
     @Field(() => String)
     chatId: string;
+
+		@Field(() => String, { nullable: true })
+		link: string | null;
 }

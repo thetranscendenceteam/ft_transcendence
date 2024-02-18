@@ -20,7 +20,7 @@ export class AuthService {
   constructor(private prisma: PrismaService, private userService: UserService) { }
 
   async ftLogin(inputCode: string): Promise<authUser | null> {
-    const FtInsertDB = async (userFtMe: any, ourJwt: string) => {
+    const FtInsertDB = async (userFtMe: any) => {
       const secret = speakeasy.generateSecret({
         name: 'Ft_transcendence_Pomy',
       });
@@ -56,7 +56,6 @@ export class AuthService {
         email: userMe.mail,
         campus: userFtMe.data.campus[0].name,
         avatar_url: userMe.avatar,
-        jwtToken: ourJwt,
         twoFA: userMe.twoFA,
       };
     };
@@ -86,8 +85,10 @@ export class AuthService {
         },
       });
 
+      const userTmp = await FtInsertDB(userFtMe);
+
       const payload = {
-        ftId: userFtMe.data.id,
+        id: userTmp.id,
         username: userFtMe.data.login,
       };
 
@@ -97,12 +98,11 @@ export class AuthService {
       };
       const ourJwt = jwt.sign(payload, secretKey, options);
 
-      const userTmp = FtInsertDB(userFtMe, ourJwt);
-
       if ((await userTmp).twoFA) {
         throw new Error(`2FA is enabled - ${(await userTmp).username}`); // dont ever modify this error
       }
-      return userTmp;
+      const resTmp = await userTmp;
+      return ({...resTmp, jwtToken: ourJwt});
     } catch (error) {
       console.error("getJwt: ", error);
       return error;
@@ -123,7 +123,7 @@ export class AuthService {
         }
         const payload = {
           username: user.pseudo,
-          ftId: user.ftId,
+          id: user.id,
         };
         const PRIVATE_KEY = "secretKeyPlaceHolder";
         const secretKey = PRIVATE_KEY;

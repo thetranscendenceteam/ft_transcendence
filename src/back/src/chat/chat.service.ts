@@ -254,7 +254,8 @@ export class ChatService {
 						},
 					},
 				});
-				return (res);
+				if (!res) return false;
+				return true;
 			}
 			catch (e) {
 				console.log("Error on removeFromBanList");

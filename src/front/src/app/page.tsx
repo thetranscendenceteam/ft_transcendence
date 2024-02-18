@@ -17,7 +17,26 @@ export default function Home() {
     <main className="h-full w-full flex flex-col items-center justify-center bg-purple-800 opacity-90">
       <title>Welcome to the game</title>
       <Image src={Pomy} alt='...' height={550} width={550} />
-      {!user && (
+      {user && user.id && (
+        <div className="w-full flex justify-center mt-10">
+          <Link href="/game" legacyBehavior passHref>
+            <Button variant="default" className="mr-6">
+              Game
+            </Button>
+          </Link>
+          <Link href="/chat" legacyBehavior passHref>
+            <Button variant="default" className="ml-10 mr-6">
+              Chat
+            </Button>
+          </Link>
+          <Link href="/board" legacyBehavior passHref>
+            <Button variant="default" className="ml-10">
+              Leaderboard
+            </Button>
+          </Link>
+        </div>
+      )}
+      {(!user || (user && !user.id)) &&  (
         <>
           <div className="mt-6 w-full flex justify-center">
             <p className="mr-6 text-3xl">New Here?</p>
@@ -28,25 +47,6 @@ export default function Home() {
             <LoginDialog variant={variant} />
           </div>
         </>
-      )}
-      {user && (
-        <div className="w-full flex justify-center mt-10">
-            <Link href="/game" legacyBehavior passHref>
-              <Button variant="default" className="mr-6">
-                Game
-              </Button>
-            </Link>
-            <Link href="/chat" legacyBehavior passHref>
-              <Button variant="default" className="ml-10 mr-6">
-                Chat
-              </Button>
-            </Link>
-            <Link href="/board" legacyBehavior passHref>
-              <Button variant="default" className="ml-10">
-                Leaderboard
-              </Button>
-            </Link>
-        </div>
       )}
     </main>
   )

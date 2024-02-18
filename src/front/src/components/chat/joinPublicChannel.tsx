@@ -5,6 +5,7 @@ import apolloClient from "../apolloclient";
 
 type Chat = {
   id: string;
+  targetId: string;
   name: string;
   role:string;
   status: string;

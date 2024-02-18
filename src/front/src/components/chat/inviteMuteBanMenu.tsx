@@ -11,6 +11,7 @@ interface PopUpProp {
 
 type Chat = {
   id: string;
+  targetId: string;
   name: string;
   role: string;
   status: string;

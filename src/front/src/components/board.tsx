@@ -80,6 +80,30 @@ export const Board = () => {
     fetchInitialData();
   }, []);
 
+  const getFriends = async () => {
+    if (user) {
+      try {
+        const { data } = await apolloClient.query({
+          query: gql`
+            query friendsLeaderboard($input: String!) {
+              friendsLeaderboard(userId: $input) {
+                pseudo
+                avatar
+                xp
+              }
+            }
+          `,
+          variables: {
+            input: user.id
+          }
+        });
+        return (data.friendsLeaderboard);
+      } catch (error) {
+        return ([]);
+      }
+    }
+  }
+
   useEffect(() => {
     const handleReload = () => {
       window.location.reload();
@@ -112,10 +136,33 @@ export const Board = () => {
   }
    
   const switchGlobalBoard = () => {
+    setCurrentPage(1);
+
+    const fetchGlobal = async () => {
+      const fetchedData = await fetchData();
+      setData(fetchedData);
+      if (user && user.id) {
+        const fetchedClient = await getPlayer(user.id);
+        setClient(fetchedClient);
+      }
+    };
+
+    fetchGlobal();
   }
 
   const switchFriendsBoard = () => {
     setCurrentPage(1);
+
+    const fetchFriends = async () => {
+      const fetchedData = await getFriends();
+      setData(fetchedData);
+      if (user && user.id) {
+        const fetchedClient = await getPlayer(user.id);
+        setClient(fetchedClient);
+      }
+    };
+
+    fetchFriends();
   }
 
   return (
@@ -140,13 +187,13 @@ export const Board = () => {
             )}
           </div>
           {[...Array(10)].map((_,index) => (
-            <div key={index} className={`w-full flex items-center justify-center ${colors[Math.floor(index / 2)]}`}>
+            <div key={index} className={`w-full flex items-center ${colors[Math.floor(index / 2)]}`}>
               {playersToShow[index] ? (
                 <>
-                  <p className="text-white text-xl">{index+1}#</p>
+                  <p className="ml-10 text-white text-xl">{index+1}#</p>
                   <img src={playersToShow[index].avatar} alt="Profile" className="rounded-full w-10 h-10 mr-6 ml-4" />
                   <span className="mr-5">{playersToShow[index].pseudo}</span>
-                  <span className="ml-10">{playersToShow[index].xp}</span>
+                  <span className="ml-10 justify-self-end">{playersToShow[index].xp}</span>
                 </>
               ) : (
                 <>

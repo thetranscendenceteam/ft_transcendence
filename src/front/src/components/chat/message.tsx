@@ -5,15 +5,16 @@ type Entity = {
   timestamp: string;
   message: string;
   username: string;
+  link?: string;
 }
 
 type Props = {
   message: Entity;
-  userMessage: string;
+  isMine: string;
 }
 
-const Message: React.FC<Props> = ({ message, userMessage }) => {
-  const messageClass = userMessage === message.username ? "flex py-1 w-full justify-end" : "flex py-1 w-full";
+const Message: React.FC<Props> = ({ message, isMine }) => {
+  const messageClass = isMine === message.username ? "flex py-1 w-full justify-end" : "flex py-1 w-full";
 
   return (
     <div className={messageClass}>
@@ -24,6 +25,9 @@ const Message: React.FC<Props> = ({ message, userMessage }) => {
           <span className="text-sm font-normal text-gray-200">{message.timestamp}</span>
         </div>
         <p className="break-words max-w-sm text-sm font-normal py-2.5 text-white">{message.message}</p>
+        {message.link && (
+          <a href={message.link} >Play a Game</a>
+        )}
       </div>
     </div>
   );

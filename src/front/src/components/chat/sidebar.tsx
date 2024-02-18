@@ -11,6 +11,7 @@ import { UserContext } from '../userProvider';
 
 type Chat = {
   id: string;
+  targetId: string;
   name: string;
   role: string;
   status: string;
@@ -40,11 +41,12 @@ const Sidebar = ({ changeConv, changeConvType, refresh }: Props) => {
               query getChatsByIdUser($userId: String!) {
                 getChatsByIdUser(userId: $userId) {
                   idChat 
+                  userInfo {idUser, pseudo, avatar}
                   name
-                  role 
-                  status
                   isPrivate
                   isWhisper
+                  role 
+                  status
                 }
               }
           `,
@@ -64,14 +66,14 @@ const Sidebar = ({ changeConv, changeConvType, refresh }: Props) => {
       const fetchedData = await fetchData();
       const tmp = fetchedData.map((item: any) => ({
         id: item.idChat,
-        name: item.name,
+        targetId: item.userInfo ? item.userInfo.idUser : '',
+        name: item.userInfo ? item.userInfo.pseudo : item.name,
         role: item.role,
         status: item.status,
         isPrivate: item.isPrivate,
         isWhisper: item.isWhisper,
-        avatar: ""
+        avatar: item.userInfo ? item.userInfo.avatar : ""
       }));
-      console.log("CHATS : ", tmp);
       setData(tmp);
     };
     fetchInitialData();
@@ -142,7 +144,7 @@ const Sidebar = ({ changeConv, changeConvType, refresh }: Props) => {
             })
             .map((conversation, index) => (
               <button key={index} className="cursor-pointer" onClick={() => handleClick(conversation)}>
-                <SidebarChat key={conversation.id} avatarUrl="" fallback="..." nickname={conversation.name} />
+                <SidebarChat key={conversation.id} avatarUrl={conversation.avatar} fallback="..." nickname={conversation.name} />
               </button>
             ))
           }

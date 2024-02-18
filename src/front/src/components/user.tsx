@@ -167,7 +167,6 @@ const UserComponent = (props: {username: string}) => {
   }
 
   const changePending = async(userId: string, targetId: string, accept: boolean) => {
-    console.log("OKSKDIJSDIJ");
     try {
       const { data } = await apolloClient.mutate({
         mutation: gql`
@@ -300,36 +299,36 @@ const UserComponent = (props: {username: string}) => {
     return (
       target && matchHistory && (
         <div className={styles.container}>
-          <div className="w-1/4 flex flex-col">
+          <div className="h-full w-1/4 flex flex-col">
             <UserProfileCard user={target} matchHistory={matchHistory} />
             {user && user.id != target.id && (
               <>
                 {status === 'friends' && (
                   <>
-                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Unfriend</button>
-                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
+                    <button className="h-1/6 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Unfriend</button>
+                    <button className="h-1/6 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
                   </>
                 )}
                 {status === 'unknown' && (
                   <>
-                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={addFriend}>Add Friend</button>
-                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
+                    <button className="h-1/6 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={addFriend}>Add Friend</button>
+                    <button className="h-1/6 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
                   </>
                 )}
                 {status === 'has_blocked' && (
-                  <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Unblock</button>
+                  <button className="h-1/6 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Unblock</button>
                 )}
                 {status === 'has_invited' && (
                   <>
-                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Cancel Invite</button>
-                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
+                    <button className="h-1/6 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={removeRelation}>Cancel Invite</button>
+                    <button className="h-1/6 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
                   </>
                 )}
                 {status === 'was_invited' && (
                   <>
-                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={() => dealPending(true)}>Accept invitation</button>
-                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={() => dealPending (false)}>Refuse invitation</button>
-                    <button className="h-24 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
+                    <button className="h-1/6 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={() => dealPending(true)}>Accept invitation</button>
+                    <button className="h-1/6 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={() => dealPending (false)}>Refuse invitation</button>
+                    <button className="h-1/6 bg-blue-600 hover:bg-blue-500 ml-6 mt-6 rounded-xl w-80" onClick={block}>Block</button>
                   </>
                 )}
               </>

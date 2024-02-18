@@ -5,6 +5,7 @@ import { UserContext } from '../userProvider';
 
 type Chat = {
   id: string;
+  targetId: string;
   name: string;
   role:string;
   status: string;
@@ -46,10 +47,10 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
           }
         }
       });
-      console.log("Private : ", isPrivate);
       if (createChat && user) {
         const newChat: Chat = {
           id: createChat.id,
+          targetId: '',
           name: createChat.name,
           role: 'owner',
           status: 'normal',

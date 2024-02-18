@@ -126,6 +126,11 @@ export class UsersInChatsService {
             if (!chats.chat) return null;
             chat.idChat = chats.chatId;
             chat.name = chats.chat.name;
+			chat.role = chats.role;
+            if (chats.chat.UsersInBanLists.length > 0)
+                chat.status = chats.chat.UsersInBanLists[0].status;
+            else
+                chat.status = UserChatStatus.normal;
             chat.isPrivate = chats.chat.isPrivate;
             chat.isWhisper = chats.chat.isWhisper;
             return chat;

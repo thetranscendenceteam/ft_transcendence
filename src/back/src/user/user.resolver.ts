@@ -9,6 +9,7 @@ import { SearchUser, SearchUserInput } from './dto/searchUser.input';
 import { UserPrivate } from './dto/userPrivate.entity';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guards';
+import { RequestWithUser } from './dto/requestwithuser.interface';
 
 @Resolver()
 export class UserResolver {
@@ -54,8 +55,11 @@ export class UserResolver {
   @Mutation(returns => User)
 	@UseGuards(GqlAuthGuard)
   editUser(
+    @Context('req') req: RequestWithUser,
     @Args('editUserInput') editUserInput: EditUserInput,
   ): Promise<User> {
+    const user = req.user;
+    if (user.id !== editUserInput.id) throw new Error('Unauthorized');
     console.log("EditUser query for UserId : " + editUserInput);
     return this.userService.editUser(editUserInput);
   }

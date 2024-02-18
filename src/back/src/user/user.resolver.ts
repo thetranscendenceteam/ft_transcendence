@@ -23,6 +23,13 @@ export class UserResolver {
     return this.userService.getAllUser(max);
   }
 
+  @Query(returns => [UserPrivate])
+  friendsLeaderboard(
+	@Args('userId', { type: () => String, nullable: false }) userId: string
+  ): Promise<UserPrivate[]> {
+	  return this.userService.friendsLeaderboard(userId);
+  }
+
   @Query(returns => User)
   async getUser(
     @Args('UserInput') userInput: GetUserInput,

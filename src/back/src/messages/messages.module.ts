@@ -5,6 +5,9 @@ import { MessagesService } from './messages.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as redisStore from 'cache-manager-redis-store';
 import { PrismaService } from 'src/prisma.service';
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from 'src/auth/auth.service';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -19,6 +22,6 @@ import { PrismaService } from 'src/prisma.service';
       }),
     }),
   ],
-  providers: [MessagesResolver, MessagesService, PrismaService]
+  providers: [MessagesResolver, MessagesService, PrismaService, JwtService, UserService, AuthService]
 })
 export class MessagesModule { }

@@ -24,9 +24,13 @@ export class UserResolver {
   }
 
   @Query(returns => [UserPrivate])
+	@UseGuards(GqlAuthGuard)
   friendsLeaderboard(
-	@Args('userId', { type: () => String, nullable: false }) userId: string
+		@Context('req') req: RequestWithUser,
+		@Args('userId', { type: () => String, nullable: false }) userId: string
   ): Promise<UserPrivate[]> {
+		const user = req.user;
+		if (user.id !== userId) throw new Error("Unauthorized");
 	  return this.userService.friendsLeaderboard(userId);
   }
 
@@ -65,9 +69,13 @@ export class UserResolver {
   }
 
   @Mutation(returns => User)
+	@UseGuards(GqlAuthGuard)
   updateUser(
-    @Args('updateUserInput') updateUser: UpdateUser,
+		@Context('req') req: RequestWithUser,
+    @Args('updateUserInput') updateUser: UpdateUser
   ): Promise<User | null> {
+		const user = req.user;
+		if (user.id !== updateUser.id) throw new Error("Unauthorized");
     console.log("UpdateUser query for UserId : " + updateUser.id);
     return this.userService.updateUser(updateUser);
   }

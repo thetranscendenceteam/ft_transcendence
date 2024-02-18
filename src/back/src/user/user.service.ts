@@ -241,7 +241,7 @@ export class UserService {
 			});
 			if (l) users.push(l);
 		}
-		users.push(await this.prisma.users.findFirst({
+		const thisUser = await this.prisma.users.findFirst({
 			where: {
 				id: userId,
 			},
@@ -257,6 +257,7 @@ export class UserService {
 				campus: true,
 			},
 		});
+		if (thisUser) users.push(thisUser);
 		const res = users.sort((a,b) => b.xp.toString().localeCompare(a.xp.toString()));
 		return res;
 	}

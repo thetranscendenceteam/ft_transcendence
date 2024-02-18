@@ -52,6 +52,7 @@ export class MessagesService {
 					username: input.username,
 					timestamp: date,
 					chatId: input.chatId,
+					link: input.link,
 				},
 				select: {
 					id: true,
@@ -59,6 +60,7 @@ export class MessagesService {
 					username: true,
 					timestamp: true,
 					chatId: true,
+					link: true,
 				},
 			});
 			const avatar = await this.prisma.users.findFirst({
@@ -111,7 +113,7 @@ export class MessagesService {
 				j.message = i.message;
 				j.username = i.username;
 				j.chatId = i.chatId;
-				j.link = null;
+				j.link = i.link;
 				let tmp = await this.prisma.users.findUnique({
 					where: {
 						pseudo: i.username,

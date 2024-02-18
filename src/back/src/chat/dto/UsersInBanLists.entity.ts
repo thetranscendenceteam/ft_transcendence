@@ -14,6 +14,12 @@ export class UsersInBanList {
 
     @Field(() => Date, { nullable: true })
     lastChange: Date;
+
+		@Field(() => String, { nullable: true })
+		username: string;
+
+		@Field(() => String, { nullable: true })
+		avatar: string;
 }
 
 registerEnumType(UserChatStatus, {

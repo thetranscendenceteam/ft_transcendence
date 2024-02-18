@@ -1,14 +1,17 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation, Subscription } from '@nestjs/graphql';
+import { Inject } from '@nestjs/common';
+import { PUB_SUB } from 'src/pubsub/pubsub.module';
 import { RelationshipService } from './relationship.service';
 import { RelationshipForUser } from './dto/RelationshipForUser.entity';
 import { RelationshipInput } from './dto/Relationship.input';
 import { DetailRelationship } from './dto/DetailRelationship.entity';
-import { RelationshipStatus } from '@prisma/client';
 import { RelationshipRequest } from './dto/RelationshipRequest.entity';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
 
+const NEW_FRIENDREQUEST = 'newFriendRequest_';
 @Resolver()
 export class RelationshipResolver {
-  constructor(private relationshipService: RelationshipService) {}
+  constructor(private relationshipService: RelationshipService, @Inject(PUB_SUB) private pubSub: RedisPubSub) {}
 
   @Query((returns) => [RelationshipForUser])
   getUserRelationship(
@@ -57,6 +60,13 @@ export class RelationshipResolver {
     @Args('userId', { type: () => String, nullable: false }) userId: string,
   ): Promise<RelationshipRequest[]> {
     return this.relationshipService.findPendingRequest(userId);
+  }
+
+  @Subscription(() => RelationshipRequest)
+  newPendingRequest(
+    @Args('userId', { type: () => String, nullable: false }) userId: string,
+  ) {
+    return this.pubSub.asyncIterator(NEW_FRIENDREQUEST + userId);
   }
 
   @Mutation((returns) => Boolean)

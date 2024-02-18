@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { RelationshipStatus, UsersRelationships } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { RelationshipForUser } from './dto/RelationshipForUser.entity';
@@ -7,10 +7,15 @@ import { SortedUsers } from './dto/sortedUsersIds.entity';
 import { InternalAddRelationshipInput } from './dto/InternalAddRelationship.input';
 import { DetailRelationship } from './dto/DetailRelationship.entity';
 import { RelationshipRequest } from './dto/RelationshipRequest.entity';
+import { FriendRequestForSub } from './dto/FriendRequest';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
+import { PUB_SUB } from 'src/pubsub/pubsub.module';
+
+const NEW_FRIENDREQUEST = 'newFriendRequest_';
 
 @Injectable()
 export class RelationshipService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, @Inject(PUB_SUB) private pubSub: RedisPubSub) {}
 
   async getUserRelationship(userId: string) {
     try {
@@ -95,6 +100,12 @@ export class RelationshipService {
     else internalInput.status = RelationshipStatus.pending_second_to_first;
     try {
       const res = await this.internalAddRelationship(internalInput);
+
+      const resSub: FriendRequestForSub = new FriendRequestForSub();
+      resSub.userId = input.userId;
+      resSub.username = input.targetId;
+      this.pubSub.publish(NEW_FRIENDREQUEST + input.userId, resSub);
+
       return res;
     } catch (e) {
       console.log('Error on addFriend');

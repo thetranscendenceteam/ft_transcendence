@@ -77,6 +77,14 @@ class Game {
     };
 
     this.matchService.setMatchScore(input);
+    this.matchService.addXpPostMatch({
+      userId: this.players[winner].userId,
+      xp: 10,
+    });
+    this.matchService.addXpPostMatch({
+      userId: this.players[winner === 'left' ? 'right' : 'left'].userId,
+      xp: 5,
+    });
     this.matchService.setMatchAsFinished(this.matchId);
   }
 

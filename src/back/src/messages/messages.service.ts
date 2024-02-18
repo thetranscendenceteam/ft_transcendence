@@ -42,8 +42,8 @@ export class MessagesService {
             const nMessage = await this.prisma.messages.count({
                 where: {
                     chatId: input.chatId,
-                }
-            })
+                },
+            });
             if (nMessage > 19) this.supprOldestMessage(input.chatId);
             const update = await this.prisma.messages.create({
                 data: {
@@ -58,13 +58,23 @@ export class MessagesService {
                     username: true,
                     timestamp: true,
                     chatId: true,
-                }
-            })
+                },
+            });
+			const avatar = await this.prisma.users.findFirst({
+				where: {
+					pseudo: input.username,
+				},
+				select: {
+					avatar: true,
+				}
+			});
             if (!update) return false;
             const res: MessageForSub = new MessageForSub();
             res.message = update.message;
             res.timestamp = update.timestamp.toISOString();
             res.username = update.username;
+			if (avatar) res.avatar = avatar.avatar;
+			else res.avatar = "";
             this.pubSub.publish(NEW_MESSAGE + input.chatId, { newMessage: res });
             return true;
         }

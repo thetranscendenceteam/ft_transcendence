@@ -126,7 +126,7 @@ export const Callback = () => {
       window.removeEventListener("beforeunload", handleReload);
     };
   }, []);
-  console.log("modale: ", modale);
+
   return (
     <div style={{display:"flex", justifyContent:"center"}}>
       {String(modale) === "true" && (

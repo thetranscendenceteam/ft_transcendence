@@ -302,59 +302,64 @@ export class RelationshipService {
     }
   }
 
-  async acceptOrRefusePending(
-    accept: boolean,
-    input: RelationshipInput,
-  ): Promise<boolean> {
-    try {
-      const users = await this.sortUsersIds(input.userId, input.targetId);
-      const query = await this.prisma.usersRelationships.findFirst({
-        where: {
-          firstId: users.smallerId,
-          secondId: users.biggerId,
-        },
-      });
-      if (!query) return false;
-      if (accept) {
-        const res = await this.prisma.usersRelationships.update({
-          where: {
-            id: query.id,
-          },
-          data: {
-            status: RelationshipStatus.friends,
-          },
-        });
-        if (!res) return false;
-        await this.createWhisperChat(input);
-      } else {
-        const res = await this.prisma.usersRelationships.delete({
-          where: {
-            id: query.id,
-          },
-        });
-      }
-      return true;
-    } catch (e) {
-      console.log('Error on acceptOrRefusePending');
-      throw e;
-    }
-  }
+	async acceptOrRefusePending(accept: boolean, input: RelationshipInput): Promise<boolean> {
+		try {
+            const users = await this.sortUsersIds(input.userId, input.targetId);
+			const query = await this.prisma.usersRelationships.findFirst({
+				where: {
+					firstId: users.smallerId,
+					secondId: users.biggerId,
+				},
+			});
+			if (!query) return false;
+			if (accept) {
+				const res = await this.prisma.usersRelationships.update({
+					where: {
+						id: query.id,
+					},
+					data: {
+						status: RelationshipStatus.friends,
+					},
+				});
+				if (!res) return false;
+				await this.createWhisperChat(input);
+			}
+			else {
+				const res = await this.prisma.usersRelationships.delete({
+					where: {
+						id: query.id,
+					},
+				});
+			}
+			return true;
+		}
+		catch (e) {
+			console.log("Error on acceptOrRefusePending");
+			throw e;
+		}
+	}
 
-  async createWhisperChat(input: RelationshipInput) {
-    try {
-      const res = await this.prisma.chats.create({
-        data: {
-          name: 'Whisper_' + input.userId + '_' + input.targetId,
-          isPrivate: false,
-          isWhisper: true,
-          users: {
-            create: [{ userId: input.userId }, { userId: input.targetId }],
-          },
-        },
-      });
-    } catch (e) {
-      console.log('Error on createWhisperChat');
-      throw e;
-    }
-  }
+	async createWhisperChat(input: RelationshipInput) {
+		try {
+			let name = "Whisper_";
+			name = name + await this.internalGetUsernameById(input.userId) + "_" + await this.internalGetUsernameById(input.targetId);
+			const res = await this.prisma.chats.create({
+				data: {
+					name: name,
+					isPrivate: false,
+					isWhisper: true,
+					users: {
+						create: [
+							{ userId: input.userId },
+							{ userId: input.targetId },
+						],
+					},
+				},
+			});
+		}
+		catch (e) {
+			console.log("Error on createWhisperChat");
+			throw e;
+		}
+	}
 }

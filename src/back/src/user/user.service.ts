@@ -12,6 +12,7 @@ import { EditUserInput } from './dto/editUser.input';
 import { UserPrivate } from './dto/userPrivate.entity';
 import { SearchUser, SearchUserInput } from './dto/searchUser.input';
 import { hashPassword } from 'src/utils/bcrypt';
+import { RelationshipStatus } from '@prisma/client';
 
 const speakeasy = require('speakeasy');
 
@@ -204,4 +205,66 @@ export class UserService {
       throw e;
     }
   }
+
+  async friendsLeaderboard(userId: string): Promise<UserPrivate[]> {
+	try {
+		const query = await this.prisma.usersRelationships.findMany({
+			where: {
+				OR: [
+					{ firstId: userId },
+					{ secondId: userId },
+				],
+				status: RelationshipStatus.friends,
+			},
+		});
+		const friendsIds = query.map((f) => {
+			if (f.firstId === userId) return f.secondId;
+			else return f.firstId;
+		});
+		const users : UserPrivate[] = [];
+		for (const f of friendsIds) {
+			const l = await this.prisma.users.findFirst({
+				where: {
+					id: f,
+				},
+				select: {
+					pseudo: true,
+					firstName: true,
+					lastName: true,
+					avatar: true,
+					xp: true,
+					createdAt: true,
+					modifiedAt: true,
+					count: true,
+					campus: true,
+				},
+			});
+			if (l) users.push(l);
+		}
+		const thisUser = await this.prisma.users.findFirst({
+			where: {
+				id: userId,
+			},
+			select: {
+				pseudo: true,
+				firstName: true,
+				lastName: true,
+				avatar: true,
+				xp: true,
+				createdAt: true,
+				modifiedAt: true,
+				count: true,
+				campus: true,
+			},
+		});
+		if (thisUser) users.push(thisUser);
+		const res = users.sort((a,b) => b.xp.toString().localeCompare(a.xp.toString()));
+		return res;
+	}
+	catch (e) {
+		console.log("Error on friendsLeaderboard");
+		throw e;
+		}
+  }
+
 }

@@ -23,6 +23,7 @@ import { useCookies } from 'react-cookie';
 import NotificationsButton from './friendsNotifs/notifsButton';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from '@/components/apolloclient';
+import { ButtonVariant } from './register-dialog';
 
 interface User {
   id: string | null;
@@ -42,6 +43,7 @@ const Menu: React.FC = () => {
   const searchBarRefSearch = useRef<HTMLDivElement>(null);
   const searchBarRefNotif = useRef<HTMLDivElement>(null);
   const [cookies, setCookie, removeCookie] = useCookies(['jwt']);
+  const variant: ButtonVariant = "black";
 
   useEffect(() => {
     function handleClickOutsideSearch(event: MouseEvent) {
@@ -140,8 +142,8 @@ const Menu: React.FC = () => {
               </DropdownMenu>
           ) : (
             <div className="flex items-center">
-              <RegisterDialog />
-              <LoginDialog />
+              <RegisterDialog variant={variant}/>
+              <LoginDialog variant={variant}/>
             </div>
           )}
         </div>

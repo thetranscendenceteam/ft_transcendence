@@ -1,22 +1,17 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { UserChatInfo } from './UserChatInfo.entity';
 import { UserChatRole, UserChatStatus } from '@prisma/client';
 
 @ObjectType()
-export class ChatUserInfo {
+export class ChatsInfoWithUser {
     @Field(() => String, { nullable: true })
     idChat: string;
 
-    @Field(() => String, { nullable: true })
-    userId: string;
+    @Field(() => UserChatInfo, { nullable: true })
+    userInfo: UserChatInfo;
 
     @Field(() => String, { nullable: true })
     name: string
-
-    @Field(() => UserChatRole, { nullable: true })
-    role: UserChatRole;
-
-    @Field(() => UserChatStatus, { nullable: true })
-    status: UserChatStatus;
 
     @Field(() => Boolean, { nullable: true })
     isPrivate: boolean;
@@ -24,8 +19,11 @@ export class ChatUserInfo {
     @Field(() => Boolean, { nullable: true })
     isWhisper: boolean;
 
-    @Field(() => Date, { nullable: true })
-    joinedAt: Date;
+    @Field(() => UserChatRole, { nullable: true })
+    role: UserChatRole;
+
+    @Field(() => UserChatStatus, { nullable: true })
+    status: UserChatStatus;
 }
 
 registerEnumType(UserChatRole, {

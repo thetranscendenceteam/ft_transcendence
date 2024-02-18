@@ -17,7 +17,13 @@ import { gql } from "@apollo/client";
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
 
-const RegisterDialog = () => {
+export type ButtonVariant = "link" | "ghost" | "transparent" | "black" | "default" | "destructive" | "outline" | "secondary";
+
+type Props = {
+  variant: ButtonVariant;
+}
+
+const RegisterDialog = ({ variant }: Props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
@@ -72,7 +78,7 @@ const RegisterDialog = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="black">Register</Button>
+        <Button variant={variant}>Register</Button>
       </DialogTrigger>
       { opened &&
         <DialogContent className="sm:max-w-[425px] max-w-72">

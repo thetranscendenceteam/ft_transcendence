@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma.service';
 import { UserChatInfo } from './dto/UserChatInfo.entity';
 import { ChatUserInfo } from './dto/ChatUserInfo.entity';
 import { UserChatStatus } from '@prisma/client';
+import { ChatsInfoWithUser } from './dto/ChatsInfoWithUser.entity';
 import { InfoChatForUserInput } from './dto/getInfoChatForUser.input';
 
 @Injectable()
@@ -76,7 +77,7 @@ export class UsersInChatsService {
         }
     }
 
-    async getAllChatByUserId(idUser: string): Promise<ChatUserInfo[]> {
+    async getAllChatByUserId(idUser: string): Promise<ChatsInfoWithUser[]> {
         try {
             const chats = await this.prisma.usersInChats.findMany({
                 where: {
@@ -85,7 +86,7 @@ export class UsersInChatsService {
             });
             const results = await Promise.all(chats
                 .map((c) => this.getChatInfoByUserIdAndChatId(idUser, c.chatId)));
-            return results.filter((c): c is ChatUserInfo => c !== null);
+            return results.filter((c): c is ChatsInfoWithUser => c !== null);
         }
         catch (e) {
             console.log("Error in getAllChatByUserId" + e);
@@ -93,9 +94,9 @@ export class UsersInChatsService {
         }
     }
 
-    async getChatInfoByUserIdAndChatId(userId: string, chatId: string): Promise<ChatUserInfo | null> {
+    async getChatInfoByUserIdAndChatId(userId: string, chatId: string): Promise<ChatsInfoWithUser | null> {
         try {
-            let chat: ChatUserInfo = new ChatUserInfo;
+            let chat: ChatsInfoWithUser = new ChatsInfoWithUser;
             const chats = await this.prisma.usersInChats.findFirst({
                 where: {
                     chatId: chatId,
@@ -124,10 +125,8 @@ export class UsersInChatsService {
             if (!chats) return null;
             if (!chats.chat) return null;
             chat.idChat = chats.chatId;
-            chat.userId = userId;
             chat.name = chats.chat.name;
-            chat.role = chats.role;
-            chat.joinedAt = chats.joinedAt;
+			chat.role = chats.role;
             if (chats.chat.UsersInBanLists.length > 0)
                 chat.status = chats.chat.UsersInBanLists[0].status;
             else

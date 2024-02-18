@@ -8,7 +8,7 @@ import { EditUserInput } from './dto/editUser.input';
 import { SearchUser, SearchUserInput } from './dto/searchUser.input';
 import { UserPrivate } from './dto/userPrivate.entity';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'src/gql-auth.guards';
+import { GqlAuthGuard } from '../auth/gql-auth.guards';
 
 @Resolver()
 export class UserResolver {
@@ -52,9 +52,11 @@ export class UserResolver {
   }
 
   @Mutation(returns => User)
+	@UseGuards(GqlAuthGuard)
   editUser(
     @Args('editUserInput') editUserInput: EditUserInput,
   ): Promise<User> {
+    console.log("EditUser query for UserId : " + editUserInput);
     return this.userService.editUser(editUserInput);
   }
 

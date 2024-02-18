@@ -76,8 +76,11 @@ export class UserService {
 
   async getUserById(id: string): Promise<User | undefined> {
     try {
-      const user = await this.prisma.users.findFirst({ where: { id: id } });
-      if (user == null) return undefined
+      if (!id)
+        throw new Error('Error no id provided')
+      const user = await this.prisma.users.findUnique({ where: { id: id } });
+      if (!user)
+        throw new Error('Error no user find for this id')
       return user;
     }
     catch (e) {

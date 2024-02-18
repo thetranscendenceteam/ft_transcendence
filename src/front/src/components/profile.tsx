@@ -58,18 +58,19 @@ const fetchMatchHistoryData = (userId: string): Promise<MatchHistory[]> => {
 export const UserProfileCard: React.FC<userAndMatch> = ({ user, matchHistory }: userAndMatch) => {
   const totalMatches = matchHistory.length;
   const winRatio = matchHistory.filter((match) => match.isWin).length / totalMatches * 100;
+  if (user.campus === null) user.campus = "Not a 42 Student";
   return (
     <Card className={`${styles.card} ${styles.userProfileCard}`}>
       <img
         src={user.avatar_url as string}
         alt="User Avatar"
-        className={styles.avatarImage} // Apply the class for styles
+        className={styles.avatarImage}
       />
       <h2 className={styles.title}>{user.username}</h2>
       <p className={styles.text}>{user.realname}</p>
       <p className={styles.text}>{user.email}</p>
       <p className={styles.text}>{user.campus === "Not a 42 Student" ? user.campus : "42 " + user.campus}</p>
-      <p className={styles.text}>Win ratio: {winRatio}%</p>
+      <p className={styles.text}>Win ratio: {isNaN(winRatio) ? "0" : winRatio}%</p>
       <p className={styles.text}>Total matches: {totalMatches}</p>
     </Card>
   );

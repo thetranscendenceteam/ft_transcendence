@@ -7,6 +7,7 @@ import { AddInBanList } from './dto/AddInBanList.input';
 import { UpdateUserInChat } from './dto/UpdateUserInChat.input';
 import { Chat } from './dto/chat.entity';
 import { RemoveUserInput } from './dto/RemoveUser.input';
+import { UsersInBanList } from './dto/UsersInBanLists.entity';
 
 @Injectable()
 export class ChatService {
@@ -81,12 +82,30 @@ export class ChatService {
 
     async getBanList(chatId: string) {
         try {
-            const res = await this.prisma.usersInBanLists.findMany({
+            const find = await this.prisma.usersInBanLists.findMany({
                 where: {
                     chatId: chatId,
                 },
             });
-            return res;
+						let res : UsersInBanList[] = [];
+						for (const i of find) {
+							let add : UsersInBanList = new UsersInBanList();
+							const j = await this.prisma.users.findFirst({
+								where: {
+									id: i.userId,
+								},
+							});
+							add.userId = i.userId;
+							add.chatId = i.chatId;
+							add.status = i.status;
+							add.lastChange = i.lastChange;
+							if (j) {
+								add.username = j.pseudo;
+								add.avatar = j.avatar;
+							}
+							res.push(add);
+						}
+					 return res;
         }
         catch (e) {
             console.log("Error on getBanList query");

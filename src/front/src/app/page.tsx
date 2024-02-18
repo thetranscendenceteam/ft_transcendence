@@ -14,7 +14,7 @@ export default function Home() {
   const { user } = useContext(UserContext);
 
   return (
-    <main className="h-full w-full flex flex-col items-center justify-center bg-purple-800 opacity-90">
+    <main className="h-full w-full flex flex-col items-center justify-center bg-purple-800 opacity-90" style={{ position: 'relative', zIndex: -1 }}>
       <title>Welcome to the game</title>
       <Image src={Pomy} alt='...' height={550} width={550} />
       {user && user.id && (

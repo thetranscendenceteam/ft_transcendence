@@ -244,4 +244,22 @@ export class ChatService {
         }
     }
 
+		async removeFromBanList(userId: string, chatId: string) {
+			try {
+				const res = await this.prisma.usersInBanLists.delete({
+					where: {
+						userId_chatId: {
+							userId: userId,
+							chatId: chatId,
+						},
+					},
+				});
+				return (res);
+			}
+			catch (e) {
+				console.log("Error on removeFromBanList");
+				throw e;
+			}
+		}
+
 }

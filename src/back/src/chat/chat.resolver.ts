@@ -57,6 +57,14 @@ export class ChatResolver {
         return this.chatService.addInBanList(addInBanListInput);
     }
 
+		@Mutation(returns => Boolean)
+		removeFromBanList(
+			@Args('userId') userId: string,
+			@Args('chatId') chatId: string
+		): Promise<boolean> {
+			return this.removeFromBanList(userId, chatId);
+		}
+
     @Mutation(returns => UserPrivate)
     updateUserInChat(
         @Args('addUserInChat') input: UpdateUserInChat,

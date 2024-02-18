@@ -241,6 +241,22 @@ export class UserService {
 			});
 			if (l) users.push(l);
 		}
+		users.push(await this.prisma.users.findFirst({
+			where: {
+				id: userId,
+			},
+			select: {
+				pseudo: true,
+				firstName: true,
+				lastName: true,
+				avatar: true,
+				xp: true,
+				createdAt: true,
+				modifiedAt: true,
+				count: true,
+				campus: true,
+			},
+		});
 		const res = users.sort((a,b) => b.xp.toString().localeCompare(a.xp.toString()));
 		return res;
 	}

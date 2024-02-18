@@ -14,19 +14,11 @@ import * as Joi from '@hapi/joi';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { RelationshipModule } from './relationship/relationship.module';
 import { GameGateway } from './game/game.gateway';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './jwt.strategy';
+import { UserService } from './user/user.service';
+import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [
-    PassportModule,
-    JwtModule.register({
-        secret: process.env.JWT_PRIVATE_KEY,
-        signOptions: {
-            expiresIn: 3600,
-        },
-    }),
     ConfigModule.forRoot({
       validationSchema: Joi.object({
         REDIS_HOST: Joi.string().required(),
@@ -55,6 +47,6 @@ import { JwtStrategy } from './jwt.strategy';
     RelationshipModule,
   ],
   controllers: [AppController],
-  providers: [AppService, GameGateway, JwtStrategy],
+  providers: [AppService, GameGateway],
 })
 export class AppModule {}

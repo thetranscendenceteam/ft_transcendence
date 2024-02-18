@@ -23,13 +23,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 			'jwt' in req.cookies &&
 			req.cookies.jwt.length > 0
 		) {
-			console.log("Hello there");
-			return req.cookies.jwt;
+			return req.cookies['jwt'];
 		}
 		return null;
 	}
 
   async validate(payload: any) {
+	console.log('payload', payload);
 		if (payload === null) {
 			throw new UnauthorizedException();
 		}

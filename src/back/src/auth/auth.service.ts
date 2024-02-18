@@ -149,6 +149,19 @@ export class AuthService {
     }
   }
 
+  verifyToken(token: string) {
+    try {
+      const PRIVATE_KEY = process.env.JWT_PRIVATE_KEY;
+      if (!PRIVATE_KEY) {
+        throw new Error('Missing env variables');
+      }
+      return jwt.verify(token, PRIVATE_KEY);
+    } catch (error) {
+      console.error("verifyToken: ", error);
+      return false;
+    }
+  }
+
   async classicRegister(input: StandardRegisterInput): Promise<boolean> {
     try {
       await this.userService.createClassicUser({

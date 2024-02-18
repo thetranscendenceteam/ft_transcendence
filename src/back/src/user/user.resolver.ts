@@ -8,7 +8,7 @@ import { EditUserInput } from './dto/editUser.input';
 import { SearchUser, SearchUserInput } from './dto/searchUser.input';
 import { UserPrivate } from './dto/userPrivate.entity';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'src/gql-auth.guards';
+import { GqlAuthGuard } from '../auth/gql-auth.guards';
 
 @Resolver()
 export class UserResolver {
@@ -30,7 +30,6 @@ export class UserResolver {
   }
 
   @Query(returns => User)
-  @UseGuards(GqlAuthGuard)
   async getUser(
     @Args('UserInput') userInput: GetUserInput,
   ): Promise<User | null> {

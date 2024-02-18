@@ -71,6 +71,7 @@ const Sidebar = ({ changeConv, changeConvType, refresh }: Props) => {
         isWhisper: item.isWhisper,
         avatar: ""
       }));
+      console.log("CHATS : ", tmp);
       setData(tmp);
     };
     fetchInitialData();

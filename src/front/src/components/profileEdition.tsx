@@ -11,9 +11,10 @@ import { Label } from './ui/label';
 import apolloClient from './apolloclient';
 import axios from 'axios';
 import { gql } from '@apollo/client';
+import { useRouter } from 'next/navigation';
 
 type UserProfileEditionCardProps = {
-  user: {
+  userEdit: {
     id: string;
     username: string;
     realname: string;
@@ -23,8 +24,10 @@ type UserProfileEditionCardProps = {
   };
 };
 
-const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user }) => {
+const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdit }) => {
   const [error, setError] = useState("");
+  const {user, updateUser} = React.useContext(UserContext);
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: null,
     password:null,
@@ -67,14 +70,14 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
         const formdata = new FormData();
         const file  = formDataReady.file as File;
         formdata.append('avatar', file, file.name);
-        await axios.post(`https://localhost:8443/avatar`, formdata, { // TODO change to env var
-          params: { username: user.username },
+        await axios.post(`https://localhost:8443/avatar`, formdata, {
+          params: { username: userEdit.username },
           headers: {
             'Content-Type': 'multipart/form-data'
           },
           withCredentials: true,
         }).then((response: any) => {
-          console.log('avatar uploaded', response); // TODO: reload avatar
+          console.log('avatar uploaded', response);
         }).catch((error: any) => {
           console.error('Error uploading the file:', error);
         });
@@ -83,20 +86,20 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ user })
         mutation: gql`
           mutation ($inputUser: EditUserInput!){
             editUser(editUserInput: $inputUser) {
-              id
-              ftId
-              firstName
-              lastName
-              mail
-              password
+              id 
               pseudo
+              mail
+              avatar
             }
           }
         `,
         variables: {
-          inputUser: { id: user.id, mail: formDataReady.email, password: formDataReady.password, pseudo: formDataReady.username },
+          inputUser: { id: userEdit.id, mail: formDataReady.email, password: formDataReady.password, pseudo: formDataReady.username },
         },
       });
+
+      updateUser({...user, email: data.editUser.email, username: data.editUser.pseudo, avatar_url: data.editUser.avatar});
+      router.push('/profile');
       } catch (error) {
         console.error('Error editing user:', error);
       }
@@ -184,7 +187,7 @@ const ProfileComponent = () => {
 
   return (
     user && <div className={styles.container}>
-      <UserProfileEditionCard user={user} />
+      <UserProfileEditionCard userEdit={user} />
     </div>
   );
 };

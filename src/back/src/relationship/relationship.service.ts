@@ -300,9 +300,11 @@ export class RelationshipService {
 
 	async createWhisperChat(input: RelationshipInput) {
 		try {
+			let name = "Whisper_";
+			name = name + await this.internalGetUsernameById(input.userId) + "_" + await this.internalGetUsernameById(input.targetId);
 			const res = await this.prisma.chats.create({
 				data: {
-					name: "Whisper_" + input.userId + "_" + input.targetId,
+					name: name,
 					isPrivate: false,
 					isWhisper: true,
 					users: {

@@ -10,4 +10,8 @@ export class MessageForSub {
 
     @Field(() => String, { nullable: true })
     username: string;
+
+	@Field(() => String, { nullable: true })
+	avatar: string;
+
 }

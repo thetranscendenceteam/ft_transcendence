@@ -93,8 +93,8 @@ model UsersInBanLists {
 
 model UsersRelationships {
     id        String             @id @unique @default(uuid()) @db.VarChar(36)
-    firstId   String
-    secondId  String
+    firstId   String			 @db.VarChar(36)
+    secondId  String			 @db.VarChar(36)
     status    RelationshipStatus @default(unknown)
     createdAt DateTime           @default(now())
     updatedAt DateTime           @default(now())

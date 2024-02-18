@@ -103,6 +103,16 @@ export class MessagesService {
 							j.username = i.username;
 							j.chatId = i.chatId;
 							j.link = null;
+							let tmp = await this.prisma.users.findUnique({
+								where: {
+									pseudo: i.username,
+								},
+								select: {
+									avatar: true,
+								},
+							});
+							if (!tmp) j.avatar = null;
+							else j.avatar = tmp.avatar;
 							obj.push(j);
 						}
 						return obj;

@@ -19,4 +19,7 @@ export class Message {
 
 		@Field(() => String, {nullable: true})
 		link: string | null;
+
+		@Field(() => String, { nullable: true })
+		avatar: string | null;
 }

@@ -5,6 +5,7 @@ import { SendMessageInput } from './dto/inputMessage.input';
 import { PrismaService } from 'src/prisma.service';
 import { MessageForSub } from './dto/MessageForSub.entity';
 import { UserChatStatus } from '@prisma/client';
+import { Message } from './dto/Messages.entity';
 
 const NEW_MESSAGE = 'newMessage_';
 
@@ -36,63 +37,75 @@ export class MessagesService {
     }
 
     async addMessage(input: SendMessageInput) {
-        try {
-            if (await this.userMuted(input)) return false;
-            const date = new Date().toISOString();
-            const nMessage = await this.prisma.messages.count({
-                where: {
-                    chatId: input.chatId,
-                },
-            });
-            if (nMessage > 19) this.supprOldestMessage(input.chatId);
-            const update = await this.prisma.messages.create({
-                data: {
-                    message: input.message,
-                    username: input.username,
-                    timestamp: date,
-                    chatId: input.chatId,
-                },
-                select: {
-                    id: true,
-                    message: true,
-                    username: true,
-                    timestamp: true,
-                    chatId: true,
-                },
-            });
-			const avatar = await this.prisma.users.findFirst({
-				where: {
-					pseudo: input.username,
-				},
-				select: {
-					avatar: true,
-				}
-			});
-            if (!update) return false;
-            const res: MessageForSub = new MessageForSub();
-            res.message = update.message;
-            res.timestamp = update.timestamp.toISOString();
-            res.username = update.username;
-			if (avatar) res.avatar = avatar.avatar;
-			else res.avatar = "";
-            this.pubSub.publish(NEW_MESSAGE + input.chatId, { newMessage: res });
-            return true;
-        }
-        catch (e) {
-            console.log("Error on addMessage Mutation");
-            throw e;
-        }
-    }
+    	try {
+      	if (await this.userMuted(input)) return false;
+        	const date = new Date().toISOString();
+        	const nMessage = await this.prisma.messages.count({
+            where: {
+              chatId: input.chatId,
+            },
+          });
+          if (nMessage > 19) this.supprOldestMessage(input.chatId);
+          const update = await this.prisma.messages.create({
+          	data: {
+              message: input.message,
+              username: input.username,
+              timestamp: date,
+              chatId: input.chatId,
+              },
+              select: {
+              	id: true,
+                message: true,
+                username: true,
+                timestamp: true,
+                chatId: true,
+              },
+          });
+					const avatar = await this.prisma.users.findFirst({
+						where: {
+							pseudo: input.username,
+						},
+						select: {
+							avatar: true,
+						}
+					});
+					if (!update) return false;
+					const res: MessageForSub = new MessageForSub();
+					res.message = update.message;
+					res.timestamp = update.timestamp.toISOString();
+					res.username = update.username;
+					res.link = input.link;
+					if (avatar) res.avatar = avatar.avatar;
+					else res.avatar = "";
+					this.pubSub.publish(NEW_MESSAGE + input.chatId, { newMessage: res });
+					return true;
+			}
+			catch (e) {
+				console.log("Error on addMessage Mutation");
+				throw e;
+			}
+		}
 
     async getMessageHistoryOfChat(chatId: string) {
         try {
+						let obj : Message[] = [];
             const res = await this.prisma.messages.findMany({
                 where: {
                     chatId: chatId,
                 },
             });
             if (!res) return null;
-            return res;
+						for (const i of res) {
+							let j : Message = new Message();
+							j.id = i.id;
+							j.timestamp = i.timestamp;
+							j.message = i.message;
+							j.username = i.username;
+							j.chatId = i.chatId;
+							j.link = null;
+							obj.push(j);
+						}
+						return obj;
         }
         catch (e) {
             console.log("Error on getMessageHistoryOfChat");

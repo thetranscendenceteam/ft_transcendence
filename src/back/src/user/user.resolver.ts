@@ -56,6 +56,7 @@ export class UserResolver {
   editUser(
     @Args('editUserInput') editUserInput: EditUserInput,
   ): Promise<User> {
+    console.log("EditUser query for UserId : " + editUserInput);
     return this.userService.editUser(editUserInput);
   }
 

@@ -8,7 +8,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['log', 'fatal', 'error', 'warn', 'debug', 'verbose'],
   });
-  console.log("FAUT FAIRE LE SANITIZE, AUTH GUARD");
   app.use(
     cors({
       origin: 'https://localhost:8443', // Allow requests from this origin

@@ -106,24 +106,25 @@ export class GameEngine {
     return undefined;
   }
 
-  async handleMessage(ws: WebSocket, message: any) {
+  handleMessage(ws: any, message: any) {
     if (message.init) {
       // Prevent concurrent connections
+      if (!ws.user || message.init.userId !== ws.user) {
+        console.log('Unauthorized, invalid token.');
+        return;
+      }
       if (this.searchPlayerByWs(ws)) return;
       this.searchGame(ws, message.init);
     } else {
       const player = this.searchPlayerByWs(ws);
       const spectator = this.searchSpectatorByWs(ws);
       if (!player) {
-        console.log('no player found');
         if (!spectator) {
-          console.log('no spectator found');
           return;
         }
       }
       const game = this.searchGameByWs(ws);
       if (!game) {
-        console.log('no game found');
         return;
       }
       if (spectator) {
@@ -147,7 +148,6 @@ export class GameEngine {
     if (!player) return;
     if (!game) return;
     if (player.client) {
-      console.log('player with id', player.userId, 'disconnected');
       game.removePlayer(player.client);
     }
     if (

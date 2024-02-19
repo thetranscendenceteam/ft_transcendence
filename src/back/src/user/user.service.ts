@@ -130,6 +130,7 @@ export class UserService {
 
 	async createClassicUser(createUserInput: CreateClassicUserInput): Promise<User> {
 		try {
+			if (!this.sanitizeCreate(createUserInput)) return new User();
 			const secret = speakeasy.generateSecret({
 				name: 'Ft_transcendence_Pomy',
 			});
@@ -154,9 +155,18 @@ export class UserService {
 		}
 	}
 
+	sanitizeCreate(input: CreateClassicUserInput) {
+		if (input.firstName && (input.firstName.length < 1 || input.firstName.length > 15 || !input.firstName.match(/^[a-zA-Z]+$/))) return false;
+		if (input.lastName && (input.lastName.length < 1 || input.lastName.length > 15 || !input.lastName.match(/^[a-zA-Z]+$/))) return false;
+		if (input.pseudo && (input.pseudo.length < 4 || input.pseudo.length > 10 || !input.pseudo.match(/[^a-zA-Z0-9]/))) return false;
+		if (input.password && (input.password.length < 6 || input.password.length > 20 || !input.password.match(/[^a-zA-Z0-9]/) || !input.password.match(/[@#$]/))) return false;
+		if (input.mail && (!input.mail.includes('@') || !input.mail.includes('.') || !input.mail.match(/[^a-zA-Z0-9@.]/))) return false;
+		return true;
+	}
+
 	async editUser(editUserInput: EditUserInput): Promise<User> {
 		try {
-
+			if (!this.sanitizeInput(editUserInput)) return new User();
 			const userToUpdate = {
 				...(editUserInput.mail && { mail: editUserInput.mail }),
 				...(editUserInput.password && { password: await hashPassword(editUserInput.password) }),
@@ -165,7 +175,6 @@ export class UserService {
 				...(editUserInput.avatar && { avatar: editUserInput.avatar }),
 				...(editUserInput.pseudo && { pseudo: editUserInput.pseudo }),
 			};
-
 			return this.prisma.users.update({
 				where: { id: editUserInput.id },
 				data: userToUpdate
@@ -175,6 +184,15 @@ export class UserService {
 			console.log("Error on editUser query" + e);
 			throw e;
 		}
+	}
+
+	sanitizeInput(input: EditUserInput) {
+		if (input.firstName && (input.firstName.length < 1 || input.firstName.length > 15 || !input.firstName.match(/^[a-zA-Z]+$/))) return false;
+		if (input.lastName && (input.lastName.length < 1 || input.lastName.length > 15 || !input.lastName.match(/^[a-zA-Z]+$/))) return false;
+		if (input.pseudo && (input.pseudo.length < 4 || input.pseudo.length > 10 || !input.pseudo.match(/[^a-zA-Z0-9]/))) return false;
+		if (input.password && (input.password.length < 6 || input.password.length > 20 || !input.password.match(/[^a-zA-Z0-9]/) || !input.password.match(/[@#$]/))) return false;
+		if (input.mail && (!input.mail.includes('@') || !input.mail.includes('.') || !input.mail.match(/[^a-zA-Z0-9@.]/))) return false;
+		return true;
 	}
 
 	async updateUser(updateUser: UpdateUser): Promise<User | null> {

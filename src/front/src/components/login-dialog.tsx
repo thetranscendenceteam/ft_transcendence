@@ -74,7 +74,8 @@ const LoginDialog = ({ variant }: Props) => {
       if (data && data.standardLogin) {
         const { id, username, realname, avatar_url, email, campus, jwtToken, twoFA }  = data.standardLogin;
         updateUser({ id, username, realname, avatar_url, email, campus, twoFA });
-        setCookie('jwt', { jwtToken }, { path: '/'});
+        console.log("UHW");
+        setCookie('jwt', { jwtToken }, { path: '/', secure: true, sameSite: 'strict'});
       }
 
       return;

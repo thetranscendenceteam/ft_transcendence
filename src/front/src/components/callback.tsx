@@ -110,7 +110,7 @@ export const Callback = () => {
     if (data) {
       const { id, username, realname, avatar_url, email, campus, jwtToken, twoFA }  = data;
       updateUser({ id, username, realname, avatar_url, email, campus, twoFA });
-      setCookie('jwt', { jwtToken }, { path: '/'});
+      setCookie('jwt', { jwtToken }, { path: '/', secure: true, sameSite: 'strict'});
       router.push('/');
     }
   }, [data, code]);

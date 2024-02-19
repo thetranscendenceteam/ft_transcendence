@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '@/components/userProvider';
 import apolloClient from '@/components/apolloclient';
 import { useRouter } from 'next/navigation';
+import Loading from '@/components/ui/loading';
 
 const USER_IN_MATCH = gql`
   query isUserInMatch($userId: String!) {
@@ -96,7 +97,7 @@ function Page({ params }: { params: { matchId: string } }) {
     return <Game matchId={match} gameParams={null} userId={user.id} watch={watch} reset={setGame} />;
   }
   else {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 }
 

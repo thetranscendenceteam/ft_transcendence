@@ -7,7 +7,7 @@ const redirectToUser = (username: string) => {
 export const SearchResult = ({ result }: any) => {
   return (
     <div
-      className="search-result"
+      className="search-result z-50"
       onClick={() => redirectToUser(result)}
     >
       {result}

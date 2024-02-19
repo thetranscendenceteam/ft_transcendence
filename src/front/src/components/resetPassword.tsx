@@ -30,8 +30,9 @@ const ResetPasswordForm = () => {
     }
 
     try {
+      setError('')
       setIsSubmitting(true);
-      apolloClient.mutate({
+      const { data } = await apolloClient.mutate({
         mutation: gql`
         mutation generatePasswordReset($email: String!){
           generatePasswordReset(email: $email)
@@ -41,7 +42,11 @@ const ResetPasswordForm = () => {
             email: email,
         },
       });
+      console.log("🚀 ~ handleSubmit ~ data:", data)
       setIsSubmitting(false);
+      if (data.errors) {
+        throw new Error('Failed to send reset password email');
+      }
       setSuccessMessage('Reset Password email sent successfully!');
       setEmail('');
     } catch (error) {

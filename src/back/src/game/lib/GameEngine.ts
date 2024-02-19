@@ -59,7 +59,8 @@ export class GameEngine {
     } else if ( // If the match is unstarted, create a new game and bind the client to the player.
       (match = unstartedMatches.find((match) => match.id === init.matchId))
     ) {
-      const game = this.createGame(match);
+      if (!(game = this.games.find((game) => game.matchId === init.matchId)))
+        game = this.createGame(match);
       console.log('unstarted match found');
       const client = new Client(ws);
       game.bindClientToPlayer(client, init.userId);

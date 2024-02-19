@@ -335,7 +335,9 @@ const UserComponent = (props: {username: string}) => {
               </>
             )}
           </div>
-          <MatchHistoryCard user={target} matchHistory={matchHistory} />
+          <div className="w-1/2">
+            <MatchHistoryCard user={target} matchHistory={matchHistory} />
+          </div>
         </div>
       )
     );

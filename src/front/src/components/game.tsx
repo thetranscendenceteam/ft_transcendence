@@ -25,6 +25,13 @@ export const Game = (
     gameEngine.current = new GameEngine();
     gameEngine.current.init(gameRef, gameParams, matchId, userId, setMenu);
     gameEngine.current.launch();
+
+    return function cleanup() {
+      if (gameEngine.current) {
+        gameEngine.current.stop();
+        gameEngine.current.closeWs();
+      }
+    }
   }, [gameRef, gameParams, matchId, userId, setMenu]);
 
   useEffect(function handleKeys() {
@@ -44,7 +51,7 @@ export const Game = (
       <canvas ref={gameRef} className="bg-gray-950"></canvas>
       {menu && !watch && reset &&
         <div className="absolute left-0 w-full h-full flex items-center justify-center">
-          <div className="bg-gray-800 mt-[20%] rounded-lg">
+          <div className="bg-gray-800 mt-[30%] rounded-lg">
             <Button className='m-4' onClick={() => reset(false)}>New game</Button>
             <Link href='/'><Button className='m-4'>Home</Button></Link>
           </div>

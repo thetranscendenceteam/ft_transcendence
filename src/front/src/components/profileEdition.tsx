@@ -85,8 +85,6 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
             'Content-Type': 'multipart/form-data'
           },
           withCredentials: true,
-        }).then((response: any) => {
-          console.log('avatar uploaded', response);
         }).catch((error: any) => {
           console.error('Error uploading the file:', error);
         });

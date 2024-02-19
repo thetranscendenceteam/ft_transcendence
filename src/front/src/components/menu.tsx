@@ -85,7 +85,7 @@ const Menu: React.FC = () => {
   }
 
   return (
-    <header className="sticky top-0 w-full backdrop-blur-lg backdrop-brightness-75">
+    <header className="sticky z-50 top-0 w-full backdrop-blur-lg backdrop-brightness-75">
       <div className="flex p-4 text-center text-slate-50">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center">

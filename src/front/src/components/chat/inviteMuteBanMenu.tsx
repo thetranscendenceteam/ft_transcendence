@@ -31,6 +31,7 @@ type Player = {
   id: string;
   nickname: string;
   avatar: string;
+  role: string;
 }
 
 const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMenu, mode, activeConv }) => {
@@ -153,6 +154,7 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
               idUser 
               pseudo
               avatar
+              role
             }
           }
         `,
@@ -198,7 +200,8 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
         const tmp = fetchedData.map((item: any) => ({
           id: item.relationId,
           nickname: item.relationUsername,
-          avatar: item.avatar
+          avatar: item.avatar,
+          role: ''
         }));
         setPlayers(tmp);
       } else if (mode === 'Ban' && !upgrade) {
@@ -208,7 +211,8 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
           .map((item: any) => ({
             id: item.userId,
             nickname: item.username,
-            avatar: item.avatar
+            avatar: item.avatar,
+            role: ''
         }));
         setPlayers(tmp);
       } else if (mode === 'Mute' && !upgrade) {
@@ -218,7 +222,8 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
           .map((item: any) => ({
             id: item.userId,
             nickname: item.username,
-            avatar: item.avatar
+            avatar: item.avatar,
+            role: ''
         }));
         setPlayers(tmp);
       } else {
@@ -226,7 +231,8 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
         const tmp = fetchedData.map((item: any) => ({
           id: item.idUser,
           nickname: item.pseudo,
-          avatar: item.avatar
+          avatar: item.avatar,
+          role: item.role
         }));
         setPlayers(tmp);
       }
@@ -245,30 +251,37 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
   }, []);
 
   const actionButton = async (player: Player | null) => {
-    if (mode === 'Kick' && player) {
+    if (mode === 'Kick' && player && player.role === 'member') {
       await leaveChat(player);
+      closeInviteMuteBanMenu();
     } else if (mode === 'Ban' && player) {
-      if (upgrade) {
+      if (upgrade && player.role === 'member') {
         await banMuteFromChat(player, 'banned');
         await leaveChat(player);
+        closeInviteMuteBanMenu();
       }
-      else
+      else if (!upgrade){
         await removeBan(player);
+        closeInviteMuteBanMenu();
+      }
     } else if (mode === 'Mute' && player) {
-      if (upgrade)
+      if (upgrade && player.role === 'member') {
         await banMuteFromChat(player, 'muted');
-      else
+        closeInviteMuteBanMenu();
+      }
+      else if (!upgrade) {
         await removeBan(player);
+        closeInviteMuteBanMenu();
+      }
     } else if (mode === 'Set Admin' && player) {
       if (upgrade) {
         await updateSomeoneInChat(player, 'admin');
+        closeInviteMuteBanMenu();
       }
       else {
         await updateSomeoneInChat(player, 'member');
+        closeInviteMuteBanMenu();
       }
-    }
-    if (player) {
-      closeInviteMuteBanMenu();
     }
   };
 

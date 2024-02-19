@@ -30,16 +30,15 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: null,
-    password:null,
-    password2:null,
+    password: null,
+    password2: null,
     username: null,
     file: null,
-  });
+  }) as [{ email: string | null, password: string | null, password2: string | null, username: string | null, file: File | null }, Function];
 
   const handleImageChange = async (e: any) => {
     const file = e.target.files[0];
     if (file) {
-      console.log("🚀 ~ handleImageChange ~ file:", file)
       setFormData({...formData, file: file});
     }
   };
@@ -49,7 +48,6 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
   };
 
   const handleEdit = async () => {
-    console.log("🚀 ~ handleInfoChange ~ formData:", formData);
     if (formData.password && formData.password2 && formData.password !== formData.password2) {
       setError('Passwords do not match');
       return;
@@ -63,8 +61,20 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
       return; 
     }
 
+    if (formData.username && ! (formData.username.length >= 4 && formData.username.length <= 10 && formData.username.match(/^[a-zA-Z0-9]+$/))) {
+      setError("Username must be between 4 and 10 alpha-numerical characters.");
+      return;
+    }
+    if (formData.password && (formData.password?.length < 6 || formData.password?.length > 20 || !formData.password?.match(/^[a-zA-Z0-9@#$]+$/))) {
+      setError("Password must be beween 6 and 20characters, alpha-numerical or @, # and $.");
+      return;
+    }
+    if (formData.email && (!formData.email?.match(/^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-z]+$/))) {
+      setError("Invalid email format.");
+      return;
+    }
+
     const formDataReady = formData.hasOwnProperty('password2') ? { ...formData, password2: undefined } : { ...formData };
-    console.log(formData);
     try {
       if (formDataReady.file) {
         const formdata = new FormData();
@@ -162,10 +172,10 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
               Email
             </Label>
             <Input
-              id="mail"
+              id="email"
               type="mail"
               placeholder="example@gmail.com"
-              onChange={(e) => handleInfoChange("mail", e.target.value)}
+              onChange={(e) => handleInfoChange("email", e.target.value)}
               className="col-span-2"
             />
           </div>

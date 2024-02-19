@@ -156,11 +156,11 @@ export class UserService {
 	}
 
 	sanitizeCreate(input: CreateClassicUserInput) {
-		if (input.firstName && (input.firstName.length < 1 || input.firstName.length > 15 || !input.firstName.match(/^[a-zA-Z]+$/))) return false;
-		if (input.lastName && (input.lastName.length < 1 || input.lastName.length > 15 || !input.lastName.match(/^[a-zA-Z]+$/))) return false;
-		if (input.pseudo && (input.pseudo.length < 4 || input.pseudo.length > 10 || !input.pseudo.match(/[^a-zA-Z0-9]/))) return false;
-		if (input.password && (input.password.length < 6 || input.password.length > 20 || !input.password.match(/[^a-zA-Z0-9]/) || !input.password.match(/[@#$]/))) return false;
-		if (input.mail && (!input.mail.includes('@') || !input.mail.includes('.') || !input.mail.match(/[^a-zA-Z0-9@.]/))) return false;
+		if (input.firstName && (input.firstName.length < 1 || input.firstName.length > 15 || !input.firstName.match(/^[a-zA-Z-]+$/))) return false;
+		if (input.lastName && (input.lastName.length < 1 || input.lastName.length > 15 || !input.lastName.match(/^[a-zA-Z-]+$/))) return false;
+		if (input.pseudo && (input.pseudo.length < 4 || input.pseudo.length > 10 || !input.pseudo.match(/^[a-zA-Z0-9]+$/))) return false;
+		if (input.password && (input.password.length < 6 || input.password.length > 20 || !input.password.match(/^[a-zA-Z0-9@#$]+$/))) return false;
+		if (input.mail && (!input.mail.includes('@') || !input.mail.includes('.') || !input.mail.match(/^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-z]+$/))) return false;
 		return true;
 	}
 
@@ -187,11 +187,11 @@ export class UserService {
 	}
 
 	sanitizeInput(input: EditUserInput) {
-		if (input.firstName && (input.firstName.length < 1 || input.firstName.length > 15 || !input.firstName.match(/^[a-zA-Z]+$/))) return false;
-		if (input.lastName && (input.lastName.length < 1 || input.lastName.length > 15 || !input.lastName.match(/^[a-zA-Z]+$/))) return false;
-		if (input.pseudo && (input.pseudo.length < 4 || input.pseudo.length > 10 || !input.pseudo.match(/[^a-zA-Z0-9]/))) return false;
-		if (input.password && (input.password.length < 6 || input.password.length > 20 || !input.password.match(/[^a-zA-Z0-9]/) || !input.password.match(/[@#$]/))) return false;
-		if (input.mail && (!input.mail.includes('@') || !input.mail.includes('.') || !input.mail.match(/[^a-zA-Z0-9@.]/))) return false;
+		if (input.firstName && (input.firstName.length < 1 || input.firstName.length > 15 || !input.firstName.match(/^[a-zA-Z-]+$/))) return false;
+		if (input.lastName && (input.lastName.length < 1 || input.lastName.length > 15 || !input.lastName.match(/^[a-zA-Z-]+$/))) return false;
+		if (input.pseudo && (input.pseudo.length < 4 || input.pseudo.length > 10 || !input.pseudo.match(/^[a-zA-Z0-9]+$/))) return false;
+		if (input.password && (input.password.length < 6 || input.password.length > 20 || !input.password.match(/^[a-zA-Z0-9@#$]+$/))) return false;
+		if (input.mail && (!input.mail.includes('@') || !input.mail.includes('.') || !input.mail.match(/^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-z]+$/))) return false;
 		return true;
 	}
 

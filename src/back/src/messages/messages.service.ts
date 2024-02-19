@@ -149,7 +149,7 @@ export class MessagesService {
 				},
 			});
 			if (!res) return false;
-			if (res.status == UserChatStatus.muted) return true;
+			if (res.status === UserChatStatus.muted || res.status === UserChatStatus.banned) return true;
 			return false;
 		}
 		catch (e) {

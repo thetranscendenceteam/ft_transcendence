@@ -136,7 +136,7 @@ class Game {
 
   resume() {
     // wait for websocket reconnection
-    if (this.lastState === 'running') {
+    if (this.lastState === 'running' || this.lastState === 'starting') {
       this.startTimestamp = Date.now();
       this.state = 'starting';
     } else
@@ -288,8 +288,7 @@ class Game {
     if (delta < 0.5) {
       this.renderAll();
       return 'Ready ?';
-    }
-    else if (delta < 1)
+    } else if (delta < 1)
       return '3';
     else if (delta < 1.5)
       return '2';

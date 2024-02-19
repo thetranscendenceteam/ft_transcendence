@@ -16,8 +16,7 @@ RUN npx prisma generate && \
     if [ "${APP_ENV}" = "production" ]; then npm run build; fi;
 
 CMD npm run migrate && \
-    npm run seed; \
     if [ "${APP_ENV}" = "production" ]; \
     then npm run start:prod; \
-    else npm run start:dev; \
+    else npm run seed && npm run start:dev; \
     fi;

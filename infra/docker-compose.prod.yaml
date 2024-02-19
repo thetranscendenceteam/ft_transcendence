@@ -1,6 +1,13 @@
 ---
 version: "3.8"
 services:
+  redis:
+    image: redis:alpine
+    networks:
+      - back
+    #ports:
+    #  - 6379:6379
+
   postgres:
     image: postgres:15.4-alpine
     restart: on-failure
@@ -21,6 +28,7 @@ services:
       - back
     volumes:
       - front-data:/data # Neede ?
+      - .env-front:/app/.env.local
 
   back:
     image: ghcr.io/thetranscendenceteam/back:latest
@@ -36,6 +44,7 @@ services:
       - db
     volumes:
       - back-data:/data # Needed ?
+      - .env-back:/app/.env
 
   nginx:
     image: ghcr.io/thetranscendenceteam/nginx:latest

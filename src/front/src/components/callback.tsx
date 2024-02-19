@@ -45,7 +45,6 @@ const fetchData = async (code: string | null) => {
 };
 
 const ftLoginTwoFA = async (username: string | null, twoFA: string | null, updateUser: Function, router: any, setError: Function) => {
-  console.log("ftLoginTwoFA: ", username, twoFA);
   if (username && twoFA) {
     try {
       const { data, errors } = await apolloClient.mutate({

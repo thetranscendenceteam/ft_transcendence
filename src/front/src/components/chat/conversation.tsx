@@ -94,7 +94,6 @@ const Conversation = ({ className, activeConv, convType, refresh }: Props) => {
 
   const onMessage = useCallback((result: OnSubscriptionDataOptions) => {
     if (!result.subscriptionData.data) return;
-    console.log(result.subscriptionData.data.newMessage.message);
     let lastMessage = result.subscriptionData.data.newMessage;
     lastMessage = {
       ...lastMessage,

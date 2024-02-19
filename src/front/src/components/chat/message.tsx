@@ -17,7 +17,6 @@ type Props = {
 }
 
 const Message: React.FC<Props> = ({ message, isMine }) => {
-  console.log("🚀 ~ message:", message)
   const messageClass = isMine === message.username ? "flex py-1 w-full justify-end" : "flex py-1 w-full";
 
   return (

@@ -140,7 +140,6 @@ function Page() {
         setMatch("local");
         return;
       }
-      console.log("getting new game");
       getNewGame(setError, setMatch, gameParams, user.id);
     }
   }, [gameParams, user]);

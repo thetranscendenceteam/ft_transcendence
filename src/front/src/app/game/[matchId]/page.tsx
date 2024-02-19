@@ -52,7 +52,6 @@ function Page({ params }: { params: { matchId: string } }) {
   useEffect(() => {
     if (!apolloClient)
       return;
-    console.log('user', user);
     if (user && user.id) {
       queryUserMatch(user.id).then((result) => {
         let m;

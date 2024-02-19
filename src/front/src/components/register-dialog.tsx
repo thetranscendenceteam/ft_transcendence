@@ -71,7 +71,7 @@ const RegisterDialog = ({ variant }: Props) => {
         setOpened(false);
         router.push('/');
       } catch (e) {
-        console.error('Error register standard:', e);
+        setError("Some fields are already taken");
       }
   }
 

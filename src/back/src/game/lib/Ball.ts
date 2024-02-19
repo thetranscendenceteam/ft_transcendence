@@ -1,9 +1,10 @@
 import Game from './Game';
+import { Player } from './Player';
 import { BallResponse } from './Messages';
 
 enum Difficulty {
-  easy = 170,
-  normal = 280,
+  easy = 250,
+  normal = 320,
   hard = 390,
 }
 
@@ -31,53 +32,73 @@ class Ball {
     this.x = (game.width - this.diameter) / 2;
     this.y = (game.height - this.diameter) / 2;
     this.speed = game.difficulty === "easy" ? Difficulty.easy : game.difficulty === "normal" ? Difficulty.normal : Difficulty.hard;
-    this.velocityX = this.speed * Math.cos(Math.PI / 4);
-    this.velocityY = this.speed * Math.sin(Math.PI / 4);
+    let angle = Math.random() * Math.PI * 2;
+    while (Math.PI * 11/6 < angle || angle < Math.PI * 1/6 || (Math.PI * 7/6 > angle && angle > Math.PI * 5/6)) {
+      angle = Math.random() * Math.PI * 2;
+    }
+    this.velocityX = this.speed * Math.sin(angle);
+    this.velocityY = this.speed * Math.cos(angle);
     this.render = true;
   }
 
-  update(game: Game, delta: number) {
-    let x = (this.x += this.velocityX * delta);
-    let y = (this.y += this.velocityY * delta);
-    if (y < 0) {
-      y = 0;
-      this.velocityY = -this.velocityY;
-      this.render = true;
-    } else if (y + this.diameter > game.height) {
-      y = game.height - this.diameter;
-      this.velocityY = -this.velocityY;
-      this.render = true;
-    }
+  handlePlayerCollision(player: Player) {
+    const relativeIntersectY = -(this.y + (this.diameter / 2) - (player.y + player.height / 2));
+    const normalizedRelativeIntersectY = relativeIntersectY / (player.height / 2);
+    const bounceAngle = normalizedRelativeIntersectY * (Math.PI / 4);
 
-    if (x < 0) {
-      game.score.addRight();
-      game.nextRound();
-    } else if (x + this.diameter > game.width) {
-      game.score.addLeft();
-      game.nextRound();
-      return;
+    if (player.position === 'right') {
+      this.velocityX = -Math.cos(bounceAngle) * this.speed;
+      this.velocityY = -Math.sin(bounceAngle) * this.speed;
+    } else {
+      this.velocityX = Math.cos(bounceAngle) * this.speed;
+      this.velocityY = -Math.sin(bounceAngle) * this.speed;
     }
+  }
+
+  detectPlayerColision(player: Player) {
+    const playerLeft = player.x;
+    const playerRight = player.x + player.width;
+    const playerTop = player.y;
+    const playerBottom = player.y + player.height;
 
     if (
-      x < game.players.left.x + game.players.left.width &&
-      y + this.diameter > game.players.left.y &&
-      y < game.players.left.y + game.players.left.height
+      this.x - this.diameter / 2 < playerRight &&
+      this.x + this.diameter / 2 > playerLeft &&
+      this.y - this.diameter / 2 < playerBottom &&
+      this.y + this.diameter / 2 > playerTop
     ) {
-      x = game.players.left.x + game.players.left.width;
-      this.velocityX = -this.velocityX;
       this.render = true;
-    } else if (
-      x + this.diameter > game.players.right.x &&
-      y + this.diameter > game.players.right.y &&
-      y < game.players.right.y + game.players.right.height
-    ) {
-      x = game.players.right.x - this.diameter;
-      this.velocityX = -this.velocityX;
+      return true;
+    }
+
+    return false;
+  }
+
+  handleWallCollision(game: Game) {
+    if (this.y - this.diameter / 2 <= 0 || this.y + this.diameter / 2 >= game.height) {
+      this.velocityY = -this.velocityY;
       this.render = true;
     }
 
-    //this.x += this.velocityX * delta;
-    //this.y += this.velocityY * delta;
+    if (this.x - this.diameter / 2 <= 0) {
+      game.score.addRight();
+      game.nextRound();
+    } else if (this.x + this.diameter / 2 >= game.width) {
+      game.score.addLeft();
+      game.nextRound();
+    }
+  }
+
+  update(game: Game, delta: number) {
+    this.x += this.velocityX * delta;
+    this.y += this.velocityY * delta;
+
+    for (const player of Object.values(game.players)) {
+      if (this.detectPlayerColision(player))
+        this.handlePlayerCollision(player);
+    }
+
+    this.handleWallCollision(game);
   }
 
   resetRender() {

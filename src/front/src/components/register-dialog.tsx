@@ -51,6 +51,22 @@ const RegisterDialog = ({ variant }: Props) => {
       setError("Passwords do not match");
       return;
       }
+      if(firstname.length < 1 || firstname.length > 15 || !firstname.match(/^[a-zA-Z]+$/)){
+        setError("Firstname must be between 1 and 15 characters and alphabetical only.");
+        return;
+      }
+      if(lastname.length < 1 || lastname.length > 15 || !lastname.match(/^[a-zA-Z]+$/)){
+        setError("Firstname must be between 1 and 15 characters and alphabetical only.");
+        return;
+      }
+      if (username.length < 4 || username.length > 10 || !username.match(/[a-z]/) || !username.match(/[A-Z]/) || !username.match(/[0-9]/) || !username.match(/[^a-zA-Z0-9]/)){
+        setError("Username must be between 4 and 10 alpha-numerical characters.");
+        return;
+      }
+      if (password.length < 6 || password.length > 20 || !password.match(/[a-z]/) || !password.match(/[A-Z]/) || !password.match(/[0-9]/) || !password.match(/[^a-zA-Z0-9]/) || !password.match(/[@#$]/)){
+        setError("Password must be beween 6 and 20characters, alpha-numerical or @, # and $.");
+        return;
+      }
       try {
         apolloClient.mutate({
           mutation: gql`

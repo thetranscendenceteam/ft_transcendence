@@ -8,6 +8,7 @@ import { gql } from '@apollo/client';
 import { UserProfileCard, MatchHistoryCard } from './profile';
 import { UserProfileCardProps, MatchHistory } from './profile';
 import { UserContext } from './userProvider';
+import Loading from './ui/loading';
 
 interface UserData {
   id: string;
@@ -346,9 +347,7 @@ const UserComponent = (props: {username: string}) => {
     );
   }
   return (
-    <div className={styles.container}>
-      Loading...
-    </div>
+    <Loading />
   );
 };
 

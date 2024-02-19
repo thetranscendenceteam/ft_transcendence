@@ -115,9 +115,6 @@ const Options = forwardRef<HTMLDivElement, Props>(({ convType, toggleMenu, activ
   }
 
   const sendGameInvite = async (user: User, target: Chat, chatId: string) => {
-    console.log("🚀 ~ sendGameInvite ~ chatId:", chatId)
-    console.log("🚀 ~ sendGameInvite ~ targetId:", target.targetId)
-    console.log("🚀 ~ sendGameInvite ~ userId:", user.id)
     try {
       const { data } = await apolloClient.mutate({
         mutation: gql`

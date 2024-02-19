@@ -43,6 +43,7 @@ const GET_COMMENTS =  gql`
       message
       username
       avatar
+      link
     }
   }
 `;
@@ -54,6 +55,7 @@ const COMMENTS_SUBSCRIPTION = gql`
       message
       username
       avatar
+      link
     }
   }
 `;

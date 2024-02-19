@@ -94,12 +94,12 @@ export class MatchResolver {
 	//     return this.matchService.findFinishedMatchesForUser(userId);
 	// }
 
-	// @Mutation(returns => Match)
-	// createMatch(
-	//     @Args('createMatchInput') input: CreateMatchInput
-	// ): Promise<Match> {
-	//     return this.matchService.createMatch(input);
-	// }
+  @Mutation(returns => Match)
+  createMatch(
+    @Args('createMatchInput') input: CreateMatchInput,
+  ): Promise<Match> {
+    return this.matchService.createMatch(input);
+  }
 
 	// @Mutation(returns => Match)
 	// setMatchAsStarted(
@@ -129,12 +129,12 @@ export class MatchResolver {
 			return this.matchService.findUsersInMatch(matchId);
 		}
 
-		// @Mutation(returns => Match)
-		// addUserInMatch(
-		//     @Args('addUserInMatch') input: AddUserInMatch
-		// ): Promise<Match> {
-		//     return this.matchService.addUserInMatch(input);
-		// }
+  @Mutation(returns => Match)
+  addUserInMatch(
+    @Args('addUserInMatch') input: AddUserInMatch,
+  ): Promise<Match> {
+    return this.matchService.addUserInMatch(input);
+  }
 
 		@Query(returns => SettingsOfMatch)
 		getSettingsOfMatch(

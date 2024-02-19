@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import React from 'react';
+import { Button } from '../ui/button';
 
 type Entity = {
   id: string;
@@ -15,6 +17,7 @@ type Props = {
 }
 
 const Message: React.FC<Props> = ({ message, isMine }) => {
+  console.log("🚀 ~ message:", message)
   const messageClass = isMine === message.username ? "flex py-1 w-full justify-end" : "flex py-1 w-full";
 
   return (
@@ -25,9 +28,15 @@ const Message: React.FC<Props> = ({ message, isMine }) => {
           <span className="text-sm font-semibold text-white">{message.username}</span>
           <span className="text-sm font-normal text-gray-200">{message.timestamp}</span>
         </div>
-        <p className="break-words max-w-sm text-sm font-normal py-2.5 text-white">{message.message}</p>
-        {message.link && (
-          <a href={message.link} >Play a Game</a>
+        {message.link ? (
+          <Link href={message.link} legacyBehavior passHref>
+            <Button variant="gradiant" className="ml-4 mt-3">
+              Game Invite
+            </Button>
+          </Link>
+        ) :
+        (
+          <p className="break-words max-w-sm text-sm font-normal py-2.5 text-white">{message.message}</p>
         )}
       </div>
     </div>

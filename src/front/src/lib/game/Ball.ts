@@ -1,8 +1,9 @@
 import GameEngine from "./GameEngine";
+import { Player } from "./Player";
 
 enum Difficulty {
-  easy = 170,
-  normal = 280,
+  easy = 250,
+  normal = 320,
   hard = 390,
 }
 
@@ -28,63 +29,72 @@ class Ball {
     this.x = (game.width - this.diameter) / 2;
     this.y = (game.height - this.diameter) / 2;
     this.speed = game.difficulty === "easy" ? Difficulty.easy : game.difficulty === "normal" ? Difficulty.normal : Difficulty.hard;
-    this.velocityX = this.speed * Math.cos(Math.PI / 4);
-    this.velocityY = this.speed * Math.sin(Math.PI / 4);
+    this.speed *= game.factor;
+    let angle = Math.random() * Math.PI * 2;
+    while (Math.PI * 11/6 < angle || angle < Math.PI * 1/6 || (Math.PI * 7/6 > angle && angle > Math.PI * 5/6)) {
+      angle = Math.random() * Math.PI * 2;
+    }
+    this.velocityX = this.speed * Math.sin(angle);
+    this.velocityY = this.speed * Math.cos(angle);
+  }
+  
+  handlePlayerCollision(player: Player) {
+    const relativeIntersectY = -(this.y + (this.diameter / 2) - (player.y + player.height / 2));
+    const normalizedRelativeIntersectY = relativeIntersectY / (player.height / 2);
+    const bounceAngle = normalizedRelativeIntersectY * (Math.PI / 4);
+
+    if (player.position === "right") {
+      this.velocityX = -Math.cos(bounceAngle) * this.speed;
+      this.velocityY = -Math.sin(bounceAngle) * this.speed;
+    } else {
+      this.velocityX = Math.cos(bounceAngle) * this.speed;
+      this.velocityY = -Math.sin(bounceAngle) * this.speed;
+    }
   }
 
-  update(game: GameEngine, delta: number) {
-    let x = this.x += this.velocityX * delta;
-    let y = this.y += this.velocityY * delta;
-    if (y < 0) {
-      y = 0;
-      this.velocityY = -this.velocityY;
-    } else if (y + this.diameter > game.height) {
-      y = game.height - this.diameter;
-      this.velocityY = -this.velocityY;
+  detectPlayerColision(player: Player) {
+    let playerLeft = player.x;
+    let playerRight = player.x + player.width;
+    let playerTop = player.y;
+    let playerBottom = player.y + player.height;
+
+    if (this.x - this.diameter / 2 < playerRight &&
+        this.x + this.diameter / 2 > playerLeft &&
+        this.y - this.diameter / 2 < playerBottom &&
+        this.y + this.diameter / 2 > playerTop) {
+        return true;
     }
 
-    for (const player of Object.values(game.players)) {
-      if (x + this.diameter > player.x &&
-        x < player.x + player.width &&
-        y + this.diameter > player.y &&
-        y < player.y + player.height) {
-        if (this.velocityX < 0) {
-          x = player.x + player.width;
-        } else {
-          x = player.x - this.diameter;
-        }
-        this.velocityX = -this.velocityX;
-      }
+    return false;
+  }
+  
+  handleWallCollision(game: GameEngine) {
+    if (this.y - this.diameter / 2 <= 0 || this.y + this.diameter / 2 >= game.height) {
+      this.velocityY = -this.velocityY;
     }
-    
-    // Check for player collision in Y axis
-    if (x < game.players.left.x + game.players.left.width &&
-      y + this.diameter > game.players.left.y &&
-      y < game.players.left.y + game.players.left.height) {
-      x = game.players.left.x + game.players.left.width;
-      this.velocityX = -this.velocityX;
-    } else if (x + this.diameter > game.players.right.x &&
-      y + this.diameter > game.players.right.y &&
-      y < game.players.right.y + game.players.right.height) {
-      x = game.players.right.x - this.diameter;
-      this.velocityX = -this.velocityX;
-    }
-
 
     if (! game.isLocal)
       return;
 
-    if (x < 0) {
+    if (this.x - this.diameter / 2 <= 0) {
       game.score.addRight();
       game.nextRound();
-    } else if (x + this.diameter > game.width) {
+    } else if (this.x + this.diameter / 2 >= game.width) {
       game.score.addLeft();
       game.nextRound();
-      return;
+    }
+  }
+
+  update(game: GameEngine, delta: number) {
+    this.x += this.velocityX * delta;
+    this.y += this.velocityY * delta;
+
+    for (const player of Object.values(game.players)) {
+      if (this.detectPlayerColision(player))
+        this.handlePlayerCollision(player);
     }
 
-    //this.x += this.velocityX * delta;
-    //this.y += this.velocityY * delta;
+    this.handleWallCollision(game);
   }
 
   draw(ctx: CanvasRenderingContext2D) {

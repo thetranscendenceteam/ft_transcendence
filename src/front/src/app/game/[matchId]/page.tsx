@@ -1,6 +1,6 @@
 "use client";
 import { Game } from '@/components/game';
-import { useQuery, gql } from '@apollo/client';
+import { gql } from '@apollo/client';
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '@/components/userProvider';
 import apolloClient from '@/components/apolloclient';
@@ -93,7 +93,7 @@ function Page({ params }: { params: { matchId: string } }) {
   }, [game]);
 
   if (game && match && user) {
-    return <Game matchId={match} userId={user.id} watch={watch} reset={setGame} />;
+    return <Game matchId={match} gameParams={null} userId={user.id} watch={watch} reset={setGame} />;
   }
   else {
     return <div>Loading...</div>;

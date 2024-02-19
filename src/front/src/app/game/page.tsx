@@ -29,8 +29,6 @@ const checkUserGame = async (setError: Function, setMatch: Function, userId: Str
     if (data && data.isUserInMatch) {
       setMatch(data.isUserInMatch)
     }
-    else
-      console.log("no match found");
 
     return;
   } catch (error) {
@@ -151,12 +149,6 @@ function Page() {
   }, [user, match]);
 
   useEffect(() => {
-    if (error) {
-      console.log("error: ", error);
-    }
-  }, [error]);
-
-  useEffect(() => {
     if (game)
       return;
     setGame(false);
@@ -165,7 +157,7 @@ function Page() {
   }, [game]);
   
   if (error) {
-    return <div>{error}</div>;
+    router.push('/');
   }
   else if (game && match && match != 'local' && user) {
     router.push(`/game/${match}`);

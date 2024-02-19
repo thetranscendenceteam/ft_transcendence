@@ -33,7 +33,6 @@ export class AvatarController {
       @Res() res: Response,
       @Param('imgname') img: string,
       ){
-        console.log("🚀 ~ AvatarController ~ getAvatar ~ img", img)
         res.sendFile((`/app/uploads/${img}`));
       }
   

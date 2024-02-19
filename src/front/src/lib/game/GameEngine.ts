@@ -127,6 +127,13 @@ class GameEngine {
     this.ws = ws;
   }
 
+  closeWs() {
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+  }
+
   handleMessage(msg: any) {
     if (msg.players) {
       if (msg.players.left)
@@ -203,6 +210,11 @@ class GameEngine {
     this.state = "paused";
   };
 
+  stop() {
+    this.state = "paused";
+    this.isLoop = false;
+  }
+
   resume() {
     this.state = "running";
   };
@@ -245,13 +257,13 @@ class GameEngine {
       this.isLoop = false;
     }
     this.drawText(this.toPrint);
-    if (this.state === "starting" || this.state === "waiting" || this.state === "paused")
+    if (this.state === "waiting")
       return ;
     this.score.draw(ctx, this);
-    if (this.state === "end")
-      return ;
     this.players.left.draw(ctx);
     this.players.right.draw(ctx);
+    if (this.state === "end")
+      return ;
     this.ball.draw(ctx);
   };
 
@@ -261,9 +273,9 @@ class GameEngine {
       console.log("canvas context not found");
       return ;
     }
-    let fontSize = 60 * this.factor;
+    let fontSize = 48 * this.factor;
     let x = this.width / 2;
-    let y = this.height / 2;
+    let y = (this.height / 2) + 50 * this.factor;
 
     ctx.font = `${fontSize}px Monospace`;
     ctx.fillStyle = "white";

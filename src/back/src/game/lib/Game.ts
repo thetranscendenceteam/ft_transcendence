@@ -213,7 +213,6 @@ class Game {
 
   bindClientToSpectator(client: Client) {
     this.spectators.push(client);
-
   }
 
 
@@ -226,7 +225,7 @@ class Game {
       this.players.right.render = true;
     }
     this.full = false;
-    if (this.state === 'running')
+    if (this.state === 'running' || this.state === 'starting' || this.state === 'paused')
       this.pause();
     this.updateText();
     this.sendGameState();
@@ -286,8 +285,10 @@ class Game {
 
   startingSequence(): string {
     const delta = (Date.now() - this.startTimestamp) / 1000;
-    if (delta < 0.5)
+    if (delta < 0.5) {
+      this.renderAll();
       return 'Ready ?';
+    }
     else if (delta < 1)
       return '3';
     else if (delta < 1.5)

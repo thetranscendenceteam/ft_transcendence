@@ -3,15 +3,29 @@ version: "3.8"
 services:
   redis:
     image: redis:alpine
+    restart: unless-stopped
     networks:
-      - back
+      - db
+    healthcheck:
+      test: redis-cli ping || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
     #ports:
     #  - 6379:6379
 
   postgres:
     image: postgres:15.4-alpine
-    restart: on-failure
+    user: postgres
+    restart: unless-stopped
     env_file: .env-postgres
+    healthcheck:
+      test: pg_isready || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
     networks:
       - db
     volumes:
@@ -24,10 +38,19 @@ services:
       dockerfile: images/front/Dockerfile
       args:
         APP_ENV: developement
-    restart: on-failure
+    restart: unless-stopped
     #env_file: .env-front
+    healthcheck:
+      test: curl -f -s http://127.0.0.1:3000/ > /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
     environment:
       - APP_ENV=developement
+    depends_on:
+      back:
+        condition: service_started
     networks:
       - back
     volumes:
@@ -42,12 +65,21 @@ services:
       dockerfile: images/back/Dockerfile
       args:
         APP_ENV: developement
-    restart: on-failure
+    restart: unless-stopped
     #env_file: .env-back
+    healthcheck:
+      test: curl -f -s http://127.0.0.1:3000/health > /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
     environment:
       - APP_ENV=developement
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     platform: linux/amd64
     networks:
       - db
@@ -64,7 +96,8 @@ services:
     environment:
       - ADMINER_DEFAULT_SERVER=postgres
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
       - 8081:8080
     networks:
@@ -75,10 +108,12 @@ services:
     build:
       context: ..
       dockerfile: images/nginx/Dockerfile
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
-      - back
-      - front
+      back:
+        condition: service_started
+      front:
+        condition: service_started
     ports:
       - 8080:8080
       - 8443:8443

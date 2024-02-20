@@ -3,6 +3,8 @@ FROM --platform=linux/amd64 node:20.11.0-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache curl
+
 ADD src/back/package.json /app/
 RUN npm install && npm cache clean --force
 

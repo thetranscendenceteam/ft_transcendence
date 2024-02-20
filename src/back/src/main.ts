@@ -14,7 +14,7 @@ async function bootstrap() {
     }),
   ); // Use the cors middleware
   app.useWebSocketAdapter(new WsAdapter(app)); // Use the WsAdapter
-	app.use(cookieParser()); //Use cookie parser
+  app.use(cookieParser()); //Use cookie parser
   await app.listen(3000);
 }
 bootstrap();

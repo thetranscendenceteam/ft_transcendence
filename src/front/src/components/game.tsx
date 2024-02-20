@@ -49,22 +49,16 @@ export const Game = (
   }, [gameEngine, watch]);
 
   return (
-    <div className="bg-slate-300 h-full w-full bg-blur-sm bg-opacity-50 p-3 rounded-lg">
-    {(user && user.id) ? (
-      <div className="h-full flex items-center justify-center rounded-lg backdrop-blur">
-        <canvas ref={gameRef} className="bg-gray-950"></canvas>
-        {menu && !watch && reset &&
-          <div className="absolute left-0 w-full h-full flex items-center justify-center">
-            <div className="bg-gray-800 mt-[30%] rounded-lg">
-              <Button className='m-4' onClick={() => reset(false)}>New game</Button>
-              <Link href='/'><Button className='m-4'>Home</Button></Link>
-            </div>
+    <div className="h-full flex items-center justify-center rounded-lg backdrop-blur">
+      <canvas ref={gameRef} className="bg-gray-950"></canvas>
+      {menu && !watch && reset &&
+        <div className="absolute left-0 w-full h-full flex items-center justify-center">
+          <div className="bg-gray-800 mt-[30%] rounded-lg">
+            <Button className='m-4' onClick={() => reset(false)}>New game</Button>
+            <Link href='/'><Button className='m-4'>Home</Button></Link>
           </div>
-        }
-      </div>
-    ) : (
-      <div className="h-full flex items-center justify-center text-4xl">You need to be logged in to play</div>
-    )}
-  </div>
+        </div>
+      }
+    </div>
   )
 }

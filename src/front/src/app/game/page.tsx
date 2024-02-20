@@ -117,10 +117,9 @@ function Page() {
           for (let i = 0; i < matchList.length; i++) {
             queryUsersInMatch(matchList[i].id).then((result) => {
               matchListWithUser[i].users = result.data.findUsersInMatch;
+              setOngoingMatches(matchListWithUser);
             });
           }
-          setOngoingMatches(matchListWithUser);
-          ongoingMatches = matchListWithUser;
         }
       });
     }

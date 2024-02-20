@@ -136,7 +136,7 @@ class Game {
 
   resume() {
     // wait for websocket reconnection
-    if (this.lastState === 'running' || this.lastState === 'starting') {
+    if (this.lastState === 'running' || this.lastState === 'starting' || this.lastState === 'paused') {
       this.startTimestamp = Date.now();
       this.state = 'starting';
     } else
@@ -181,7 +181,7 @@ class Game {
       if (!player.client && player.userId === userId) {
         player.setClient(client);
         playerFound = true;
-        console.log('userId' + userId + ' already binded to ' + player.position);
+        console.log('userId ' + userId + ' already binded to ' + player.position);
         break;
       }
     }
@@ -190,7 +190,7 @@ class Game {
         if (!player.client && player.userId === '') {
           player.setClient(client);
           player.setUserId(userId);
-          console.log('userId' + userId + ' binded to ' + player.position);
+          console.log('userId ' + userId + ' binded to ' + player.position);
           break;
         }
       }
@@ -266,8 +266,10 @@ class Game {
       text = 'Waiting for players';
     if (this.state === 'starting')
       text = this.startingSequence();
-    if (this.state === 'paused')
+    if (this.state === 'paused') {
+      this.renderAll();
       text = 'Player disconnected\nWaiting for reconnection...';
+    }
     for (const player of Object.values(this.players)) {
       if (this.state === 'end')
         player.setToPrint(this.won(player));

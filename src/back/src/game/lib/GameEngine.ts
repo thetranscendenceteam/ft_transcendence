@@ -48,8 +48,6 @@ export class GameEngine {
       await this.matchService.findUngoingMatchesForUser(init.userId);
     const unstartedMatches: Match[] =
       await this.matchService.findUnstartedMatchesForUser(init.userId);
-    console.log('ongoingMatches', ongoingMatches);
-    console.log('unstartedMatches', unstartedMatches);
     if ( // If the match is ongoing, find the game and bind the client to the player.
       ongoingMatches &&
       (match = ongoingMatches.find((match) => match.id === init.matchId))

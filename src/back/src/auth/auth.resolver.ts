@@ -93,7 +93,6 @@ export class AuthResolver {
   }
 
   @Mutation(returns => Boolean)
-	@UseGuards(GqlAuthGuard)
   async resetPassword(
 		@Context('req') req: RequestWithUser,
 		@Args('user') user:string,

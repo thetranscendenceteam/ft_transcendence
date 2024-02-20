@@ -187,7 +187,11 @@ function Page() {
     )
   }
   else {
-    return <div>Not logged in</div>;
+    return (
+      <div className="bg-slate-300 h-full w-full bg-blur-sm bg-opacity-50 p-3 rounded-lg">
+        <div className="h-full flex items-center justify-center text-4xl">You need to be logged in to play</div>
+      </div>
+    )
   }
 }
 

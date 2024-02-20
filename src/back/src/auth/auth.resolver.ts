@@ -94,18 +94,15 @@ export class AuthResolver {
 
   @Mutation(returns => Boolean)
   async resetPassword(
-		@Context('req') req: RequestWithUser,
 		@Args('user') user:string,
 		@Args('code') code: string,
 		@Args('password') password: string
 	): Promise<boolean> {
     try {
-			const user = req.user;
-			if (user.username !== user) throw new Error("Unauthorized");
       await this.userService.resetPassword(user, code, password);
       return true;
     } catch (error) {
-      throw new Error('Failed to send password reset email');
+      throw new Error('Failed to change password');
     }
   }
 }

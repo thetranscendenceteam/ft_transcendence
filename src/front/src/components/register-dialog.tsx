@@ -16,14 +16,16 @@ import apolloClient from "./apolloclient";
 import { gql } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
+import Image from "next/image";
 
 export type ButtonVariant = "link" | "ghost" | "transparent" | "black" | "default" | "destructive" | "outline" | "secondary";
 
 type Props = {
   variant: ButtonVariant;
+  className?: string;
 }
 
-const RegisterDialog = ({ variant }: Props) => {
+const RegisterDialog = ({ variant, className }: Props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
@@ -33,6 +35,15 @@ const RegisterDialog = ({ variant }: Props) => {
   const [error, setError] = useState("");
   const [opened, setOpened] = useState(true);
   const router = useRouter();
+
+  const NEXT_PUBLIC_OAUTH_CLIENT_ID = process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID;
+  const NEXT_PUBLIC_OAUTH_URL = process.env.NEXT_PUBLIC_OAUTH_URL;
+  const NEXT_PUBLIC_OAUTH_REDIRECT = process.env.NEXT_PUBLIC_OAUTH_REDIRECT;
+  if (!NEXT_PUBLIC_OAUTH_CLIENT_ID || !NEXT_PUBLIC_OAUTH_URL || !NEXT_PUBLIC_OAUTH_REDIRECT) {
+    throw new Error("Missing environment variables for OAuth");
+  }
+  // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
+  const ft_auth = NEXT_PUBLIC_OAUTH_URL + '?client_id=' + NEXT_PUBLIC_OAUTH_CLIENT_ID + '&redirect_uri=' + NEXT_PUBLIC_OAUTH_REDIRECT + '&response_type=code';
 
   const handleRegister = async (
     username: string,
@@ -98,7 +109,7 @@ const RegisterDialog = ({ variant }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={variant} onClick={() => setOpened(true)}>Register</Button>
+        <Button variant={variant} className={className} onClick={() => setOpened(true)}>Register</Button>
       </DialogTrigger>
       { opened &&
         <DialogContent className="sm:max-w-[425px] max-w-72">
@@ -180,8 +191,17 @@ const RegisterDialog = ({ variant }: Props) => {
           </div>
           {error && <div className="text-red-500">{error}</div>}
           <DialogFooter>
-          <Button type="submit" onClick={() => handleRegister(username, password, password2, firstname, lastname, mail)}>Register</Button>
+            <Button type="submit" onClick={() => handleRegister(username, password, password2, firstname, lastname, mail)}>Register</Button>
           </DialogFooter>
+          <div className="flex items-center">
+            <hr className="flex-1"/>
+            <p className="m-2">or</p>
+            <hr className="flex-1"/>
+          </div>
+          <Button className="flex align-middle" onClick={() => (window.location.href = ft_auth as string)}>
+            Register with
+            <Image src="/42_Logo.svg" height={30} width={30} alt="42 logo" className="ml-2"/>
+          </Button>
         </DialogContent>
       }
     </Dialog>

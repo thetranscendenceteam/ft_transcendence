@@ -22,9 +22,10 @@ import { ButtonVariant } from './register-dialog';
 
 type Props = {
   variant: ButtonVariant;
+  className?: string;
 }
 
-const LoginDialog = ({ variant }: Props) => {
+const LoginDialog = ({ variant, className }: Props) => {
   const {updateUser} = React.useContext(UserContext);
   const [error, setError] = useState("");
   const [cookies, setCookie] = useCookies(['jwt']);
@@ -91,7 +92,7 @@ const LoginDialog = ({ variant }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={variant}>Login</Button>
+        <Button variant={variant} className={className}>Login</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] max-w-72">
         <DialogHeader>
@@ -137,7 +138,7 @@ const LoginDialog = ({ variant }: Props) => {
           )}
         </div>
         <DialogFooter>
-          <Button className={styles.button} type="submit" onClick={login}>Login</Button>
+          <Button type="submit" onClick={login}>Login</Button>
         </DialogFooter>
         <div>
           <p className="text-center" style={{fontSize: "10px", color: "darkgrey"}}><a href="/resetPassword">Forgot your password? Reset it here</a></p>

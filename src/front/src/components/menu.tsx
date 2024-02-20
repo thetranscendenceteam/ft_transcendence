@@ -141,9 +141,9 @@ const Menu: React.FC = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
           ) : (
-            <div className="flex items-center">
-              <RegisterDialog variant={variant}/>
-              <LoginDialog variant={variant}/>
+            <div className="flex items-center justify-between">
+              <RegisterDialog variant={variant} className='ml-4 mr-2'/>
+              <LoginDialog variant={variant} className='ml-2 mr-2'/>
             </div>
           )}
         </div>

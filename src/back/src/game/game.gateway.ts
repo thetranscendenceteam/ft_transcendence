@@ -10,35 +10,39 @@ import { GameEngine } from './lib/GameEngine';
 import { Injectable } from '@nestjs/common';
 import { MatchService } from 'src/match/match.service';
 import { AuthService } from 'src/auth/auth.service';
-import { UserService } from 'src/user/user.service';
+import { Response } from 'express';
+import { RequestWithUser } from 'src/user/dto/requestwithuser.interface';
 
 @Injectable()
 @NestWebSocketGateway(3001, { path: '/ws/game' })
-export class GameGateway implements OnGatewayConnection {
+export class GameGateway {
   @NestWebSocketServer() server: WebSocketServer;
 
   private gameEngine: GameEngine;
   private matchService: MatchService;
-  private userService: UserService;
   private authService: AuthService;
 
-  constructor(matchService: MatchService, userService: UserService, authService: AuthService) {
+  constructor(matchService: MatchService, authService: AuthService) {
     this.matchService = matchService;
-    this.userService = userService;
     this.authService = authService;
     this.gameEngine = new GameEngine(this.matchService);
   }
 
-  handleConnection(client: any, req: any, res: any) {
+  handleConnection(client: any, req: RequestWithUser, res: Response) {
     console.log('Client connected');
-    const cookies: string[] = req.headers.cookie.split('; ');
+    const cookies: string[] = req.headers.cookie?.split('; ') || [];
     const jwtName = 'jwt';
-    let token = cookies.find((cookie: string) => cookie.startsWith(jwtName))?.split('=')[1];
+    let token = cookies
+      .find((cookie: string) => cookie.startsWith(jwtName))
+      ?.split('=')[1];
+
     if (!token) {
+      res.cookie('jwt', '', { maxAge: 0 });
+      console.log('Unauthorized, no token found.');
       throw new Error('Unauthorized, no token found.');
     }
-    let decodedToken;
 
+    let decodedToken;
     token = decodeURI(token);
     token = token.replace(/%3A/g, ':');
     try {
@@ -54,7 +58,8 @@ export class GameGateway implements OnGatewayConnection {
         client.user = user;
       }
     } catch (error) {
-      res.headers.set('Set-Cookie', 'jwt=; HttpOnly; Path=/; Max-Age=0');
+      //res.cookie('jwt', '', { maxAge: 0 });
+      console.log('Error:', error);
       throw new Error(error);
     }
   }

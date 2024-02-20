@@ -48,11 +48,14 @@ export class GameEngine {
       await this.matchService.findUngoingMatchesForUser(init.userId);
     const unstartedMatches: Match[] =
       await this.matchService.findUnstartedMatchesForUser(init.userId);
+    console.log('ongoingMatches', ongoingMatches);
+    console.log('unstartedMatches', unstartedMatches);
     if ( // If the match is ongoing, find the game and bind the client to the player.
       ongoingMatches &&
-      ongoingMatches.find((match) => match.id === init.matchId) &&
-      (game = this.games.find((game) => game.matchId === init.matchId))
+      (match = ongoingMatches.find((match) => match.id === init.matchId))
     ) {
+      if (!(game = this.games.find((game) => game.matchId === init.matchId)))
+        game = this.createGame(match);
       console.log('ongoing match found');
       const client = new Client(ws);
       game.bindClientToPlayer(client, init.userId);
@@ -65,8 +68,7 @@ export class GameEngine {
       const client = new Client(ws);
       game.bindClientToPlayer(client, init.userId);
     } else if (
-      (game = this.games.find((game) => game.matchId === init.matchId)) &&
-      init.userId === ''
+      (game = this.games.find((game) => game.matchId === init.matchId))
     ) {
       console.log('spectator found');
       const client = new Client(ws);

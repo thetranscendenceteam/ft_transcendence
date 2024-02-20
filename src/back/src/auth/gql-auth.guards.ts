@@ -1,10 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { Observable } from "rxjs";
-import { RequestWithUser } from "../user/dto/requestwithuser.interface";
-import { User } from "../user/dto/user.entity";
-import { UserService } from "../user/user.service";
-import { AuthService } from "./auth.service";
-import { GqlExecutionContext } from "@nestjs/graphql";
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { RequestWithUser } from '../user/dto/requestwithuser.interface';
+import { UserService } from '../user/user.service';
+import { AuthService } from './auth.service';
+import { GqlExecutionContext } from '@nestjs/graphql';
+import { Response } from 'express';
 
 @Injectable()
 export class GqlAuthGuard implements CanActivate {
@@ -34,7 +33,12 @@ export class GqlAuthGuard implements CanActivate {
         req.user = user;
       }
     } catch (error) {
-      res.headers.set('Set-Cookie', 'jwt=; HttpOnly; Path=/; Max-Age=0');
+      res.cookie(jwtName, '', {
+        expires: new Date(),
+        httpOnly: true,
+        secure: true,
+      });
+      //res.redirect('/login');
       throw new Error(error);
     }
   }

@@ -119,7 +119,7 @@ export const Board = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const start = (currentPage - 1) * 10;
   const end = start + 10;
-  const playersToShow = data.slice(start, end);
+  const playersToShow = data ? data.slice(start, end) : [].slice(start, end);
 
   const colors = ['bg-[#8c1aff]', 'bg-[#8000ff]', 'bg-[#7300e6]', 'bg-[#6600cc]', 'bg-[#5900b3]'];
 

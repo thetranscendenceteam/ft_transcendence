@@ -31,7 +31,7 @@ class Player {
   }
 
   update(game: GameEngine, dt: number) {
-    if (! this.gamePad)
+    if (! this.gamePad || game.role === "spectator")
       return ;
     const pd = this.gamePad;
     if (pd.prevState != pd.state)

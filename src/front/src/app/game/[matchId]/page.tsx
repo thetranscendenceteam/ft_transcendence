@@ -66,7 +66,7 @@ function Page({ params }: { params: { matchId: string } }) {
               result &&
               (m = result.data.findUngoingMatches.find((m: any) => m.id === params.matchId))
             ) {
-              setMatch(m);
+              setMatch(m.id);
               return;
             } else {
               router.push('/game');

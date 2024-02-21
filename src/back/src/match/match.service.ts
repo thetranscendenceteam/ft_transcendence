@@ -116,7 +116,8 @@ export class MatchService {
 				},
 			});
 			if (findMatch) {
-				this.startMatch(findMatch.id, input.userId);
+				//this.startMatch(findMatch.id, input.userId);
+				this.addUserInMatch({ matchId: findMatch.id, userId: input.userId });
 				return findMatch.id;
 			}
 			// Create Match if not match found
@@ -574,6 +575,22 @@ export class MatchService {
 		}
 		catch (e) {
 			console.log("Error on addXpPostMatch");
+			throw e;
+		}
+	}
+
+	async deleteMatch(matchId: string): Promise<boolean> {
+		try {
+			const res = await this.prisma.matchs.delete({
+				where: {
+					id: matchId,
+				}
+			});
+			if (!res) return false;
+			return true;
+		}
+		catch (e) {
+			console.log("Error on deleteMatch");
 			throw e;
 		}
 	}

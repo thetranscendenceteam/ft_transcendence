@@ -11,6 +11,7 @@ import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import styles from './style/twoFAFt.module.css';
+import Loading from './ui/loading';
 
 const fetchData = async (code: string | null) => {
   if (code) {
@@ -93,14 +94,17 @@ export const Callback = () => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
+      setModale(false);
       const fetchedData = await fetchData(code);
 
       if(fetchedData?.graphQLErrors) {
         setModale(true);
-        const userSplited = fetchedData?.graphQLErrors[0]?.message.split(" ");
-        const username = userSplited[userSplited.length - 1];
-        setUsername(username);
-        return fetchedData;
+        const userSplited = fetchedData.graphQLErrors[0].message.split(" ");
+        if (userSplited) {
+          const username = userSplited[userSplited.length - 1];
+          setUsername(username);
+        }
+        return;
       }
       setData(fetchedData);
     };
@@ -144,7 +148,7 @@ export const Callback = () => {
       )}
       {String(modale) === "false" && (
       <div>
-      {"Logging In..."}
+        <Loading />
       </div>
       )}
     </div>

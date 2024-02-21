@@ -10,7 +10,7 @@ async function bootstrap() {
   });
   app.use(
     cors({
-      origin: 'https://localhost:8443', // Allow requests from this origin
+      origin: 'https://' + process.env.DOMAIN_NAME + ':8443', // Allow requests from this origin
     }),
   ); // Use the cors middleware
   app.useWebSocketAdapter(new WsAdapter(app)); // Use the WsAdapter

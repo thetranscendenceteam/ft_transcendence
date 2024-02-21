@@ -109,6 +109,8 @@ services:
       context: ..
       dockerfile: images/nginx/Dockerfile
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       back:
         condition: service_started
@@ -127,7 +129,6 @@ volumes:
   front-data:
   back-data:
   nginx-ssl:
-
 
 networks:
   back:

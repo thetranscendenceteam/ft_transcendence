@@ -94,9 +94,14 @@ function Page({ params }: { params: { matchId: string } }) {
 
   if (game && match && user) {
     return <Game matchId={match} gameParams={null} userId={user.id} watch={watch} reset={setGame} />;
-  }
-  else {
+  } else if  (user) {
     return <Loading />;
+  } else {
+    return (
+      <div className="bg-slate-300 h-full w-full bg-blur-sm bg-opacity-50 p-3 rounded-lg">
+        <div className="h-full flex items-center justify-center text-4xl">You need to be logged in to play/watch</div>
+      </div>
+    );
   }
 }
 

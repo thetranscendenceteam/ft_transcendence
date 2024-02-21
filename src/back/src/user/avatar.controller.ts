@@ -57,7 +57,7 @@ export class AvatarController {
             password: null,
             firstName: null,
             lastName: null,
-            avatar: `https://localhost:8443/avatar/${file.filename}`, // TODO change to env var
+            avatar: 'https://' + process.env.DOMAIN_NAME + ':8443/avatar/${file.filename}', // TODO change to env var
             pseudo: null,
         }
         );

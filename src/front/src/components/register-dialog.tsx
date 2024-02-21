@@ -82,8 +82,12 @@ const RegisterDialog = ({ variant, className }: Props) => {
         setError("Invalid email format.");
         return;
       }
+      if (mail.includes('@student.42lausanne.ch')) { // Regex all 42 ?
+        setError("42 mail are not allowed.");
+        return;
+      }
       try {
-        apolloClient.mutate({
+        await apolloClient.mutate({
           mutation: gql`
             mutation standardRegister($standardRegisterInput: StandardRegisterInput!) {
               standardRegister(standardRegister: $standardRegisterInput)

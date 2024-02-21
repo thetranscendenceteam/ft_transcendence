@@ -15,36 +15,39 @@ import { UserService } from 'src/user/user.service';
 import { StandardRegisterInput } from './dto/standardRegister.input';
 import { StandardLoginInput } from './dto/standardLogin.input';
 
+type ftUser = {
+  id: string;
+  username: string;
+  realname: string;
+  email: string;
+  campus: any;
+  avatar_url: string;
+  twoFA: boolean;
+};
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService, private userService: UserService) { }
 
-  async ftLogin(inputCode: string): Promise<authUser | null> {
-    const FtInsertDB = async (userFtMe: any) => {
+  async ftLoginUpsert(userFtMe: any) {
+    try {
       const secret = speakeasy.generateSecret({
         name: 'Ft_transcendence_Pomy',
       });
       const userMe = await this.prisma.users.upsert({
         where: {
-          ftId: userFtMe.data.id,
+          mail: userFtMe.email,
         },
         update: {
-          ftId: userFtMe.data.id,
-          pseudo: userFtMe.data.login,
-          firstName: userFtMe.data.first_name,
-          lastName: userFtMe.data.last_name,
-          avatar: userFtMe.data.image.versions.small,
-          mail: userFtMe.data.email,
-          campus: userFtMe.data.campus[0].name,
+          campus: userFtMe.campus[0].name,
         },
         create: {
-          ftId: userFtMe.data.id,
-          pseudo: userFtMe.data.login,
-          firstName: userFtMe.data.first_name,
-          lastName: userFtMe.data.last_name,
-          avatar: userFtMe.data.image.versions.small,
-          mail: userFtMe.data.email,
-          campus: userFtMe.data.campus[0].name,
+          ftId: userFtMe.id,
+          pseudo: userFtMe.login,
+          firstName: userFtMe.first_name,
+          lastName: userFtMe.last_name,
+          avatar: userFtMe.image.versions.small,
+          mail: userFtMe.email,
+          campus: userFtMe.campus[0].name,
           twoFASecret: secret.base32,
           twoFAOtpAuthUrl: secret.otpauth_url,
         },
@@ -54,10 +57,27 @@ export class AuthService {
         username: userMe.pseudo,
         realname: userMe.firstName + ' ' + userMe.lastName,
         email: userMe.mail,
-        campus: userFtMe.data.campus[0].name,
+        campus: userFtMe.campus[0].name,
         avatar_url: userMe.avatar,
         twoFA: userMe.twoFA,
       };
+    } catch (error) {
+      return("Username already taken");
+    }
+  };
+
+  async ftLogin(inputCode: string): Promise<authUser | null> {
+    const FtInsertDB = async (userFtMe: any): Promise<ftUser | string> => {
+      try {
+        const user = await this.ftLoginUpsert(userFtMe);
+        if (user === "Username already taken") {
+          const user_ft = await this.ftLoginUpsert({...userFtMe.data, login: `${userFtMe.data.login}_ft`});
+          return user_ft;
+        }
+        return user;
+      } catch (error) {
+        throw new Error("ftLoginUpsert failed");
+      }
     };
 
     try {
@@ -67,7 +87,6 @@ export class AuthService {
       const OAUTH_TOKEN_URL = process.env.OAUTH_TOKEN_URL;
       const OAUTH_USER_URL = process.env.OAUTH_USER_URL;
       const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY;
-      // .env not working, using this temporary. do not commit id and secret ! replace by process.env.NEXT_PUBLIC_CLIENT_ID later
 
       if (!OAUTH_CLIENT_ID || !OAUTH_CLIENT_SECRET || !OAUTH_REDIRECT_URL || !OAUTH_TOKEN_URL || !OAUTH_USER_URL || !JWT_PRIVATE_KEY) {
         throw new Error('Missing env variables');
@@ -87,24 +106,26 @@ export class AuthService {
 
       const userTmp = await FtInsertDB(userFtMe);
 
-      const payload = {
-        id: userTmp.id,
-        username: userFtMe.data.login,
-      };
+      if (userTmp instanceof Object) {
+        const payload = {
+          id: userTmp.id,
+          username: userFtMe.data.login,
+        };
 
-      const secretKey = JWT_PRIVATE_KEY;
-      const options = {
-        expiresIn: '1h',
-      };
-      const ourJwt = jwt.sign(payload, secretKey, options);
+        const secretKey = JWT_PRIVATE_KEY;
+        const options = {
+          expiresIn: '1h',
+        };
+        const ourJwt = jwt.sign(payload, secretKey, options);
 
-      if ((await userTmp).twoFA) {
-        throw new Error(`2FA is enabled - ${(await userTmp).username}`); // dont ever modify this error
+        if ((await userTmp).twoFA) {
+          throw new Error(`2FA is enabled - ${(await userTmp).username}`); // dont ever modify this error
+        }
+        const resTmp = await userTmp;
+        return ({...resTmp, jwtToken: ourJwt});
       }
-      const resTmp = await userTmp;
-      return ({...resTmp, jwtToken: ourJwt});
+      return null;
     } catch (error) {
-      console.error("getJwt: ", error);
       return error;
     }
   }
@@ -164,6 +185,9 @@ export class AuthService {
 
   async classicRegister(input: StandardRegisterInput): Promise<boolean> {
     try {
+      if (input.mail.includes('@student.42lausanne.ch')) {
+        throw new Error("42 mail are not allowed");
+      }
       await this.userService.createClassicUser({
         mail: input.mail,
         password: input.password,
@@ -174,7 +198,7 @@ export class AuthService {
       });
       return true;
     } catch (error) {
-      console.log("Error on classicRegister from auth.service");
+      console.log("Error on classicRegister");
       throw error;
     }
   }

@@ -34,11 +34,12 @@ export class AuthResolver {
 
   @Mutation(returns => Boolean)
   async standardRegister(@Args('standardRegister') standardRegister: StandardRegisterInput): Promise<boolean> {
-    const result = await this.userService.classicRegister(standardRegister);
-    if (result === null) {
+    try {
+      const result = await this.userService.classicRegister(standardRegister);
+      return result;
+    } catch (error) {
       throw new Error('Error: Could not register user');
     }
-    return result;
   }
 
   @Mutation(returns => authUser, { nullable: true })

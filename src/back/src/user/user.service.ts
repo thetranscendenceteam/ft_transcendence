@@ -175,13 +175,13 @@ export class UserService {
 				...(editUserInput.avatar && { avatar: editUserInput.avatar }),
 				...(editUserInput.pseudo && { pseudo: editUserInput.pseudo }),
 			};
-			return this.prisma.users.update({
+			return await this.prisma.users.update({
 				where: { id: editUserInput.id },
 				data: userToUpdate
 			});
 		}
 		catch (e) {
-			console.log("Error on editUser query" + e);
+			console.log("Error on editUser query: " + e);
 			throw e;
 		}
 	}
@@ -222,7 +222,7 @@ export class UserService {
 			return null;
 		}
 		catch (e) {
-			console.log("Error on updateUser query" + e);
+			console.log("Error on updateUser query: " + e);
 			throw e;
 		}
 	}

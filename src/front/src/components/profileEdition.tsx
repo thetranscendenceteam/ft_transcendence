@@ -48,6 +48,7 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
   };
 
   const handleEdit = async () => {
+    setError("");
     if (formData.password && formData.password2 && formData.password !== formData.password2) {
       setError('Passwords do not match');
       return;
@@ -89,7 +90,8 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
           console.error('Error uploading the file:', error);
         });
       }
-      const { data } = await apolloClient.mutate({
+      try {
+        const { data } = await apolloClient.mutate({
         mutation: gql`
           mutation ($inputUser: EditUserInput!){
             editUser(editUserInput: $inputUser) {
@@ -104,13 +106,22 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
           inputUser: { id: userEdit.id, mail: formDataReady.email, password: formDataReady.password, pseudo: formDataReady.username },
         },
       });
-
       updateUser({...user, email: data.editUser.email, username: data.editUser.pseudo, avatar_url: data.editUser.avatar});
       router.push('/profile');
-      } catch (error) {
-        console.error('Error editing user:', error);
+    } catch (error: any) {
+      if (error.message && error.message.includes("Unique constraint failed on the fields: (`pseudo`)")) {
+        setError("Username already taken");
+        return;
+      }
+      if (error.message && error.message.includes("Unique constraint failed on the fields: (`mail`)")) {
+        setError("Email already taken");
+        return;
       }
     }
+    } catch (error) {
+      console.error('Error editing user:', error);
+    }
+  }
 
   return (
     <Card className={`${styles.card} ${styles.userProfileEditCard}`}>

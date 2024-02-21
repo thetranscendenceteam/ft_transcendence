@@ -99,10 +99,12 @@ export const Callback = () => {
 
       if(fetchedData?.graphQLErrors) {
         setModale(true);
-        const userSplited = fetchedData.graphQLErrors[0].message.split(" ");
-        if (userSplited) {
-          const username = userSplited[userSplited.length - 1];
-          setUsername(username);
+        if (fetchedData.graphQLErrors[0].message) {
+          const userSplited = fetchedData.graphQLErrors[0].message.split(" ");
+          if (userSplited) {
+            const username = userSplited[userSplited.length - 1];
+            setUsername(username);
+          }
         }
         return;
       }

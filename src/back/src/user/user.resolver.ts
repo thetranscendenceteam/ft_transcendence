@@ -64,8 +64,13 @@ export class UserResolver {
   ): Promise<User> {
     const user = req.user;
     if (user.id !== editUserInput.id) throw new Error('Unauthorized');
-    console.log("EditUser query for UserId : " + editUserInput);
-    return this.userService.editUser(editUserInput);
+    try {
+      console.log("EditUser query for UserId : " + editUserInput.pseudo);
+      const res = this.userService.editUser(editUserInput);
+      return res;
+    } catch (e) {
+      throw e;
+    }
   }
 
   @Mutation(returns => User)

@@ -69,7 +69,7 @@ export class AuthService {
   async ftLogin(inputCode: string): Promise<authUser | null> {
     const FtInsertDB = async (userFtMe: any): Promise<ftUser | string> => {
       try {
-        const user = await this.ftLoginUpsert(userFtMe);
+        const user = await this.ftLoginUpsert(userFtMe.data);
         if (user === "Username already taken") {
           const user_ft = await this.ftLoginUpsert({...userFtMe.data, login: `${userFtMe.data.login}_ft`});
           return user_ft;

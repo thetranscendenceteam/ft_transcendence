@@ -103,7 +103,7 @@ class GameEngine {
   initWs() {
     if (this.isLocal)
       return;
-    let ws = new WebSocket('wss://localhost:8443/ws/game');
+    let ws = new WebSocket('wss://' + process.env.NEXT_PUBLIC_DOMAIN_NAME + ':8443/ws/game');
     let game = this;
     ws.onopen = async function () {
       //console.log('WebSocket is ready');
@@ -379,7 +379,7 @@ class GameEngine {
       game.players.left.gamePad.state = 'stop';
   }
   handleKeyDown(e:any, game: GameEngine) {
-    console.log("handleKeyDown: " + e.keyCode);
+    //console.log("handleKeyDown: " + e.keyCode);
     if (this.role !== 'spectator' && (this.state === "waiting" || this.state === "paused") && e.keyCode === 27) {
       this.send({giveUp: true});
       this.setMenu(true);

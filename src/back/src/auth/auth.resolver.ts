@@ -15,11 +15,12 @@ export class AuthResolver {
 
   @Mutation(returns => authUser, { nullable: true })
   async authAsFt(@Args('code') code: string): Promise<authUser | null> {
-    const result = await this.userService.ftLogin(code);
-    if (result === null) {
-      throw new Error('Invalid code or null response');
+    try {
+      const result = await this.userService.ftLogin(code);
+      return result;
+    } catch (error) {
+      throw new Error(error);
     }
-    return result;
   }
 
   @Mutation(returns => authUser, { nullable: true })

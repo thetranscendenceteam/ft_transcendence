@@ -63,11 +63,11 @@ model Matchs {
 model Messages {
     id        String   @id @unique @default(uuid()) @db.VarChar(36)
     timestamp DateTime @default(now())
-		link			String?
+    link      String?
     message   String
     username  String   @db.VarChar(255)
     chatId    String   @db.VarChar(36)
-    Chat      Chats    @relation(fields: [chatId], references: [id])
+    Chat      Chats    @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
 
 model UsersInChats {
@@ -84,7 +84,7 @@ model UsersInChats {
 model UsersInBanLists {
     user       Users          @relation(fields: [userId], references: [id])
     userId     String         @db.VarChar(36)
-    chat       Chats          @relation(fields: [chatId], references: [id])
+    chat       Chats          @relation(fields: [chatId], references: [id], onDelete: Cascade)
     chatId     String         @db.VarChar(36)
     status     UserChatStatus
     lastChange DateTime       @default(now())
@@ -94,8 +94,8 @@ model UsersInBanLists {
 
 model UsersRelationships {
     id        String             @id @unique @default(uuid()) @db.VarChar(36)
-    firstId   String			 @db.VarChar(36)
-    secondId  String			 @db.VarChar(36)
+    firstId   String             @db.VarChar(36)
+    secondId  String             @db.VarChar(36)
     status    RelationshipStatus @default(unknown)
     createdAt DateTime           @default(now())
     updatedAt DateTime           @default(now())

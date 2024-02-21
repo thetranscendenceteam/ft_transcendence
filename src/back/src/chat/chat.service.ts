@@ -61,7 +61,7 @@ export class ChatService {
 		}
 	}
 
-	async updateChat(updateChatInput: UpdateChatInput, userId:string) {
+	async updateChat(updateChatInput: UpdateChatInput, userId: string) {
 		try {
 			const chat = this.prisma.chats.findUnique({
 				where: {
@@ -107,9 +107,9 @@ export class ChatService {
 					chatId: chatId,
 				},
 			});
-			let res : UsersInBanList[] = [];
+			let res: UsersInBanList[] = [];
 			for (const i of find) {
-				let add : UsersInBanList = new UsersInBanList();
+				let add: UsersInBanList = new UsersInBanList();
 				const j = await this.prisma.users.findFirst({
 					where: {
 						id: i.userId,
@@ -239,7 +239,7 @@ export class ChatService {
 					],
 				},
 			});
-			if (!admin) throw new Error("Unauthorized");
+			if (!admin && reqUser !== input.userId) throw new Error("Unauthorized");
 			await this.prisma.usersInChats.delete({
 				where: {
 					userId_chatId: {
@@ -248,13 +248,15 @@ export class ChatService {
 					},
 				},
 			});
-			const test = await this.prisma.usersInChats.findFirst({
+			const test = await this.prisma.usersInChats.findUnique({
 				where: {
-					chatId: input.chatId,
-					userId: input.userId,
+					userId_chatId: {
+						chatId: input.chatId,
+						userId: input.userId,
+					},
 				},
 			});
-			const isChanEmpty = await this.prisma.chats.findFirst({
+			const isChanEmpty = await this.prisma.chats.findUnique({
 				where: {
 					id: input.chatId,
 				},
@@ -263,7 +265,7 @@ export class ChatService {
 				},
 			});
 			if (isChanEmpty) {
-				if (isChanEmpty.users.length == 0) {
+				if (isChanEmpty.users.length === 0) {
 					await this.deleteChannel(input.chatId);
 				}
 			}

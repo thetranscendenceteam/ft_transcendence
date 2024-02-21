@@ -99,7 +99,7 @@ export class MessagesService {
 				},
 			});
 			if (!req) throw new Error("Unauthorized");
-			let obj : Message[] = [];
+			let obj: Message[] = [];
 			const res = await this.prisma.messages.findMany({
 				where: {
 					chatId: chatId,
@@ -107,7 +107,7 @@ export class MessagesService {
 			});
 			if (!res) return null;
 			for (const i of res) {
-				let j : Message = new Message();
+				let j: Message = new Message();
 				j.id = i.id;
 				j.timestamp = i.timestamp;
 				j.message = i.message;
@@ -136,16 +136,27 @@ export class MessagesService {
 
 	async userMuted(input: SendMessageInput) {
 		try {
-			const user = await this.prisma.users.findFirst({
+			const user = await this.prisma.users.findUnique({
 				where: {
 					pseudo: input.username,
 				},
 			});
 			if (!user) return true;
-			const res = await this.prisma.usersInBanLists.findFirst({
+			const isInChat = await this.prisma.usersInChats.findUnique({
 				where: {
-					chatId: input.chatId,
-					userId: user.id,
+					userId_chatId: {
+						userId: user.id,
+						chatId: input.chatId,
+					},
+				},
+			});
+			if (!isInChat) return true;
+			const res = await this.prisma.usersInBanLists.findUnique({
+				where: {
+					userId_chatId: {
+						userId: user.id,
+						chatId: input.chatId,
+					},
 				},
 			});
 			if (!res) return false;

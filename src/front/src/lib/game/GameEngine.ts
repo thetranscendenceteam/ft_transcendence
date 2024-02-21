@@ -4,7 +4,6 @@ import Ball from './Ball';
 import Score from './Score';
 import confetti from 'canvas-confetti';
 
-
 class GameEngine {
   ready: boolean = false;
   matchId: string;
@@ -18,6 +17,7 @@ class GameEngine {
   isLoop: boolean;
   height: number;
   width: number;
+  role: 'left' | 'right' | 'spectator';
   players: { left: Player, right: Player };
   ball: Ball;
   score: Score;
@@ -40,6 +40,7 @@ class GameEngine {
     this.isLoop = false;
     this.height = 600;
     this.width = 960;
+    this.role = "spectator";
     this.players = {
       left: new Player("left"),
       right: new Player("right"),
@@ -147,6 +148,8 @@ class GameEngine {
     if (msg.score) {
       this.score.populate(msg.score);
     }
+    if (msg.role)
+      this.role = msg.role;
     if (msg.game) {
       this.state = msg.game.state;
       this.factor = msg.game.factor;
@@ -257,6 +260,8 @@ class GameEngine {
       this.isLoop = false;
     }
     this.drawText(this.toPrint);
+    if ((this.state === "waiting" || this.state === "paused") && this.role !== "spectator")
+      this.drawText("Press esc to quit", 24, 200);
     if (this.state === "waiting")
       return ;
     this.score.draw(ctx, this);
@@ -267,15 +272,15 @@ class GameEngine {
     this.ball.draw(ctx);
   };
 
-  drawText(text: string) {
+  drawText(text: string, fontSizeDefault: number = 48, xPosition: number = 50) {
     const ctx = this.ctx;
     if (! ctx) {
       console.log("canvas context not found");
       return ;
     }
-    let fontSize = 48 * this.factor;
+    let fontSize = fontSizeDefault * this.factor;
     let x = this.width / 2;
-    let y = (this.height / 2) + 50 * this.factor;
+    let y = (this.height / 2) + xPosition * this.factor;
 
     ctx.font = `${fontSize}px Monospace`;
     ctx.fillStyle = "white";
@@ -374,6 +379,12 @@ class GameEngine {
       game.players.left.gamePad.state = 'stop';
   }
   handleKeyDown(e:any, game: GameEngine) {
+    console.log("handleKeyDown: " + e.keyCode);
+    if (this.role !== 'spectator' && (this.state === "waiting" || this.state === "paused") && e.keyCode === 27) {
+      this.send({giveUp: true});
+      this.setMenu(true);
+      return ;
+    }
     if (! (game.state === "running"))
       return ;
     if (game.players.right.gamePad) {

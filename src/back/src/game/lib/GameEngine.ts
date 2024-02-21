@@ -5,6 +5,10 @@ import WebSocket from 'ws';
 import { MatchService } from 'src/match/match.service';
 import { Match } from 'src/match/dto/Match.entity';
 
+export interface WebSocketWithUser extends WebSocket {
+  user: string | undefined;
+}
+
 export class GameEngine {
   games: Game[];
   matchService: MatchService;
@@ -21,7 +25,19 @@ export class GameEngine {
 
   deleteGame(game: Game) {
     clearInterval(game.interval);
+    for (const player of Object.values(game.players)) {
+      if (player.client) {
+        player.client.ws.close();
+        player.client = undefined;
+      }
+    }
+    for (const spectator of game.spectators) {
+      spectator.ws.close();
+    }
+    game.spectators = [];
     this.games = this.games.filter((g) => g !== game);
+    if (game.state !== 'end')
+      this.matchService.deleteMatch(game.matchId);
     console.log('Game deleted');
   }
 
@@ -39,41 +55,55 @@ export class GameEngine {
     return game;
   }
 
-  async searchGame(ws: WebSocket, init: { matchId: string; userId: string }) {
+  async searchGame(ws: WebSocketWithUser, init: { matchId: string; userId: string }) {
     // Replace with call to DB.
     console.log('searching game...');
     let match: Match | undefined;
     let game: Game | undefined;
-    const ongoingMatches: Match[] =
-      await this.matchService.findUngoingMatchesForUser(init.userId);
-    const unstartedMatches: Match[] =
-      await this.matchService.findUnstartedMatchesForUser(init.userId);
-    if ( // If the match is ongoing, find the game and bind the client to the player.
-      ongoingMatches &&
-      (match = ongoingMatches.find((match) => match.id === init.matchId))
-    ) {
-      if (!(game = this.games.find((game) => game.matchId === init.matchId)))
-        game = this.createGame(match);
-      console.log('ongoing match found');
-      const client = new Client(ws);
-      game.bindClientToPlayer(client, init.userId);
-    } else if ( // If the match is unstarted, create a new game and bind the client to the player.
-      (match = unstartedMatches.find((match) => match.id === init.matchId))
-    ) {
-      if (!(game = this.games.find((game) => game.matchId === init.matchId)))
-        game = this.createGame(match);
-      console.log('unstarted match found');
-      const client = new Client(ws);
-      game.bindClientToPlayer(client, init.userId);
-    } else if (
+    if (ws.user && ws.user === init.userId) {
+      const ongoingMatches: Match[] =
+        await this.matchService.findUngoingMatchesForUser(init.userId);
+      const unstartedMatches: Match[] =
+        await this.matchService.findUnstartedMatchesForUser(init.userId);
+      if (
+        ws.user &&
+        ongoingMatches &&
+        (match = ongoingMatches.find((match) => match.id === init.matchId))
+      ) {
+        if (!(game = this.games.find((game) => game.matchId === init.matchId)))
+          game = this.createGame(match);
+        if (!this.isUserInGame(init.userId, game)) {
+          console.log('ongoing match found');
+          const client = new Client(ws);
+          game.bindClientToPlayer(client, init.userId);
+          return;
+        }
+      } else if ( // If the match is unstarted, create a new game and bind the client to the player.
+        (match = unstartedMatches.find((match) => match.id === init.matchId))
+      ) {
+        if (!(game = this.games.find((game) => game.matchId === init.matchId)))
+          game = this.createGame(match);
+        console.log('unstarted match found');
+        const client = new Client(ws);
+        game.bindClientToPlayer(client, init.userId);
+        return;
+      }
+    }
+    if (
       (game = this.games.find((game) => game.matchId === init.matchId))
     ) {
       console.log('spectator found');
       const client = new Client(ws);
       game.bindClientToSpectator(client);
     } else {
-      console.log('no match found');
+      console.log('no match found with id ' + JSON.stringify(init.matchId));
     }
+  }
+
+  isUserInGame(userId: string, game: Game): boolean {
+    return (
+      game.players.left.userId === userId || game.players.right.userId === userId
+    );
   }
 
   searchPlayerByWs(ws: WebSocket): Player | undefined {
@@ -106,15 +136,26 @@ export class GameEngine {
     return undefined;
   }
 
-  handleMessage(ws: any, message: any) {
+  handleMessage(ws: WebSocketWithUser, message: any) {
     if (message.init) {
       // Prevent concurrent connections
-      if (!ws.user || message.init.userId !== ws.user) {
-        console.log('Unauthorized, invalid token.');
-        return;
-      }
       if (this.searchPlayerByWs(ws)) return;
       this.searchGame(ws, message.init);
+    } else if (message.giveUp) {
+      const player = this.searchPlayerByWs(ws);
+      if (!player || !player.client) return;
+      const game = this.searchGameByWs(ws);
+      if (!game) return;
+      if (
+        (game.state === 'waiting' || game.state === 'paused') &&
+        !game.full
+      ) {
+        game.toPrint = 'Game has been canceled by ' + player.username;
+        game.isToPrint = true;
+        game.sendGameState();
+        game.isLoop = false;
+        this.deleteGame(game);
+      }
     } else {
       const player = this.searchPlayerByWs(ws);
       const spectator = this.searchSpectatorByWs(ws);
@@ -144,16 +185,20 @@ export class GameEngine {
 
   handleDisconnect(ws: WebSocket) {
     const player = this.searchPlayerByWs(ws);
+    const spectator = this.searchSpectatorByWs(ws);
     const game = this.searchGameByWs(ws);
-    if (!player) return;
+    if (!player && !spectator) return;
     if (!game) return;
-    if (player.client) {
+    if (player && player.client) {
       game.removePlayer(player.client);
+    } else if (spectator) {
+      game.removeSpectator(spectator);
     }
     if (
       (game.state === 'end' || game.state === 'waiting') &&
       !game.players.left.client &&
-      !game.players.right.client
+      !game.players.right.client &&
+      !game.spectators.length
     ) {
       this.deleteGame(game);
     }

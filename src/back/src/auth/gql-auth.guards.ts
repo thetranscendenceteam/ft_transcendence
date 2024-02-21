@@ -33,12 +33,6 @@ export class GqlAuthGuard implements CanActivate {
         req.user = user;
       }
     } catch (error) {
-      res.cookie(jwtName, '', {
-        expires: new Date(),
-        httpOnly: true,
-        secure: true,
-      });
-      //res.redirect('/login');
       throw new Error(error);
     }
   }

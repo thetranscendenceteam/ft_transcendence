@@ -19,6 +19,7 @@ type GamePadMessage = {
 type Response = {
   timestamp: number;
   game?: GameResponse;
+  role?: 'left' | 'right' | 'spectator';
   players?: { left?: PlayerResponse; right?: PlayerResponse };
   ball?: BallResponse;
   score?: ScoreResponse;

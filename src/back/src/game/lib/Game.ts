@@ -212,6 +212,7 @@ class Game {
   }
 
   bindClientToSpectator(client: Client) {
+    console.log('Spectator with id ' + client.userId + ' binded to match ' + this.matchId);
     this.spectators.push(client);
   }
 
@@ -219,9 +220,11 @@ class Game {
   removePlayer(client: Client) {
     if (this.players.left.client === client) {
       this.players.left.client = undefined;
+      this.players.left.userId = '';
       this.players.left.render = true;
     } else if (this.players.right.client === client) {
       this.players.right.client = undefined;
+      this.players.right.userId = '';
       this.players.right.render = true;
     }
     this.full = false;
@@ -229,6 +232,13 @@ class Game {
       this.pause();
     this.updateText();
     this.sendGameState();
+  }
+
+  removeSpectator(client: Client) {
+    const index = this.spectators.indexOf(client);
+    if (index > -1) {
+      this.spectators.splice(index, 1);
+    }
   }
 
   renderAll() {
@@ -326,7 +336,7 @@ class Game {
         const toPrint = player ? player.toPrint : this.toPrint;
         const isToPrint = player ? player.isToPrint : this.isToPrint;
         const factor = player.client.factor;
-        const response = this.genGameState(isToPrint, toPrint, factor);
+        const response = this.genGameState(isToPrint, toPrint, factor, player.position);
         player.client.send(response);
       }
     }
@@ -339,17 +349,18 @@ class Game {
         this.score.render
       ) {
         const factor = spectator.factor;
-        const response = this.genGameState(this.isToPrint, this.toPrint, factor);
+        const response = this.genGameState(this.isToPrint, this.toPrint, factor, 'spectator');
         spectator.send(response);
       }
     }
     this.resetRender();
   }
 
-  genGameState(isToPrint: boolean, toPrint: string, factor: number): Response {
+  genGameState(isToPrint: boolean, toPrint: string, factor: number, role: 'left' | 'right' | 'spectator'): Response {
     const response: Response = {
       timestamp: Date.now(),
       game: this.genResponse(factor),
+      role: role,
       ...(isToPrint && {
         toPrint: toPrint,
       }),
@@ -387,7 +398,7 @@ class Game {
   handleSpectatorMessages(spectator: Client, message: any) {
     if (message.height && spectator) {
       spectator.setHeight(message.height);
-      console.log('spectator factor: ' + spectator.factor);
+      this.renderAll();
     }
   }
 }

@@ -4,7 +4,7 @@ import menuIcon from '../../../public/more.png';
 import sendIcon from '../../../public/send.png';
 import Message from './message';
 import Options from './options';
-import { OnSubscriptionDataOptions, gql, useQuery, useSubscription } from "@apollo/client"
+import { OnDataOptions, gql, useQuery, useSubscription } from "@apollo/client"
 import apolloClient from "../apolloclient";
 import { UserContext } from '../userProvider';
 
@@ -92,9 +92,9 @@ const Conversation = ({ className, activeConv, convType, refresh }: Props) => {
     }
   }, [datam, loadingm]);
 
-  const onMessage = useCallback((result: OnSubscriptionDataOptions) => {
-    if (!result.subscriptionData.data) return;
-    let lastMessage = result.subscriptionData.data.newMessage;
+  const onMessage = useCallback((result: OnDataOptions) => {
+    if (!result.data.data) return;
+    let lastMessage = result.data.data.newMessage;
     lastMessage = {
       ...lastMessage,
       timestamp: formatTime(lastMessage.timestamp)
@@ -105,7 +105,7 @@ const Conversation = ({ className, activeConv, convType, refresh }: Props) => {
   useSubscription(COMMENTS_SUBSCRIPTION, {
     variables: { "chatId": activeConv.id },
     fetchPolicy: "no-cache",
-    onSubscriptionData: onMessage
+    onData: onMessage
   });
 
   const toggleMenu = () => {

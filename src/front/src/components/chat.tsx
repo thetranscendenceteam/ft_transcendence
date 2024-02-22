@@ -30,7 +30,7 @@ export const Chat = () => {
   const changeConvType = (newType: string) => {
     setConvType(newType);
   }
-  
+
   const refresh = () => {
     setRifresh(!rifresh);
   }
@@ -46,25 +46,23 @@ export const Chat = () => {
 
   if (user && user.id) {
     return (
-          <div className="h-full grid grid-cols-7 grid-rows-1 items-center justify-center">
-            <Sidebar changeConv={changeConv} changeConvType={changeConvType} refresh={rifresh}/>
-            {activeConv ? (
-              <Conversation className="col-span-6" activeConv={activeConv} convType={convType} refresh={refresh} />
-            ) : (
-              <></>
-            )}
-          </div>
+      <div className="h-full grid grid-cols-7 grid-rows-1 items-center justify-center">
+        <Sidebar changeConv={changeConv} changeConvType={changeConvType} refresh={rifresh}/>
+        {activeConv ? (
+          <Conversation className="col-span-6" activeConv={activeConv} convType={convType} refresh={refresh} />
+        ) : (
+            <></>
+          )}
+      </div>
     );
   } else {
     if ((!loading && !user) || (!loading && user && user.id === null)) {
-      console.log('loading1', loading, 'user1', user)
       return (
         <div className="bg-slate-300 h-full w-full bg-blur-sm bg-opacity-50 p-3 rounded-lg">
           <div className="h-full flex items-center justify-center text-4xl">You need to be logged in to play</div>
         </div>
       );
     } else {
-      console.log('loading2', loading, 'user2', user)
       return (
         <Loading />
       );

@@ -17,7 +17,7 @@ class GameEngine {
   isLoop: boolean;
   height: number;
   width: number;
-  role: 'left' | 'right' | 'spectator';
+  role: 'left' | 'right' | 'spectator' | 'local';
   players: { left: Player, right: Player };
   ball: Ball;
   score: Score;
@@ -80,6 +80,7 @@ class GameEngine {
     this.factor = this.height / 600;
     this.setMenu = setMenu;
     if (matchId === "local" && gameParams) {
+      this.role = "local";
       this.matches = gameParams.rounds;
       this.difficulty = gameParams.difficulty;
     }

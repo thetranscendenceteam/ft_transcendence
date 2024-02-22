@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { UserContext } from '@/components/userProvider';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Loading from '@/components/ui/loading';
 
 const checkUserGame = async (setError: Function, setMatch: Function, userId: String) => {
   try {
@@ -99,12 +100,21 @@ function Page() {
   const [error, setError] = useState(null) as [string | null, Function];
   const [match, setMatch] = useState(null) as [string | null, Function];
   const [game, setGame] = useState(false) as [boolean, Function];
+  const [loading, setLoading] = useState(true);
   const [gameParams, setGameParams] = useState(null) as [{rounds: number, difficulty: string, local: boolean} | null, Function];
   let [ongoingMatches, setOngoingMatches] = useState(null) as [any, Function];
 
   async function handleCheckUserGame(userId: string) {
     await checkUserGame(setError, setMatch, userId);
   }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!apolloClient)
@@ -126,7 +136,7 @@ function Page() {
   }, [user]);
   
   useEffect(() => {
-    if (user) {
+    if (user && user.id) {
       handleCheckUserGame( user.id );
     }
   }, [user]);
@@ -167,7 +177,7 @@ function Page() {
         <Game gameParams={gameParams} matchId={match} userId={user.id} reset={setGame} watch={false}/>
       </div>
     );
-  } else if (user) {
+  } else if (user && user.id) {
     return (
       <div className="flex flex-col h-full items-center justify-center">
         <GameDialog setGameParams={setGameParams} />
@@ -187,11 +197,17 @@ function Page() {
     )
   }
   else {
-    return (
-      <div className="bg-slate-300 h-full w-full bg-blur-sm bg-opacity-50 p-3 rounded-lg">
-        <div className="h-full flex items-center justify-center text-4xl">You need to be logged in to play</div>
-      </div>
-    )
+    if ((!loading && !user) || (!loading && user && user.id === null)) {
+      return (
+        <div className="bg-slate-300 h-full w-full bg-blur-sm bg-opacity-50 p-3 rounded-lg">
+          <div className="h-full flex items-center justify-center text-4xl">You need to be logged in to play</div>
+        </div>
+      );
+    } else {
+      return (
+        <Loading />
+      );
+    }
   }
 }
 

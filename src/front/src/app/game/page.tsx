@@ -100,7 +100,7 @@ function Page() {
   const [error, setError] = useState(null) as [string | null, Function];
   const [match, setMatch] = useState(null) as [string | null, Function];
   const [game, setGame] = useState(false) as [boolean, Function];
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [gameParams, setGameParams] = useState(null) as [{rounds: number, difficulty: string, local: boolean} | null, Function];
   let [ongoingMatches, setOngoingMatches] = useState(null) as [any, Function];
 
@@ -110,7 +110,7 @@ function Page() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(true);
+      setLoading(false);
     }, 50);
 
     return () => clearTimeout(timer);
@@ -197,7 +197,7 @@ function Page() {
     )
   }
   else {
-    if ((loading && !user) || (loading && user && user.id === null)) {
+    if ((!loading && !user) || (!loading && user && user.id === null)) {
       return (
         <div className="bg-slate-300 h-full w-full bg-blur-sm bg-opacity-50 p-3 rounded-lg">
           <div className="h-full flex items-center justify-center text-4xl">You need to be logged in to play</div>

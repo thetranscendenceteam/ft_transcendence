@@ -21,7 +21,7 @@ export const Chat = () => {
   const [activeConv, setActiveConv] = useState<Chat>();
   const [convType, setConvType] = useState<string>('Friends');
   const [rifresh, setRifresh]  = useState<boolean>(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const changeConv = (ChatName: Chat) => {
     setActiveConv(ChatName);
@@ -37,7 +37,7 @@ export const Chat = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(true);
+      setLoading(false);
     }, 50);
 
     return () => clearTimeout(timer);
@@ -56,7 +56,7 @@ export const Chat = () => {
           </div>
     );
   } else {
-    if ((loading && !user) || (loading && user && user.id === null)) {
+    if ((!loading && !user) || (!loading && user && user.id === null)) {
       console.log('loading1', loading, 'user1', user)
       return (
         <div className="bg-slate-300 h-full w-full bg-blur-sm bg-opacity-50 p-3 rounded-lg">

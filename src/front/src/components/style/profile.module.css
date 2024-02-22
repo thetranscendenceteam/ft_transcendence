@@ -144,7 +144,8 @@
 
 .text {
   font-size: 1.2vw; /* Adjust this value as needed to reduce text size */
-}
+  overflow-wrap: break-word;
+  word-break: break-all;}
 
 .button {
   align-self: flex-end ;

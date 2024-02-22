@@ -1,14 +1,12 @@
+import { useRouter } from "next/navigation";
 import "../style/searchResult.module.css";
 
-const redirectToUser = (username: string) => {
-  window.location.href = `/user/${username}`;
-}
-
 export const SearchResult = ({ result }: any) => {
+  const router = useRouter();
   return (
     <div
       className="search-result z-50"
-      onClick={() => redirectToUser(result)}
+      onClick={() => router.push(`/user/${result}`)}
     >
       {result}
     </div>

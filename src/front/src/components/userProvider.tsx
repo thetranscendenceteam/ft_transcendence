@@ -49,7 +49,6 @@ const fetchData = async (id: string) => {
         }
       }
     });
-    console.log("🚀 ~ fetchData ~ data:", data)
     return (data.getUser);
   } catch (error) {
     return ([]);

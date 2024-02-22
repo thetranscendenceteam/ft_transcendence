@@ -42,7 +42,6 @@ const ResetPasswordForm = () => {
             email: email,
         },
       });
-      console.log("🚀 ~ handleSubmit ~ data:", data)
       setIsSubmitting(false);
       if (data.errors) {
         throw new Error('Failed to send reset password email');

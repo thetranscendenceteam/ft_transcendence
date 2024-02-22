@@ -114,14 +114,14 @@ export class AuthService {
 
         const secretKey = JWT_PRIVATE_KEY;
         const options = {
-          expiresIn: '1h',
+          expiresIn: '1d',
         };
         const ourJwt = jwt.sign(payload, secretKey, options);
 
-        if ((await userTmp).twoFA) {
-          throw new Error(`2FA is enabled - ${(await userTmp).username}`); // dont ever modify this error
+        if ((userTmp).twoFA) {
+          throw new Error('2FA is enabled - ${(await userTmp).username}'); // dont ever modify this error
         }
-        const resTmp = await userTmp;
+        const resTmp = userTmp;
         return ({...resTmp, jwtToken: ourJwt});
       }
       return null;

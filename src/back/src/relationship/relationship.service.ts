@@ -276,20 +276,21 @@ export class RelationshipService {
 		try {
 			const query = await this.prisma.usersRelationships.findMany({
 				where: {
-					firstId: userId,
-					status: RelationshipStatus.pending_second_to_first,
+					secondId: userId,
+					status: RelationshipStatus.pending_first_to_second,
 				},
 			});
+			console.log("🚀 ~ RelationshipService ~ findPendingRequest ~ query:", query)
 			const res: RelationshipRequest[] = [];
 			for (const q of query) {
 				const user = await this.prisma.users.findFirst({
 					where: {
-						id: q.secondId,
+						id: q.firstId,
 					},
 				});
 				if (user) {
 					const r = {
-						userId: q.secondId,
+						userId: q.firstId,
 						username: user?.pseudo,
 					};
 					res.push(r);

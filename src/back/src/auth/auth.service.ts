@@ -35,7 +35,7 @@ export class AuthService {
       });
       const userMe = await this.prisma.users.upsert({
         where: {
-          ftId: userFtMe.ftId,
+          ftId: userFtMe.id,
         },
         update: {
           campus: userFtMe.campus[0].name,

@@ -106,7 +106,7 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
           inputUser: { id: userEdit.id, mail: formDataReady.email, password: formDataReady.password, pseudo: formDataReady.username },
         },
       });
-      updateUser({...user, email: data.editUser.email, username: data.editUser.pseudo, avatar_url: data.editUser.avatar});
+      updateUser({...user, email: data.editUser.mail, username: data.editUser.pseudo, avatar_url: data.editUser.avatar});
       router.push('/profile');
     } catch (error: any) {
       if (error.message && error.message.includes("Unique constraint failed on the fields: (`pseudo`)")) {

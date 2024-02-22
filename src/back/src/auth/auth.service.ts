@@ -29,8 +29,8 @@ export class AuthService {
   constructor(private prisma: PrismaService, private userService: UserService) { }
 
   async ftLoginUpsert(userFtMe: any) {
-        try {
-            const secret = speakeasy.generateSecret({
+    try {
+      const secret = speakeasy.generateSecret({
         name: 'Ft_transcendence_Pomy',
       });
       const userMe = await this.prisma.users.upsert({
@@ -52,7 +52,7 @@ export class AuthService {
           twoFAOtpAuthUrl: secret.otpauth_url,
         },
       });
-            return {
+      return {
         id: userMe.id,
         username: userMe.pseudo,
         realname: userMe.firstName + ' ' + userMe.lastName,
@@ -69,19 +69,19 @@ export class AuthService {
   async ftLogin(inputCode: string): Promise<authUser | null> {
     const FtInsertDB = async (userFtMe: any): Promise<ftUser | string> => {
       try {
-                const user = await this.ftLoginUpsert(userFtMe.data);
-                if (user === "Username already taken") {
+        const user = await this.ftLoginUpsert(userFtMe.data);
+        if (user === "Username already taken") {
           const user_ft = await this.ftLoginUpsert({...userFtMe.data, login: `${userFtMe.data.login}_ft`});
           return user_ft;
         }
-                return user;
+        return user;
       } catch (error) {
-                throw new Error("ftLoginUpsert failed");
+        throw new Error("ftLoginUpsert failed");
       }
     };
 
     try {
-            const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID;
+      const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID;
       const OAUTH_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET;
       const OAUTH_REDIRECT_URL = process.env.OAUTH_REDIRECT_URL;
       const OAUTH_TOKEN_URL = process.env.OAUTH_TOKEN_URL;
@@ -121,12 +121,12 @@ export class AuthService {
         if ((await userTmp).twoFA) {
           throw new Error(`2FA is enabled - ${(await userTmp).username}`); // dont ever modify this error
         }
-                const resTmp = await userTmp;
+        const resTmp = await userTmp;
         return ({...resTmp, jwtToken: ourJwt});
       }
       return null;
     } catch (error) {
-            return error;
+      return error;
     }
   }
 

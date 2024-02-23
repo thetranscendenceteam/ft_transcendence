@@ -23,6 +23,7 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
   const [channelName, setChannelName] = useState<string>('');
   const { user } = useContext(UserContext);
   const [isPrivate, setIsPrivate] = useState(true);
+  const [error, setError] = useState<String | null>(null);
 
   
   const createChannel = async() => {
@@ -81,8 +82,13 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
           addChat(newChat);
         }
       }
-    } catch (error) {
-      console.error("Error senging message:", error);
+    } catch (error: any) {
+      if (error.message && error.message.includes("Unique constraint failed on the fields: (`name`)")) {
+      setError("Channel already exists");
+      } else {
+        setError("An error occured");
+      }
+      return;
     }
     closePopUp();
   };
@@ -115,6 +121,7 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
             Public
           </button>
         </div>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
         <button className="absolute bottom-3 right-3 bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-600" onClick={createChannel}>Create</button>
       </div>
     </div>

@@ -119,7 +119,7 @@ export class AuthService {
         const ourJwt = jwt.sign(payload, secretKey, options);
 
         if ((userTmp).twoFA) {
-          throw new Error('2FA is enabled - ${(await userTmp).username}'); // dont ever modify this error
+          throw new Error(`2FA is enabled - ${(await userTmp).username}`); // dont ever modify this error
         }
         const resTmp = userTmp;
         return ({...resTmp, jwtToken: ourJwt});

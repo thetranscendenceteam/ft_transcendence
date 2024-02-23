@@ -280,7 +280,6 @@ export class RelationshipService {
 					status: RelationshipStatus.pending_first_to_second,
 				},
 			});
-			console.log("🚀 ~ RelationshipService ~ findPendingRequest ~ query:", query)
 			const res: RelationshipRequest[] = [];
 			for (const q of query) {
 				const user = await this.prisma.users.findFirst({

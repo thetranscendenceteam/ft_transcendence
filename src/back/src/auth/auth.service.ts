@@ -119,7 +119,7 @@ export class AuthService {
         const ourJwt = jwt.sign(payload, secretKey, options);
 
         if ((userTmp).twoFA) {
-          throw new Error('2FA is enabled - ${(await userTmp).username}'); // dont ever modify this error
+          throw new Error(`2FA is enabled - ${(await userTmp).username}`); // dont ever modify this error
         }
         const resTmp = userTmp;
         return ({...resTmp, jwtToken: ourJwt});
@@ -131,14 +131,17 @@ export class AuthService {
   }
 
   async ftLoginTwoFA(username: string, twoFA?: string): Promise<authUser | null> {
+    console.log("🚀 ~ AuthService ~ ftLoginTwoFA ~ username:", username)
     try {
       const user = await this.prisma.users.findFirst({ where: { pseudo: username } });
+      console.log("🚀 ~ AuthService ~ ftLoginTwoFA ~ user:", user)
       if (user) {
         const twoFAVerification = speakeasy.totp.verify({
           secret: user.twoFASecret,
           encoding: 'base32',
           token: twoFA as string,
         });
+        console.log("🚀 ~ AuthService ~ ftLoginTwoFA ~ twoFAVerification:", twoFAVerification)
         if (!twoFAVerification) {
           throw new Error("2FA verification failed");
         }
@@ -152,6 +155,7 @@ export class AuthService {
           expiresIn: '1d',
         };
         const jwtToken = jwt.sign(payload, secretKey, options);
+        console.log("🚀 ~ AuthService ~ ftLoginTwoFA ~ jwtToken:", jwtToken)
         return {
           username: user.pseudo,
           realname: user.firstName + ' ' + user.lastName,

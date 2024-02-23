@@ -94,7 +94,7 @@ export class UserService {
 		try {
 			const user = await this.prisma.users.findFirst({ where: { pseudo: pseudo } });
 			if (user == null) return undefined
-				return user;
+			return user;
 		}
 		catch (e) {
 			console.log("Error on getUserByUserName query" + e);
@@ -242,7 +242,7 @@ export class UserService {
 				if (f.firstId === userId) return f.secondId;
 				else return f.firstId;
 			});
-			const users : UserPrivate[] = [];
+			const users: UserPrivate[] = [];
 			for (const f of friendsIds) {
 				const l = await this.prisma.users.findFirst({
 					where: {
@@ -279,7 +279,11 @@ export class UserService {
 				},
 			});
 			if (thisUser) users.push(thisUser);
-			const res = users.sort((a,b) => b.xp.toString().localeCompare(a.xp.toString()));
+			const res = users.sort((a, b) => {
+				if (a.xp < b.xp) return 1;
+				if (a.xp > b.xp) return -1;
+				return 0;
+			});
 			return res;
 		}
 		catch (e) {

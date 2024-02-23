@@ -29,6 +29,7 @@ const JoinPublicChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }
   const { user } = useContext(UserContext);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [data, setData]= useState<Chat[]>([]);
+  const [error, setError]= useState<String | null>(null);
 
   const fetchChats = async () => {
     try {
@@ -133,8 +134,10 @@ const JoinPublicChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }
     if (user && selectedChat) {
       const banList = await getBanList(selectedChat.id);
       const isBanned = banList.some(bannedUser => bannedUser.userId === user.id && bannedUser.status === 'banned');
-      if (isBanned)
+      if (isBanned) {
+        setError('You are banned from this chat');
         return;
+      }
       addUserToChat();
       closePopUp();
     }
@@ -162,6 +165,7 @@ const JoinPublicChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }
             ))}
           </select>
         </div>
+        {error && <p className="text-red-500">{error}</p>}
         <button className="absolute bottom-3 right-3 bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-600" onClick={joinChat}>Join</button>
       </div>
     </div>

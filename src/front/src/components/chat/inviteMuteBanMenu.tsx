@@ -39,6 +39,7 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
   const [players, setPlayers] = useState<Player[]>([]);
   const [upgrade, setUpgrade] = useState<boolean>(true);
   const { user } = useContext(UserContext);
+  const [error, setError]= useState<String | null>(null);
 
   const leaveChat = async(player: Player) => {
     try {
@@ -259,8 +260,10 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
         await banMuteFromChat(player, 'banned');
         await leaveChat(player);
         closeInviteMuteBanMenu();
-      }
-      else if (!upgrade){
+      } else if (player.role === 'admin' || player.role === 'owner') {
+        setError("Can't ban an admin or owner.");
+        return;
+      } else if (!upgrade) {
         await removeBan(player);
         closeInviteMuteBanMenu();
       }
@@ -268,8 +271,10 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
       if (upgrade && player.role === 'member') {
         await banMuteFromChat(player, 'muted');
         closeInviteMuteBanMenu();
-      }
-      else if (!upgrade) {
+      } else if (player.role === 'admin' || player.role === 'owner') {
+        setError("Can't mute an admin or owner.");
+        return;
+      } else if (!upgrade) {
         await removeBan(player);
         closeInviteMuteBanMenu();
       }
@@ -291,6 +296,7 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
     const fetchedData = await getBanList(activeConv.id);
     const isBanned = fetchedData.some(bannedUser => bannedUser.userId === player.id && bannedUser.status === 'banned');
     if (isBanned) {
+      setError('Selected player is banned.');
       return;
     }
     updateSomeoneInChat(player, 'member');
@@ -374,6 +380,7 @@ const InviteMuteBanMenu: FunctionComponent<PopUpProp> = ({ closeInviteMuteBanMen
               <option key={player.id} value={player.nickname}>{player.nickname}</option>
             ))}
           </select>
+          {error && <p className="text-red-500">{error}</p>}
         </div>
         {selectedPlayer && (
           <div className="absolute bottom-16 mt-4">

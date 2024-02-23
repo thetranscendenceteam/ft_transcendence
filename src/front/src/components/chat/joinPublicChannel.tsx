@@ -164,8 +164,8 @@ const JoinPublicChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }
               <option key={chat.id} value={chat.name}>{chat.name}</option>
             ))}
           </select>
+          {error && <p className="text-red-500">{error}</p>}
         </div>
-        {error && <p className="text-red-500">{error}</p>}
         <button className="absolute bottom-3 right-3 bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-600" onClick={joinChat}>Join</button>
       </div>
     </div>

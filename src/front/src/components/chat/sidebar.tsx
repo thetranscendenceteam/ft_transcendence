@@ -5,7 +5,6 @@ import joinButton from '../../../public/joinButton.png';
 import Image from 'next/image';
 import NewChannel from './newChannel';
 import JoinPublicChannel from './joinPublicChannel';
-import apolloClient from "../apolloclient";
 import { gql, useQuery } from "@apollo/client";
 import { UserContext } from '../userProvider';
 
@@ -54,7 +53,6 @@ const Sidebar = ({ changeConv, activeConv, changeConvType, refresh }: Props) => 
     skip: !user || !user.id,
   });
 
-
   useEffect(() => {
     if (!fetchedData) return;
     const tmp = fetchedData.getChatsByIdUser.map((item: any) => ({
@@ -102,7 +100,9 @@ const Sidebar = ({ changeConv, activeConv, changeConvType, refresh }: Props) => 
   };
 
   const changeActiveList = (buttonName: string) => {
+    if (buttonName === activeList) return;
     setActiveList(buttonName);
+    changeConv(null);
   };
 
   const addChat = (newChat: Chat) => {
@@ -124,7 +124,7 @@ const Sidebar = ({ changeConv, activeConv, changeConvType, refresh }: Props) => 
 
   return (
     <div className='h-full flex flex-col bg-indigo-800 rounded-l-lg'>
-      <div className='bg-white h-12 flex grid grid-cols-2 grid-row-1 items-center justify-center'>
+      <div className='bg-white h-12 grid grid-cols-2 grid-row-1 items-center justify-center'>
         <button className='border-r border-gray-500 bg-indigo-950 h-full transition-all duration-300 hover:opacity-60' onClick={() => changeActiveList('Friends')}>Friends</button>
         <button className='h-full transition-all duration-300 hover:opacity-60 bg-indigo-950' onClick={() => changeActiveList('Channels')}>Channels</button>
       </div>

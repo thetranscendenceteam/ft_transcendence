@@ -45,10 +45,10 @@ const fetchData = async (code: string | null) => {
   }
 };
 
-const ftLoginTwoFA = async (username: string | null, twoFA: string | null, updateUser: Function, router: any, setError: Function) => {
+const ftLoginTwoFA = async (username: string | null, twoFA: string | null, updateUser: Function, router: any, setError: Function, setCookie: Function) => {
   if (username && twoFA) {
     try {
-      const { data, errors } = await apolloClient.mutate({
+      const { data } = await apolloClient.mutate({
         mutation: gql`
           mutation ($username: String!, $twoFA: String!) {
             ftLoginTwoFA(username: $username, twoFA: $twoFA) {
@@ -69,8 +69,9 @@ const ftLoginTwoFA = async (username: string | null, twoFA: string | null, updat
         },
       });
       if (data) {
-        const { id, username, realname, avatar_url, email, campus, twoFA }  = data.ftLoginTwoFA;
+        const { id, username, realname, avatar_url, email, campus, jwtToken, twoFA }  = data.ftLoginTwoFA;
         updateUser({ id, username, realname, avatar_url, email, campus, twoFA });
+        setCookie('jwt', { jwtToken }, { path: '/', secure: true, sameSite: 'strict'});
         router.push('/');
       }
     } catch (error) {
@@ -141,7 +142,7 @@ export const Callback = () => {
             <div className={styles.buttonAndInput}>
               <Input id="2FACode" type="text" placeholder="Enter your 2FA code" onChange={(e) => setTwoFACode(e.target.value)} />
               {error && <div style={{ color: 'red' }}>{error}</div>}
-              <Button className={styles.button} type="submit" onClick={() => {ftLoginTwoFA(username, twoFACode, updateUser, router, setError);}}>
+              <Button className={styles.button} type="submit" onClick={() => {ftLoginTwoFA(username, twoFACode, updateUser, router, setError, setCookie);}}>
                 Login
               </Button>
             </div>

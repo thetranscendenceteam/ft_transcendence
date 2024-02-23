@@ -146,8 +146,8 @@ export class AuthService {
           username: user.pseudo,
           id: user.id,
         };
-        const PRIVATE_KEY = "secretKeyPlaceHolder";
-        const secretKey = PRIVATE_KEY;
+        const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY;
+        const secretKey = JWT_PRIVATE_KEY;
         const options = {
           expiresIn: '1d',
         };

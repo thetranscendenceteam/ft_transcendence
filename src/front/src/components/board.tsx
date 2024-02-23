@@ -78,7 +78,7 @@ export const Board = () => {
     };
 
     fetchInitialData();
-  }, []);
+  }, [user]);
 
   const getFriends = async () => {
     if (user) {

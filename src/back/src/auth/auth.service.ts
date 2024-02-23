@@ -256,7 +256,7 @@ export class AuthService {
       throw new Error("Logging failed");
     }
     catch (e) {
-      console.log("Error on classicLogin" + e);
+      console.log("Error on classicLogin: " + e);
       throw e;
     }
 

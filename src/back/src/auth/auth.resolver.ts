@@ -43,12 +43,13 @@ export class AuthResolver {
   }
 
   @Mutation(returns => authUser, { nullable: true })
-  async standardLogin(@Args('standardLogin') standardLogin: StandardLoginInput): Promise<authUser> {
-    const result = await this.userService.classicLogin(standardLogin);
-    if (result === null) {
-      throw new Error('Error: Invalid user/password');
+  async standardLogin(@Args('standardLogin') standardLogin: StandardLoginInput): Promise<authUser | null> {
+    try {
+      const result = await this.userService.classicLogin(standardLogin);
+      return result;
+    } catch (error) {
+      return error;
     }
-    return result;
   }
 
   @Mutation(returns => String)

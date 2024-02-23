@@ -44,20 +44,23 @@ export class AvatarController {
       @Req() req: RequestWithUser,
       @Res() res: Response,
       ){
-        console.log("req.user", req.user);
         const user = req.user;
         if (user  === undefined) {
           res.status(401).send('Unauthorized');
           return;
         }
         // Handle the uploaded file here, e.g., save it to a database or return its details.
+        if (!file) {
+          res.status(400).send('No file uploaded');
+          return;
+        }
         let editedUser = await this.userService.editUser({
             id: user.id,
             mail: null,
             password: null,
             firstName: null,
             lastName: null,
-            avatar: 'https://' + process.env.DOMAIN_NAME + ':8443/avatar/${file.filename}', // TODO change to env var
+            avatar: 'https://' + process.env.DOMAIN_NAME + ':8443/avatar/' + file.filename,
             pseudo: null,
         }
         );

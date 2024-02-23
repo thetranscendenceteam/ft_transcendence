@@ -9,6 +9,7 @@ import { UserContext } from '@/components/userProvider';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Loading from '@/components/ui/loading';
+import { Button } from '@/components/ui/button';
 
 const checkUserGame = async (setError: Function, setMatch: Function, userId: String) => {
   try {
@@ -168,9 +169,6 @@ function Page() {
   if (error) {
     router.push('/');
   }
-  else if (game && match && match != 'local' && user) {
-    router.push(`/game/${match}`);
-  }
   else if (game && match && match == 'local' && user) {
     return (
       <div className='h-full'>
@@ -180,18 +178,24 @@ function Page() {
   } else if (user && user.id) {
     return (
       <div className="flex flex-col h-full items-center justify-center">
-        <GameDialog setGameParams={setGameParams} />
-        <div className='m-4 p-5 rounded-xl border-black border-2 bg-black'>
-          <h1 className='text-center font-bold' >Ongoing matches</h1>
-          <ul>
-            {ongoingMatches && ongoingMatches.map((m: any) => (m.users &&
-              <li className='overflow-scroll max-h-[20%]:' key={m.id}>
-                <Link className='hover:text-sky-500' href={`/game/${m.id}`}>
-                  Watch {m.users[0].username} vs {m.users[1].username}
-                </Link>
-              </li>))}
-            {(!ongoingMatches || !ongoingMatches[0] ) && <li>No ongoing matches</li>} 
-          </ul>
+        <div className="flex flex-col items-center justify-center">
+          { (game && match && match != 'local' && user) ?
+            <Button variant="black" className="h-auto p-12 rounded-3xl text-7xl" onClick={() => router.push(`/game/${match}`)}>Resume</Button>
+          :
+            <GameDialog setGameParams={setGameParams} />
+          }
+          <div className='m-4 p-5 rounded-xl border-black border-2 bg-black'>
+            <h1 className='text-center font-bold' >Ongoing matches</h1>
+            <ul>
+              {ongoingMatches && ongoingMatches.map((m: any) => (m.users &&
+                <li className='max-h-[20%]:' key={m.id}>
+                  <Link className='hover:text-sky-500' href={`/game/${m.id}`}>
+                    {m.id === match ? 'Resume' : 'Watch'} {m.users[0].username} vs {m.users[1].username}
+                  </Link>
+                </li>))}
+              {(!ongoingMatches || !ongoingMatches[0] ) && <li>No ongoing matches</li>} 
+            </ul>
+          </div>
         </div>
       </div>
     )

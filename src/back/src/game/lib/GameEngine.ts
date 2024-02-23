@@ -23,7 +23,7 @@ export class GameEngine {
     });
   }
 
-  deleteGame(game: Game) {
+  async deleteGame(game: Game) {
     clearInterval(game.interval);
     for (const player of Object.values(game.players)) {
       if (player.client) {
@@ -36,7 +36,8 @@ export class GameEngine {
     }
     game.spectators = [];
     this.games = this.games.filter((g) => g !== game);
-    if (game.state !== 'end')
+    const usersInMatch = await this.matchService.findUsersInMatch(game.matchId);
+    if (game.state !== 'end' && usersInMatch.length < 2)
       this.matchService.deleteMatch(game.matchId);
     console.log('Game deleted');
   }
@@ -89,14 +90,17 @@ export class GameEngine {
         return;
       }
     }
-    if (
-      (game = this.games.find((game) => game.matchId === init.matchId))
-    ) {
+    const ongoingMatches: Match[] = await this.matchService.findUngoingMatches();
+    if ((match = ongoingMatches.find((match) => match.id === init.matchId))) {
+      if (!(game = this.games.find((game) => game.matchId === init.matchId)))
+        game = this.createGame(match);
       console.log('spectator found');
       const client = new Client(ws);
       game.bindClientToSpectator(client);
+      return;
     } else {
-      console.log('no match found with id ' + JSON.stringify(init.matchId));
+      console.log('no match found with id ' + init.matchId);
+      ws.close();
     }
   }
 

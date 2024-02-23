@@ -178,6 +178,7 @@ const Conversation = ({ className, activeConv, convType, refresh }: Props) => {
             className="w-full border bg-indigo-400 placeholder-gray-300 text-white border-indigo-300 rounded-lg pl-1 pr-10 outline-none"
             placeholder="Type here"
             value={newMessage}
+            maxLength={1000}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && user) {

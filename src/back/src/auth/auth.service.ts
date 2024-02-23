@@ -149,7 +149,7 @@ export class AuthService {
         const PRIVATE_KEY = "secretKeyPlaceHolder";
         const secretKey = PRIVATE_KEY;
         const options = {
-          expiresIn: '1h',
+          expiresIn: '1d',
         };
         const jwtToken = jwt.sign(payload, secretKey, options);
         return {
@@ -218,7 +218,7 @@ export class AuthService {
       }
       const secretKey = JWT_PRIVATE_KEY;
       const options = {
-        expiresIn: '1h',
+        expiresIn: '1d',
       };
       const user = await this.prisma.users.findUnique({
         where: {

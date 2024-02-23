@@ -6,7 +6,7 @@ import Image from 'next/image';
 import NewChannel from './newChannel';
 import JoinPublicChannel from './joinPublicChannel';
 import apolloClient from "../apolloclient";
-import { gql } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { UserContext } from '../userProvider';
 
 type Chat = {
@@ -21,63 +21,59 @@ type Chat = {
 }
 
 type Props = {
-  changeConv: (ChatName: Chat) => void;
-  changeConvType: (newType: string) => void;
+  activeConv: Chat | null;
+  changeConv: Function;
+  changeConvType: Function;
   refresh: boolean;
 }
 
-const Sidebar = ({ changeConv, changeConvType, refresh }: Props) => {
+const GET_CHATS_BY_ID_USER = gql`
+  query getChatsByIdUser($userId: String!) {
+    getChatsByIdUser(userId: $userId) {
+      idChat
+      userInfo {idUser, pseudo, avatar}
+      name
+      isPrivate
+      isWhisper
+      role
+      status
+    }
+  }
+`;
+
+const Sidebar = ({ changeConv, activeConv, changeConvType, refresh }: Props) => {
   const [activeList, setActiveList] = useState<string>('Friends');
   const [createNewChannel, setCreateNewChannel] = useState(false);
   const [joinPublicChannel, setJoinPublicChannel] = useState(false);
   const [data, setData] = useState<Chat[]>([]);
   const { user } = useContext(UserContext);
 
-  const fetchData = async() => {
-    if (user) {
-      try {
-        const { data } = await apolloClient.query({
-          query: gql`
-              query getChatsByIdUser($userId: String!) {
-                getChatsByIdUser(userId: $userId) {
-                  idChat 
-                  userInfo {idUser, pseudo, avatar}
-                  name
-                  isPrivate
-                  isWhisper
-                  role 
-                  status
-                }
-              }
-          `,
-          variables: {
-            userId: user.id
-          }
-        });
-        return (data.getChatsByIdUser);
-      } catch (error) {
-        return ([]);
-      }
-    }
-  }
+  let { data: fetchedData } = useQuery(GET_CHATS_BY_ID_USER, {
+    variables: { userId: user ? user.id : '' },
+    pollInterval: 500,
+    skip: !user || !user.id,
+  });
+
 
   useEffect(() => {
-    const fetchInitialData = async () => {
-      const fetchedData = await fetchData();
-      const tmp = fetchedData.map((item: any) => ({
-        id: item.idChat,
-        targetId: item.userInfo ? item.userInfo.idUser : '',
-        name: item.userInfo ? item.userInfo.pseudo : item.name,
-        role: item.role,
-        status: item.status,
-        isPrivate: item.isPrivate,
-        isWhisper: item.isWhisper,
-        avatar: item.userInfo ? item.userInfo.avatar : ""
-      }));
-      setData(tmp);
-    };
-    fetchInitialData();
-  }, [refresh]);
+    if (!fetchedData) return;
+    const tmp = fetchedData.getChatsByIdUser.map((item: any) => ({
+      id: item.idChat,
+      targetId: item.userInfo ? item.userInfo.idUser : '',
+      name: item.userInfo ? item.userInfo.pseudo : item.name,
+      role: item.role,
+      status: item.status,
+      isPrivate: item.isPrivate,
+      isWhisper: item.isWhisper,
+      avatar: item.userInfo ? item.userInfo.avatar : ""
+    }));
+    setData(tmp);
+  }, [refresh, fetchedData]);
+
+  useEffect(() => {
+    if (activeConv && data.find((chat) => chat.id === activeConv?.id)) return;
+      changeConv(null);
+  }, [data, changeConv]);
 
   useEffect(() => {
     const handleReload = () => {

@@ -18,7 +18,7 @@ type Chat = {
 
 export const Chat = () => {
   const { user } = useContext(UserContext);
-  const [activeConv, setActiveConv] = useState<Chat>();
+  const [activeConv, setActiveConv] = useState<Chat | null>(null);
   const [convType, setConvType] = useState<string>('Friends');
   const [rifresh, setRifresh]  = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
@@ -47,7 +47,7 @@ export const Chat = () => {
   if (user && user.id) {
     return (
       <div className="h-full grid grid-cols-7 grid-rows-1 items-center justify-center">
-        <Sidebar changeConv={changeConv} changeConvType={changeConvType} refresh={rifresh}/>
+        <Sidebar changeConv={changeConv} activeConv={activeConv} changeConvType={changeConvType} refresh={rifresh}/>
         {activeConv ? (
           <Conversation className="col-span-6" activeConv={activeConv} convType={convType} refresh={refresh} />
         ) : (

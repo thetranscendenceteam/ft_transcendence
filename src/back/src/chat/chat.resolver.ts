@@ -40,9 +40,9 @@ export class ChatResolver {
   }
 
   @Mutation(returns => Chat)
-	@UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard)
   updateChat(
-		@Context('req') req : RequestWithUser,
+    @Context('req') req : RequestWithUser,
     @Args('updateChatInput') updateChatInput: UpdateChatInput,
   ): Promise<Chat> {
     return this.chatService.updateChat(updateChatInput, req.user.id);
@@ -56,25 +56,25 @@ export class ChatResolver {
   }
 
   @Mutation(returns => String)
-	@UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard)
   addInBanList(
     @Args('addInBanListInput') addInBanListInput: AddInBanList,
-		@Context('req') req : RequestWithUser,
+    @Context('req') req : RequestWithUser,
   ): Promise<string> {
-		const user = req.user;
-  	return this.chatService.addInBanList(addInBanListInput, user.id);
+    const user = req.user;
+    return this.chatService.addInBanList(addInBanListInput, user.id);
   }
 
-	@Mutation(returns => Boolean)
-	@UseGuards(GqlAuthGuard)
-	removeFromBanList(
-		@Args('userId') userId: string,
-		@Args('chatId') chatId: string,
-		@Context('req') req: RequestWithUser,
-	): Promise<boolean> {
-		const user = req.user;
-		return this.chatService.removeFromBanList(userId, chatId, user.id);
-	}
+  @Mutation(returns => Boolean)
+  @UseGuards(GqlAuthGuard)
+  removeFromBanList(
+    @Args('userId') userId: string,
+    @Args('chatId') chatId: string,
+    @Context('req') req: RequestWithUser,
+  ): Promise<boolean> {
+    const user = req.user;
+    return this.chatService.removeFromBanList(userId, chatId, user.id);
+  }
 
   @Mutation(returns => UserPrivate)
   updateUserInChat(
@@ -84,13 +84,13 @@ export class ChatResolver {
   }
 
   @Mutation(returns => Boolean)
-	@UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard)
   removeUserOfChat(
     @Args('removeUser') input: RemoveUserInput,
-		@Context('req') req: RequestWithUser,
+    @Context('req') req: RequestWithUser,
   ): Promise<boolean> {
-		const user = req.user;
-  	return this.chatService.removeUserOfChat(input, user.id);
+    const user = req.user;
+    return this.chatService.removeUserOfChat(input, user.id);
   }
 
 }

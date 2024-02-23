@@ -261,6 +261,8 @@ class GameEngine {
       this.isLoop = false;
     }
     this.drawText(this.toPrint);
+    if (this.role === "spectator")
+      this.drawText("Spectating...", 12, 280);
     if ((this.state === "waiting" || this.state === "paused") && this.role !== "spectator")
       this.drawText("Press esc to quit", 24, 200);
     if (this.state === "waiting")

@@ -187,7 +187,7 @@ function Page() {
           <div className='m-4 p-5 rounded-xl border-black border-2 bg-black'>
             <h1 className='text-center font-bold' >Ongoing matches</h1>
             <ul>
-              {ongoingMatches && ongoingMatches.map((m: any) => (m.users && m.users.size === 2 &&
+              {ongoingMatches && ongoingMatches.map((m: {id: string, users: {userId: string, username: string}[]}) => (m.users && m.users.length === 2 &&
                 <li className='max-h-[20%]:' key={m.id}>
                   <Link className='hover:text-sky-500' href={`/game/${m.id}`}>
                     {m.id === match ? 'Resume' : 'Watch'} {m.users[0].username} vs {m.users[1].username}

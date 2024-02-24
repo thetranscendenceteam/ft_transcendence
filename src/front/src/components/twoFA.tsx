@@ -42,7 +42,6 @@ const TwoFA = () => {
   
   useEffect(() => {
     if (fetchError) {
-      console.log(fetchError.message);
       return;
     }
     if (dataQR) {
@@ -51,24 +50,36 @@ const TwoFA = () => {
   }, [dataQR, fetchError]);
 
   useEffect(() => {
-    if (toggleError && ! toggleLoading) {
+    if (toggleError && !toggleLoading) {
       setError(toggleError.message);
       return;
     }
-    if (toggleRes && ! toggleLoading && user) {
+    if (toggleRes && !toggleLoading && user) {
       setError("");
-      updateUser({...user, twoFA: !user.twoFA});
+      updateUser({...user, twoFA: !(user.twoFA)});
       router.push('/');
     }
   }, [toggleError, toggleRes, toggleLoading]);
 
-  function toggle(): void {
+  function activate(): void {
     if (user && twoFACode) {
       toggleTwoFA({
         variables: {
           id: user.id,
           code: twoFACode,
-          toggleTwoFA: !user.twoFA
+          toggleTwoFA: true
+        }
+      });
+    }
+  }
+
+  function deactivate(): void {
+    if (user && twoFACode) {
+      toggleTwoFA({
+        variables: {
+          id: user.id,
+          code: twoFACode,
+          toggleTwoFA: false
         }
       });
     }
@@ -94,7 +105,7 @@ const TwoFA = () => {
               </div>
               <div style={{alignContent:"center"}}>
                 <Input id="2FADeactivate" type="text" placeholder="Enter a 2FA code" onChange={(e) => setTwoFACode(e.target.value)} />
-                <Button className={styles.button} type="submit" onClick={toggle}>Deactivate</Button>
+                <Button className={styles.button} type="submit" onClick={deactivate}>Deactivate</Button>
               </div>
             </div>
           }
@@ -106,7 +117,7 @@ const TwoFA = () => {
               </div>
               <div style={{alignContent:"center"}}>
                 <Input id="2FAActivate" type="text" placeholder="Enter a 2FA code" onChange={(e) => setTwoFACode(e.target.value)} />
-                <Button className={styles.button} type="submit" onClick={toggle}>Activate</Button>
+                <Button className={styles.button} type="submit" onClick={activate}>Activate</Button>
               </div>
             </div>
           }

@@ -100,7 +100,12 @@ const NotificationsButton = () => {
   const onMessage = useCallback((result: OnDataOptions) => {
     if (!result.data.data) return;
     const lastMessage = result.data.data.newPendingRequest;
-    setFriendsNotifs((prevMessages) => [...prevMessages, lastMessage]);
+    setFriendsNotifs((prevMessages) => {
+      if (!prevMessages.some(message => message.userId === lastMessage.userId)) {
+        return [...prevMessages, lastMessage];
+      }
+      return prevMessages;
+    });
   }, []);
 
   useSubscription(NEW_FRIENDREQUEST_SUBSCRIPTION, {

@@ -35,7 +35,7 @@ const TwoFA = () => {
   });
 
   useEffect(() => {
-    if (user) {
+    if (user && user.id) {
       fetchQR();
     }
   }, [user, fetchQR]);
@@ -56,32 +56,40 @@ const TwoFA = () => {
     }
     if (toggleRes && !toggleLoading && user) {
       setError("");
-      updateUser({...user, twoFA: !(user.twoFA)});
+      updateUser({...user, twoFA: user.twoFA ? false : true });
       router.push('/');
     }
   }, [toggleError, toggleRes, toggleLoading]);
 
   function activate(): void {
     if (user && twoFACode) {
-      toggleTwoFA({
-        variables: {
-          id: user.id,
-          code: twoFACode,
-          toggleTwoFA: true
-        }
-      });
+      try {
+        toggleTwoFA({
+          variables: {
+            id: user.id,
+            code: twoFACode,
+            toggleTwoFA: true
+          }
+        });
+      } catch (e) {
+        setError("Error when toggling 2FA");
+      }
     }
   }
 
   function deactivate(): void {
     if (user && twoFACode) {
-      toggleTwoFA({
-        variables: {
-          id: user.id,
-          code: twoFACode,
-          toggleTwoFA: false
-        }
-      });
+      try {
+        const res = toggleTwoFA({
+          variables: {
+            id: user.id,
+            code: twoFACode,
+            toggleTwoFA: false
+          }
+        });
+      } catch (e) {
+        setError("Error when toggling 2FA");
+      }
     }
   }
 

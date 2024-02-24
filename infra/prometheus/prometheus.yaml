@@ -8,13 +8,14 @@ global:
 alerting:
   alertmanagers:
     - static_configs:
-        - targets:
-          # - alertmanager:9093
+        - targets: ["alertmanager:9093"]
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
+  - "rules/cadvisor.yaml"
+  - "rules/node_exporter.yaml"
+  - "rules/postgres_exporter.yaml"
+  - "rules/prometheus.yaml"
 
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
@@ -39,3 +40,8 @@ scrape_configs:
 
     static_configs:
       - targets: ["postgres-exporter:9187"]
+
+  - job_name: "alertmanager"
+
+    static_configs:
+      - targets: ["alertmanager:9093"]

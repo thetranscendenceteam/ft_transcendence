@@ -10,6 +10,7 @@ services:
       - /:/rootfs:ro
     command:
       - --path.rootfs=/rootfs
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|containers|var/lib/docker/.+|var/lib/mount-services-cache/.+)($|/)
     pid: host
     privileged: true
     restart: unless-stopped
@@ -44,6 +45,19 @@ services:
     devices: 
       - /dev/kmsg
 
+  alertmanager:
+    container_name: alertmanager
+    image: prom/alertmanager:v0.26.0
+    restart: unless-stopped
+    networks:
+      - mon
+    volumes:
+      - ./alertmanager:/config
+      - alertmanager-data:/data
+    command:
+      - --config.file=/config/alertmanager.yaml
+      - --log.level=debug
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -51,11 +65,12 @@ services:
       - mon
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
-    ports:
-      - 9090:9090
+    #ports:
+    #  - 9090:9090
     restart: unless-stopped
     volumes:
       - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./prometheus/rules:/etc/prometheus/rules
       - prometheus-data:/prometheus
 
   grafana:
@@ -80,6 +95,7 @@ services:
       - grafana-data:/var/lib/grafana
 
 volumes:
+  alertmanager-data:
   prometheus-data:
   grafana-data:
 

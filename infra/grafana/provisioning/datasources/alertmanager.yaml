@@ -1,0 +1,9 @@
+apiVersion: 1
+
+datasources:
+- name: Alertmanager
+  type: prometheus
+  url: http://alertmanager:9093
+  isDefault: false
+  access: proxy
+  editable: true

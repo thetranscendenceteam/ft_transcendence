@@ -104,7 +104,7 @@ const NewChannel: FunctionComponent<PopUpProp> = ({ closePopUp, addChat }) => {
           <h1 className="text-2xl">x</h1>
         </button>
         <h2 className="absolute top-6 text-5xl mb-6">Create your new channel</h2>
-        <input type="text" required placeholder="Channel Name" className="text-gray-600 border rounded-md p-2 mt-16" onChange={(e) => setChannelName(e.target.value)} />
+        <input type="text" maxLength={15} required placeholder="Channel Name" className="text-gray-600 border rounded-md p-2 mt-16" onChange={(e) => setChannelName(e.target.value)} />
         <div className="flex mt-6">
           <button onClick={() => handlePrivacy(true)}
             className={`px-4 py-2 mr-4 border rounded-md 

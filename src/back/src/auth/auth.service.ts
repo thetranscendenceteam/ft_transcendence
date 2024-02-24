@@ -278,7 +278,6 @@ export class AuthService {
 
   async toggleTwoFA(id: string, code: string, toggleTwoFA: boolean): Promise<boolean | null> { // TODO take from JWT
     try {
-			console.log(id, code, toggleTwoFA, "id, code, toggleTwoFA");
       const userCurrent = await this.prisma.users.findFirst(
         {
           where: { id: id },

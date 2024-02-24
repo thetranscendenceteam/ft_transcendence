@@ -70,7 +70,10 @@ const TwoFA = () => {
             code: twoFACode,
             toggleTwoFA: true
           }
-        });
+        }).then(({ data }) => {
+				}).catch(e => {
+					setError("Error when toggling 2FA");
+				});
       } catch (e) {
         setError("Error when toggling 2FA");
       }
@@ -86,7 +89,10 @@ const TwoFA = () => {
             code: twoFACode,
             toggleTwoFA: false
           }
-        });
+        }).then(({ data }) => {
+				}).catch(e => {
+				setError("Error when toggling 2FA");
+				});
       } catch (e) {
         setError("Error when toggling 2FA");
       }

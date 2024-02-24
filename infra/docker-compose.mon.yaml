@@ -1,6 +1,31 @@
 ---
 version: "3.8"
 services:
+  node-exporter:
+    image: prom/node-exporter:v1.7.0
+    container_name: node-exporter
+    networks:
+      - mon
+    volumes:
+      - /:/rootfs:ro
+    command:
+      - --path.rootfs=/rootfs
+    pid: host
+    privileged: true
+    restart: unless-stopped
+
+  postges-exporter:
+    container_name: postgres-exporter
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    restart: unless-stopped
+    environment:
+      - DATA_SOURCE_URI=postgres:5432/${POSTGRES_DB}?sslmode=disable
+      - DATA_SOURCE_USER=${POSTGRES_USER}
+      - DATA_SOURCE_PASS=${POSTGRES_PASSWORD}
+    networks:
+      - mon
+      - db
+
   cadvisor:
     container_name: cadvisor
     image: gcr.io/cadvisor/cadvisor:v0.47.2
@@ -26,15 +51,15 @@ services:
       - mon
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
-    #ports:
-    #  - 9090:9090
+    ports:
+      - 9090:9090
     restart: unless-stopped
     volumes:
       - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - prometheus-data:/prometheus
 
   grafana:
-    image: grafana/grafana-oss:latest
+    image: grafana/grafana-oss:10.3.1
     container_name: grafana
     ports:
       - 3000:3000
@@ -42,8 +67,13 @@ services:
       - mon
     restart: unless-stopped
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SERVER_DOMAIN=${DOMAIN_NAME}
+      - GF_SERVER_ROOT_URL=https://${DOMAIN_NAME}:8443/mon
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${GF_AUTH_GENERIC_OAUTH_CLIENT_ID}
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
+      - GF_AUTH_SIGNOUT_REDIRECT_URL=https://${DOMAIN_NAME}:8443/mon/login
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini

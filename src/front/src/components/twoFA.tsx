@@ -29,7 +29,7 @@ const TwoFA = () => {
   const {user, updateUser} = React.useContext(UserContext);
   const router = useRouter();
 
-  const [toggleTwoFA, { data: toggleRes, error: toggleError }] = useMutation(TOGGLE_TWO_FA);
+  const [toggleTwoFA, { data: toggleRes, error: toggleError, loading: toggleLoading }] = useMutation(TOGGLE_TWO_FA);
   const [fetchQR, { data: dataQR, error: fetchError }] = useMutation(GET_TWO_FA_QR, {
     variables: { id: user ? user.id : "" }
   });
@@ -51,16 +51,16 @@ const TwoFA = () => {
   }, [dataQR, fetchError]);
 
   useEffect(() => {
-    if (toggleError) {
+    if (toggleError && ! toggleLoading) {
       setError(toggleError.message);
       return;
     }
-    if (toggleRes) {
+    if (toggleRes && ! toggleLoading && user) {
       setError("");
-      updateUser({...user, twoFA: toggleRes.toggleTwoFA});
+      updateUser({...user, twoFA: !user.twoFA});
       router.push('/');
     }
-  }, [toggleError, toggleRes]);
+  }, [toggleError, toggleRes, toggleLoading]);
 
   function toggle(): void {
     if (user && twoFACode) {

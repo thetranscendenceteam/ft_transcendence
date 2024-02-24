@@ -140,7 +140,7 @@ const Sidebar = ({ changeConv, activeConv, changeConvType, refresh }: Props) => 
             })
             .map((conversation, index) => (
               <button key={index} className="cursor-pointer" onClick={() => handleClick(conversation)}>
-                <SidebarChat key={conversation.id} avatarUrl={conversation.avatar} fallback="..." nickname={conversation.name} />
+                <SidebarChat key={conversation.id} avatarUrl={conversation.avatar} fallback="🔐" nickname={conversation.name} />
               </button>
             ))
           }

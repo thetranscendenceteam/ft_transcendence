@@ -26,41 +26,44 @@ function useJwtCookie() {
   return (jwtCookie ? jwtCookie : null);
 }
 
-const fetchData = async (id: string) => {
-  try {
-    const { data } = await apolloClient.query({
-      query: gql`
-        query GetUser($UserInput: GetUserInput!) {
-          getUser(UserInput: $UserInput) {
-            id 
-            pseudo
-            mail
-            firstName
-            lastName
-            avatar
-            campus
-            twoFA
-          }
-        }
-      `,
-      variables: {
-        UserInput: {
-          id: id
-        }
-      }
-    });
-    return (data.getUser);
-  } catch (error) {
-    return ([]);
-  }
-}
 
 export function UserProvider({ children }: { children: ReactNode }): JSX.Element {
   const [user, setUser] = useState<User | null>(null);
+  const [cookies, setCookie, removeCookie] = useCookies(['jwt']);
   const jwtToken = useJwtCookie();
 
   function updateUser(inUser: User) {
     setUser(inUser);
+  }
+
+  const fetchData = async (id: string) => {
+    try {
+      const { data } = await apolloClient.query({
+        query: gql`
+          query GetUser($UserInput: GetUserInput!) {
+            getUser(UserInput: $UserInput) {
+              id 
+              pseudo
+              mail
+              firstName
+              lastName
+              avatar
+              campus
+              twoFA
+            }
+          }
+        `,
+        variables: {
+          UserInput: {
+            id: id
+          }
+        }
+      });
+      return (data.getUser);
+    } catch (error) {
+      removeCookie('jwt');
+      return ([]);
+    }
   }
 
   useEffect(() => {

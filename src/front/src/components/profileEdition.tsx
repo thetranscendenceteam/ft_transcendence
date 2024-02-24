@@ -135,7 +135,7 @@ const UserProfileEditionCard: React.FC<UserProfileEditionCardProps> = ({ userEdi
               id="image"
               type="file"
               name="avatar"
-              accept="image/*"
+              accept="image/jpeg, image/png, image/gif"
               onChange={handleImageChange}
               className="col-span-2"
             />

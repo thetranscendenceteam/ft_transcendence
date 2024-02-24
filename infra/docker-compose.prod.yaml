@@ -74,7 +74,7 @@ services:
       - db
       - back
     volumes:
-      - back-data:/data # Needed ?
+      - back-data:/app/uploads
       - .env-back:/app/.env
 
   nginx:

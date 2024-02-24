@@ -73,14 +73,7 @@ const Menu: React.FC = () => {
 
   function handleLogoutClick() {
     removeCookie('jwt');
-    updateUser({
-      id: null,
-      username: null,
-      realname: null,
-      avatar_url: null,
-      email: null,
-      campus: null,
-    });
+    updateUser(null);
     router.push('/');
   }
 

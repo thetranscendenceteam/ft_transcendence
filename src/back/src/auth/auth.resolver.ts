@@ -53,13 +53,13 @@ export class AuthResolver {
   }
 
   @Mutation(returns => String)
-	@UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard)
   async getTwoFaQr(
-		@Context('req') req: RequestWithUser,
-		@Args('id') id: string
-	): Promise<string> {
-		const user = req.user;
-		if (user.id !== id) throw new Error("Unauthorized");
+    @Context('req') req: RequestWithUser,
+    @Args('id') id: string
+  ): Promise<string> {
+    const user = req.user;
+    if (user.id !== id) throw new Error("Unauthorized");
     const result = await this.userService.twoFaQr(id);
     if (result === null) {
       throw new Error('2FA QR generation failed');
@@ -68,16 +68,16 @@ export class AuthResolver {
   }
 
   @Mutation(returns => String)
-	@UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard)
   async toggleTwoFA(
-		@Context('req') req: RequestWithUser,
-		@Args('id') id: string,
-		@Args('code') code: string,
-		@Args('toggleTwoFA') toggleTwoFA: boolean
+    @Context('req') req: RequestWithUser,
+    @Args('id') id: string,
+    @Args('code') code: string,
+    @Args('toggleTwoFA') toggleTwoFA: boolean
 
-	): Promise<boolean> {
-		const user = req.user;
-		if (user.id !== id) throw new Error("Unauthorized");
+  ): Promise<boolean> {
+    const user = req.user;
+    if (user.id !== id) throw new Error("Unauthorized");
     const result = await this.userService.toggleTwoFA(id, code, toggleTwoFA);
     if (result === null) {
       throw new Error('2FA activation failed');
@@ -97,10 +97,10 @@ export class AuthResolver {
 
   @Mutation(returns => Boolean)
   async resetPassword(
-		@Args('user') user:string,
-		@Args('code') code: string,
-		@Args('password') password: string
-	): Promise<boolean> {
+    @Args('user') user:string,
+    @Args('code') code: string,
+    @Args('password') password: string
+  ): Promise<boolean> {
     try {
       await this.userService.resetPassword(user, code, password);
       return true;

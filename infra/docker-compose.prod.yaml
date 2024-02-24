@@ -90,8 +90,12 @@ services:
     env_file:
       - .env
     depends_on:
-      - back
-      - front
+      back:
+        condition: service_healthy
+      front:
+        condition: service_healthy
+      grafana:
+        condition: service_started
     ports:
       - 8080:8080
       - 8443:8443

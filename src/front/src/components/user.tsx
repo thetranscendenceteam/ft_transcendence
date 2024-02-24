@@ -266,18 +266,18 @@ const UserComponent = (props: {username: string}) => {
     }
   }, [relationship]);
 
-  const addFriend = () => {
+  const addFriend = async () => {
     if (user && target) {
-      removeRelationship(user.id, target.id);
-      mutateAddFriend(user.id, target.id);
+      await removeRelationship(user.id, target.id);
+      await mutateAddFriend(user.id, target.id);
       setRefresh(!refresh);
     }
   }
 
-  const block = () => {
+  const block = async () => {
     if (user && target) {
-      removeRelationship(user.id, target.id);
-      addBlock(user.id, target.id);
+      await removeRelationship(user.id, target.id);
+      await addBlock(user.id, target.id);
       setRefresh(!refresh);
     }
   }
@@ -289,9 +289,9 @@ const UserComponent = (props: {username: string}) => {
     }
   }
 
-  const removeRelation = () => {
+  const removeRelation = async () => {
     if (user && target) {
-      removeRelationship(user.id, target.id);
+      await removeRelationship(user.id, target.id);
       setRefresh(!refresh);
     }
   }
